@@ -7,5 +7,5 @@ To install the R package LEMAD, make sure you have devtools installed and then t
 
 ```
 library(devtools)
-remotes::install_github("leonelhalsina/lemad")
+remotes::install_github("leonelhalsina/geneclade")
 ```
