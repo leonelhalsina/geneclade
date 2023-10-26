@@ -557,7 +557,7 @@ using namespace std;
    if(no_failure)
    {
      cout << "OK" << endl;
-     cout << "end of simulation" << endl;
+     cout << "end of simulation, now we are in Github too" << endl;
    }
 
    // for RcPP
