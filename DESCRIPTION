@@ -1,7 +1,7 @@
 Package: geneclade
 Type: Package
 Title: Simulates the radiation of a clade in space with genetic structure
-Version: 0.1.0
+Version: 0.1.1
 Author: Leonel Herrera Alsina
 Maintainer: Leonel Herrera Alsina <leonelhalsina@gmail.com>
 Description: Simulates the radiation of a clade in space with genetic structure
