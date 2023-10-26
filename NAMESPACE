@@ -1,0 +1,4 @@
+useDynLib(geneclade, .registration=TRUE)
+importFrom(Rcpp, evalCpp)
+import(Rcpp)
+exportPattern("^[[:alpha:]]+")

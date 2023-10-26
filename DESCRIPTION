@@ -1,0 +1,14 @@
+Package: geneclade
+Type: Package
+Title: Simulates the radiation of a clade in space with genetic structure
+Version: 0.1.0
+Author: Leonel Herrera Alsina
+Maintainer: Leonel Herrera Alsina <leonelhalsina@gmail.com>
+Description: Simulates the radiation of a clade in space with genetic structure
+Encoding: UTF-8
+LazyData: true
+License: GPL (>= 2)
+Imports: Rcpp
+LinkingTo: Rcpp
+NeedsCompilation: yes
+RoxygenNote: 7.2.3

@@ -1,0 +1,9 @@
+# Makevars for BiasedUrn
+# The value of MAXCOLORS may be modified
+PKG_CPPFLAGS= -DR_BUILD=1 -DMAXCOLORS=32
+PKG_LIBS = `$(R_HOME)/bin/Rscript -e \
+"Rcpp:::LdFlags()"`
+PKG_LIBS = $(shell \
+"${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" \
+-e "Rcpp:::LdFlags()")
+
