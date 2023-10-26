@@ -9,6 +9,8 @@ To install the R package LEMAD, make sure you have devtools installed and then t
 library(devtools)
 remotes::install_github("leonelhalsina/geneclade")
 
+library(withr)
+library(devtools)
 new_dir <- tempdir(new)
 dir.create(new_dir) 
 with_libpaths(new_dir,install_github("leonelhalsina/geneclade"))
