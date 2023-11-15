@@ -20,6 +20,57 @@ const int x_max = 22;
 const int y_max = 22;
 // vector <species> all_species;
 
+
+void species::update_latitudinal_borders(double t, bool was_it_expansion){
+
+
+  vector <int> all_ys;
+  for(int ij = 0; ij < presence.size();ij ++){
+
+    all_ys.push_back(presence[ij].y);
+  }
+
+  int fromhere_southmost;
+  fromhere_southmost = *max_element(all_ys.begin(),all_ys.end());
+  int fromhere_northmost;
+  fromhere_northmost = *min_element(all_ys.begin(),all_ys.end());
+
+
+  if(was_it_expansion){
+    if(fromhere_southmost > southernmost){
+      change_southernmost.push_back(1);
+      time_change_southernmost.push_back(t);
+      southernmost = fromhere_southmost;
+    }
+    if(fromhere_northmost < northernmost){
+      change_northernmost.push_back(1);
+      time_change_northernmost.push_back(t);
+      northernmost = fromhere_northmost;
+
+    }
+
+  } else {
+    // cout << "contract" << endl;
+    // cout << fromhere_southmost << "  " << southernmost << endl;
+    // cout << fromhere_northmost << "  " <<northernmost << endl;
+    if(fromhere_southmost < southernmost){
+      change_southernmost.push_back(-1);
+      time_change_southernmost.push_back(t);
+      southernmost = fromhere_southmost;
+      //cout << "contract south" << endl;
+    }
+
+
+    if(fromhere_northmost > northernmost){
+      change_northernmost.push_back(-1);
+      time_change_northernmost.push_back(t);
+      northernmost = fromhere_northmost;
+     // cout << "contract north" << endl;
+    }
+  }
+
+}
+
 double calculate_variance(vector<int> vector_values){
 
   double the_sum;
@@ -1959,18 +2010,19 @@ void species::happening_contraction(double t, landscape **map1, std::string temp
 
   // part to see whether there was a latitudinal contraction
 
-  if(presence[random_cell_to_remove_population].y == (southernmost + 1))
-  {
-    change_southernmost.push_back(-1);
-    time_change_southernmost.push_back(t);
-    southernmost = southernmost + 1;
-  }
-  if(presence[random_cell_to_remove_population].y == (northernmost - 1))
-  {
-    change_northernmost.push_back(-1);
-    time_change_northernmost.push_back(t);
-    northernmost = northernmost - 1;
-  }
+  // if(presence[random_cell_to_remove_population].y == (southernmost + 1))
+  // {
+  //   change_southernmost.push_back(-1);
+  //   time_change_southernmost.push_back(t);
+  //   southernmost = southernmost + 1;
+  // }
+  // if(presence[random_cell_to_remove_population].y == (northernmost - 1))
+  // {
+  //   change_northernmost.push_back(-1);
+  //   time_change_northernmost.push_back(t);
+  //   northernmost = northernmost - 1;
+  // }
+
 
 
   // cout << " ++ cells presence After contraction:" << presence.size() << endl;
@@ -1978,6 +2030,10 @@ void species::happening_contraction(double t, landscape **map1, std::string temp
   { // it died by contraction too much
     death = t;
     alive = false;
+  }
+  else
+  {
+    update_latitudinal_borders(t,false);
   }
 }
 
@@ -2043,26 +2099,26 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       presence.push_back(ready_to_colonize2[random_cell_to_go - 1]); // -1 as it is index
 
       // log if latitudinal expansion took place
-     // cout << "y coor: "<<ready_to_colonize2[random_cell_to_go - 1].y << endl;
+      // cout << "y coor: "<<ready_to_colonize2[random_cell_to_go - 1].y << endl;
 
-      if (ready_to_colonize2[random_cell_to_go - 1].y == (northernmost + 1)) // northward expansion
-      {
-      //  cout << "here in north" << endl;
-        change_northernmost.push_back(1); // Ones are expansions whereas -1 are contractions
-        time_change_northernmost.push_back(t);
-   //  cout << "before " << northernmost << endl;
-        northernmost = northernmost + 1;
-     //   cout << "after " << northernmost << endl;
-      }
-      if (ready_to_colonize2[random_cell_to_go - 1].y == (southernmost - 1)) // southward expansion
-      {
-      //  cout << "here in south" << endl;
-        change_southernmost.push_back(1); // Ones are expansions whereas -1 are contractions
-        time_change_southernmost.push_back(t);
-        //cout << "before " << southernmost << endl;
-        southernmost = southernmost - 1;
-       // cout << "after " << southernmost << endl;
-      }
+      //    if (ready_to_colonize2[random_cell_to_go - 1].y == (northernmost + 1)) // northward expansion
+      //    {
+      //    //  cout << "here in north" << endl;
+      //      change_northernmost.push_back(1); // Ones are expansions whereas -1 are contractions
+      //      time_change_northernmost.push_back(t);
+      // //  cout << "before " << northernmost << endl;
+      //      northernmost = northernmost + 1;
+      //   //   cout << "after " << northernmost << endl;
+      //    }
+      //    if (ready_to_colonize2[random_cell_to_go - 1].y == (southernmost - 1)) // southward expansion
+      //    {
+      //    //  cout << "here in south" << endl;
+      //      change_southernmost.push_back(1); // Ones are expansions whereas -1 are contractions
+      //      time_change_southernmost.push_back(t);
+      //      //cout << "before " << southernmost << endl;
+      //      southernmost = southernmost - 1;
+      //     // cout << "after " << southernmost << endl;
+      //    }
 
 
       // the part where the new population could have evolved a different temperature from parental population
@@ -2281,6 +2337,7 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
         stop(" +++++++++++++ Error: original populatio did not split correctly (pop_size) ++++++++++++++");
       }
 
+      update_latitudinal_borders(t,true);
 
     }
     else
@@ -2374,9 +2431,9 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
       all_ys_this_species.push_back(focal.presence[i].y);
 
     }
-    focal.southernmost = *min_element(all_ys_this_species.begin(),all_ys_this_species.end());
+    focal.northernmost = *min_element(all_ys_this_species.begin(),all_ys_this_species.end());
 
-    focal.northernmost = *max_element(all_ys_this_species.begin(),all_ys_this_species.end());
+    focal.southernmost = *max_element(all_ys_this_species.begin(),all_ys_this_species.end());
 
     //  cout <<" population size_parent before speciation: " << focal.total_pop_size << endl;
 

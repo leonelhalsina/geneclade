@@ -110,7 +110,8 @@ public:
   vector <yx> presence;
 
   vector <population_structure> populations_this_species;
-  void happening_population_popchange_this_species(double , landscape **map1, vector<int>  );
+void update_latitudinal_borders(double, bool);
+    void happening_population_popchange_this_species(double , landscape **map1, vector<int>  );
 
   void happening_gene_flow( double,landscape **map1);
 
