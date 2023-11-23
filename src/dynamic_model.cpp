@@ -1540,7 +1540,7 @@ vector<yx> species::find_neighbor(int cell)
   return adjacent_cells;
 }
 
-probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> all_species, landscape **map1, std::string temperature_influencing, double mutation_rate, double geneflow_rate, double popchange_rate, double lambda, double gamma, double mu, vector<int> id_alive_species, double v)
+probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> all_species, landscape **map1, bool extirpation_depen_temperature, bool colonization_depen_temperature, double mutation_rate, double geneflow_rate, double popchange_rate, double lambda, double gamma, double mu, vector<int> id_alive_species, double v)
 {
   // int species_to_do;
   // species_to_do = id_alive_species[give_me_random_uniform(0, (id_alive_species.size()-1))];
@@ -1572,20 +1572,29 @@ probabilities_based_traits calculate_probabilities_using_traitstate(vector<speci
       double total_fitnesslike;
       total_fitnesslike = std::accumulate(work_this_species.computed_rate_based_on_temperature.begin(), work_this_species.computed_rate_based_on_temperature.end(),
                                           decltype(work_this_species.computed_rate_based_on_temperature)::value_type(0));
-      if (temperature_influencing == "mu_depending")
+      if (extirpation_depen_temperature)
       {
-        this_species_mu = total_fitnesslike * mu;
-        this_species_gamma = work_this_species.range * gamma;
+        this_species_mu = ((work_this_species.range - total_fitnesslike)/work_this_species.range) * mu * work_this_species.range;
+
       }
-      if (temperature_influencing == "gamma_depending" || temperature_influencing == "gamma_depending_mu_onPopsize")
+      else
       {
-        this_species_gamma = (total_fitnesslike/work_this_species.range) * gamma;
+        this_species_mu =  work_this_species.range * mu;
+      }
+      if(colonization_depen_temperature)
+      {
+                this_species_gamma = (total_fitnesslike/work_this_species.range) * gamma;
 
         // being poorly adapted increases the chances that extirpation happens, so this event is more likely to happen
         // I use the range size of the species as that value would be equivalent to populations with the highest
         // fitness_like score
-        this_species_mu = ((work_this_species.range - total_fitnesslike)/work_this_species.range) * mu * work_this_species.range;
+
       }
+      else
+      {
+        this_species_gamma = work_this_species.range * gamma;
+      }
+
       this_species_geneflow = work_this_species.range * geneflow_rate;
       this_species_lambda = work_this_species.range * lambda;
       this_species_popchange = work_this_species.range * popchange_rate;
@@ -1955,16 +1964,15 @@ double give_me_random_normal(double my_mean, double my_sd)
   return my_random;
 }
 
-void species::happening_contraction(double t, landscape **map1, std::string temperature_influencing)
+void species::happening_contraction(double t, landscape **map1, bool extirpation_depen_temperature)
 {
   random_device rd;
   default_random_engine generator3(rd());
   int random_cell_to_remove_population;
-  if (temperature_influencing == "gamma_depending")
-  {
-    random_cell_to_remove_population = give_me_random_uniform(0, presence.size() - 1);
-  }
-  if (temperature_influencing == "gamma_depending_mu_onPopsize")
+
+
+
+  if (extirpation_depen_temperature)
   {
 
     vector<int> all_cells_id;
@@ -1980,6 +1988,10 @@ void species::happening_contraction(double t, landscape **map1, std::string temp
 
     discrete_distribution<int> cell_probabilities_to_pick(pop_sizes_vector.begin(), pop_sizes_vector.end());
     random_cell_to_remove_population = all_cells_id[cell_probabilities_to_pick(generator3)];
+  }
+  else
+    {
+    random_cell_to_remove_population = give_me_random_uniform(0, presence.size() - 1);
   }
 
   x_coordinate_last_event = presence[random_cell_to_remove_population].x;
@@ -2037,7 +2049,7 @@ void species::happening_contraction(double t, landscape **map1, std::string temp
   }
 }
 
-void species::happening_expansion(int x_max, int y_max, bool use_k, double restiction_par, landscape **map1, std::string temperature_influencing, vector<int> alleles_adaptation_coef,double t)
+void species::happening_expansion(int x_max, int y_max, bool use_k, double restiction_par, landscape **map1, bool colonization_depen_temperature, vector<int> alleles_adaptation_coef,double t)
 { // restriction par will be either k or trait dissimilarity
   // If there is any cell available for focal species to expand, colonization will take place
   // empty cells that are surrounded by focal species, will be more likely to be colonized
@@ -2075,18 +2087,14 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
   if (ready_to_colonize2.size() > 0)
   { // it has, otherwise, no where to go
     int random_cell_to_go;
-    if (temperature_influencing == "mu_depending")
-    {
-      random_cell_to_go = give_me_random_uniform(1, ready_to_colonize2.size());
-
-    }
-    if (temperature_influencing == "gamma_depending" || temperature_influencing == "gamma_depending_mu_onPopsize")
+    if (colonization_depen_temperature)
     {
       discrete_distribution<int> cell_probabilities_to_pick(probabilities_temperature2.begin(), probabilities_temperature2.end());
       random_cell_to_go = all_cells_id[cell_probabilities_to_pick(generator4)];
 
+
     }
-    if (temperature_influencing == "independent")
+    else
     {
       random_cell_to_go = give_me_random_uniform(1, ready_to_colonize2.size());
 
@@ -2803,7 +2811,7 @@ List extract_species_data(vector<species> process_all_species)
 }
 // end for Rcpp
 
-vector<species> get_species_intocpp(vector<species> all_species, IntegerVector all_alleles,IntegerVector all_alleles_neutral, IntegerVector all_popsize, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, int number_spp, landscape **map1, vector<int> alleles_adaptation_coef, double v, double gamma, double mu, std::string temperature_influencing)
+vector<species> get_species_intocpp(vector<species> all_species, IntegerVector all_alleles,IntegerVector all_alleles_neutral, IntegerVector all_popsize, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, int number_spp, landscape **map1, vector<int> alleles_adaptation_coef, double v, double gamma, double mu, bool extirpation_depen_temperature, bool colonization_depen_temperature)
 {
 
   // vector <species> all_species;

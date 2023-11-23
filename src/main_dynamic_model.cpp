@@ -17,7 +17,7 @@ using namespace std;
 //default_random_engine &generator;
 //' @export
  // [[Rcpp::export]]
- List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, std::string temperature_influencing, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow, double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,double t_change_rates, IntegerVector ice_age_change, double q, double lambda, double sd_normal_distribution, double starting_time, double simulated_time, int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map, double v, IntegerVector alleles_adaptation_coef2,bool global_reducing)
+ List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, bool extirpation_depen_temperature, bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow, double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,double t_change_rates, IntegerVector ice_age_change, double q, double lambda, double sd_normal_distribution, double starting_time, double simulated_time, int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map, double v, IntegerVector alleles_adaptation_coef2,bool global_reducing)
  {
 
    random_device rd;
@@ -84,7 +84,7 @@ using namespace std;
    }
 
 
-   all_species = get_species_intocpp(all_species,  all_alleles, all_alleles_neutral, all_popsize,  all_x,  all_y,  all_IDs,  all_parents,  all_births,  all_deaths,  all_traits,  all_ranges,  number_spp, map1, alleles_adaptation_coef,  v,  gamma,  mu, temperature_influencing);
+   all_species = get_species_intocpp(all_species,  all_alleles, all_alleles_neutral, all_popsize,  all_x,  all_y,  all_IDs,  all_parents,  all_births,  all_deaths,  all_traits,  all_ranges,  number_spp, map1, alleles_adaptation_coef,  v,  gamma,  mu, extirpation_depen_temperature,  colonization_depen_temperature);
 
    int total_num_populations = 0;
    for (int ij = 0; ij < all_ranges.size(); ++ij)
@@ -163,7 +163,7 @@ using namespace std;
      vector<double> total_probability_species;
      probabilities_based_traits calculation_probabilities;
 
-     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1, temperature_influencing, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
+     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1,  extirpation_depen_temperature, colonization_depen_temperature, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
      total_probability_species = calculation_probabilities.total_probability_species;
      discrete_distribution<int> species_probabilities_to_pick(total_probability_species.begin(), total_probability_species.end());
      species_to_do = id_alive_species[species_probabilities_to_pick(generator)];
@@ -434,7 +434,7 @@ using namespace std;
       // cout << "                  i will expand" << endl;
 
        //  cout << "                   species  BEFORE expansion: " << all_species[species_to_do].presence.size() << endl;
-       all_species[species_to_do].happening_expansion(x_max, y_max, use_k, restiction_par, map1, temperature_influencing, alleles_adaptation_coef,t); // restriction par will be either k or trait dissimilarity;
+       all_species[species_to_do].happening_expansion(x_max, y_max, use_k, restiction_par, map1, colonization_depen_temperature, alleles_adaptation_coef,t); // restriction par will be either k or trait dissimilarity;
        //  cout << "                    species  AFTER expansion: " << all_species[species_to_do].presence.size() << endl;
 
        all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
@@ -478,7 +478,7 @@ using namespace std;
      if (event_to_do == "contraction")
      {
        //  cout << "                  I will contract range " << endl;
-       all_species[species_to_do].happening_contraction(t, map1, temperature_influencing);
+       all_species[species_to_do].happening_contraction(t, map1, extirpation_depen_temperature);
        total_contraction_events = total_contraction_events + 1;
        //all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
      }

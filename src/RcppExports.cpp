@@ -23,15 +23,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // do_simulation
-List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, std::string temperature_influencing, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral, IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate, double percentage_flow, double geneflow_rate, double popchange_rate, NumericVector the_gammas, NumericVector the_mus, double t_change_rates, IntegerVector ice_age_change, double q, double lambda, double sd_normal_distribution, double starting_time, double simulated_time, int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map, double v, IntegerVector alleles_adaptation_coef2, bool global_reducing);
-RcppExport SEXP _geneclade_do_simulation(SEXP map_elevation_vectorSEXP, SEXP map_k_vectorSEXP, SEXP map_temperature_vectorSEXP, SEXP temperature_influencingSEXP, SEXP x_maxSEXP, SEXP y_maxSEXP, SEXP all_xSEXP, SEXP all_ySEXP, SEXP all_IDsSEXP, SEXP all_parentsSEXP, SEXP all_birthsSEXP, SEXP all_deathsSEXP, SEXP all_traitsSEXP, SEXP all_rangesSEXP, SEXP all_allelesSEXP, SEXP all_alleles_neutralSEXP, SEXP all_popsizeSEXP, SEXP number_sppSEXP, SEXP the_seedSEXP, SEXP mutation_rateSEXP, SEXP percentage_flowSEXP, SEXP geneflow_rateSEXP, SEXP popchange_rateSEXP, SEXP the_gammasSEXP, SEXP the_musSEXP, SEXP t_change_ratesSEXP, SEXP ice_age_changeSEXP, SEXP qSEXP, SEXP lambdaSEXP, SEXP sd_normal_distributionSEXP, SEXP starting_timeSEXP, SEXP simulated_timeSEXP, SEXP maximum_cyclesSEXP, SEXP use_kSEXP, SEXP restiction_parSEXP, SEXP show_richness_mapSEXP, SEXP vSEXP, SEXP alleles_adaptation_coef2SEXP, SEXP global_reducingSEXP) {
+List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, bool extirpation_depen_temperature, bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral, IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate, double percentage_flow, double geneflow_rate, double popchange_rate, NumericVector the_gammas, NumericVector the_mus, double t_change_rates, IntegerVector ice_age_change, double q, double lambda, double sd_normal_distribution, double starting_time, double simulated_time, int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map, double v, IntegerVector alleles_adaptation_coef2, bool global_reducing);
+RcppExport SEXP _geneclade_do_simulation(SEXP map_elevation_vectorSEXP, SEXP map_k_vectorSEXP, SEXP map_temperature_vectorSEXP, SEXP extirpation_depen_temperatureSEXP, SEXP colonization_depen_temperatureSEXP, SEXP x_maxSEXP, SEXP y_maxSEXP, SEXP all_xSEXP, SEXP all_ySEXP, SEXP all_IDsSEXP, SEXP all_parentsSEXP, SEXP all_birthsSEXP, SEXP all_deathsSEXP, SEXP all_traitsSEXP, SEXP all_rangesSEXP, SEXP all_allelesSEXP, SEXP all_alleles_neutralSEXP, SEXP all_popsizeSEXP, SEXP number_sppSEXP, SEXP the_seedSEXP, SEXP mutation_rateSEXP, SEXP percentage_flowSEXP, SEXP geneflow_rateSEXP, SEXP popchange_rateSEXP, SEXP the_gammasSEXP, SEXP the_musSEXP, SEXP t_change_ratesSEXP, SEXP ice_age_changeSEXP, SEXP qSEXP, SEXP lambdaSEXP, SEXP sd_normal_distributionSEXP, SEXP starting_timeSEXP, SEXP simulated_timeSEXP, SEXP maximum_cyclesSEXP, SEXP use_kSEXP, SEXP restiction_parSEXP, SEXP show_richness_mapSEXP, SEXP vSEXP, SEXP alleles_adaptation_coef2SEXP, SEXP global_reducingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerVector >::type map_elevation_vector(map_elevation_vectorSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type map_k_vector(map_k_vectorSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type map_temperature_vector(map_temperature_vectorSEXP);
-    Rcpp::traits::input_parameter< std::string >::type temperature_influencing(temperature_influencingSEXP);
+    Rcpp::traits::input_parameter< bool >::type extirpation_depen_temperature(extirpation_depen_temperatureSEXP);
+    Rcpp::traits::input_parameter< bool >::type colonization_depen_temperature(colonization_depen_temperatureSEXP);
     Rcpp::traits::input_parameter< int >::type x_max(x_maxSEXP);
     Rcpp::traits::input_parameter< int >::type y_max(y_maxSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type all_x(all_xSEXP);
@@ -67,7 +68,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type v(vSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type alleles_adaptation_coef2(alleles_adaptation_coef2SEXP);
     Rcpp::traits::input_parameter< bool >::type global_reducing(global_reducingSEXP);
-    rcpp_result_gen = Rcpp::wrap(do_simulation(map_elevation_vector, map_k_vector, map_temperature_vector, temperature_influencing, x_max, y_max, all_x, all_y, all_IDs, all_parents, all_births, all_deaths, all_traits, all_ranges, all_alleles, all_alleles_neutral, all_popsize, number_spp, the_seed, mutation_rate, percentage_flow, geneflow_rate, popchange_rate, the_gammas, the_mus, t_change_rates, ice_age_change, q, lambda, sd_normal_distribution, starting_time, simulated_time, maximum_cycles, use_k, restiction_par, show_richness_map, v, alleles_adaptation_coef2, global_reducing));
+    rcpp_result_gen = Rcpp::wrap(do_simulation(map_elevation_vector, map_k_vector, map_temperature_vector, extirpation_depen_temperature, colonization_depen_temperature, x_max, y_max, all_x, all_y, all_IDs, all_parents, all_births, all_deaths, all_traits, all_ranges, all_alleles, all_alleles_neutral, all_popsize, number_spp, the_seed, mutation_rate, percentage_flow, geneflow_rate, popchange_rate, the_gammas, the_mus, t_change_rates, ice_age_change, q, lambda, sd_normal_distribution, starting_time, simulated_time, maximum_cycles, use_k, restiction_par, show_richness_map, v, alleles_adaptation_coef2, global_reducing));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -88,7 +89,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_geneclade_dotRcpp_I", (DL_FUNC) &_geneclade_dotRcpp_I, 2},
-    {"_geneclade_do_simulation", (DL_FUNC) &_geneclade_do_simulation, 39},
+    {"_geneclade_do_simulation", (DL_FUNC) &_geneclade_do_simulation, 40},
     {"_geneclade_try_random_wallenius", (DL_FUNC) &_geneclade_try_random_wallenius, 4},
     {NULL, NULL, 0}
 };
