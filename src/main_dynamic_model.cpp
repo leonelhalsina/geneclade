@@ -359,7 +359,21 @@ using namespace std;
      event_to_do = all_events[events_probabilities_to_pick(generator)];
 
      vector <std::string> list_events_to_do;
-     list_events_to_do.push_back("gene_flow");
+     //list_events_to_do.push_back("gene_flow");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
@@ -425,9 +439,13 @@ using namespace std;
      list_events_to_do.push_back("mutation");
 
      if(cycles < list_events_to_do.size()){
-      // event_to_do = list_events_to_do[cycles - 1];   // to DELETE
+      event_to_do = list_events_to_do[cycles - 1];   // to DELETE
      }
-     //cout << "                       event_to_do: " << event_to_do << endl;
+     cout << "                       event_to_do: " << event_to_do << endl;
+
+     if(cycles == 15){
+       all_species[species_to_do].find_patches_distribution();
+     }
 
      if (event_to_do == "expansion")
      {

@@ -43,6 +43,15 @@ struct yx {
 
 };
 
+class position_and_id {
+public:
+  vector <int> id_cell;
+  vector <yx> position;
+private:
+};
+
+
+
 class landscape {
 public:
   int habitat;
@@ -109,6 +118,8 @@ public:
   int total_pop_size;
   vector <yx> presence;
 
+  void find_patches_distribution();
+
   vector <population_structure> populations_this_species;
 void update_latitudinal_borders(double, bool);
     void happening_population_popchange_this_species(double , landscape **map1, vector<int>  );
@@ -151,4 +162,5 @@ List extract_species_data(vector <species> process_all_species);
 List get_me_output(vector <species>,double );
 vector <int> extract_yx_func(species, std::string );
 bool final_check(vector<species>,landscape **map1);
+bool any_element_match(int , vector <int> );
 #endif

@@ -20,6 +20,221 @@ const int x_max = 22;
 const int y_max = 22;
 // vector <species> all_species;
 
+bool any_element_match(int this_element, vector <int> this_vector){
+
+  bool found;
+  found = false;
+  for(int ii = 0; ii < this_vector.size(); ++ii)
+    {
+    if(this_vector[ii] == this_element){
+      found = true;
+      cout << "any_element_match: "<< this_vector[ii] << " _ "<< this_element<< endl;
+      break;
+    }
+  }
+  return found;
+}
+
+
+void species::find_patches_distribution(){
+
+  vector <position_and_id> all_cells_this_spp;
+  vector <int> cell_id_presence_vector;
+  for(int ii = 0; ii < presence.size(); ++ii)
+  {
+    cell_id_presence_vector.push_back(ii);
+  }
+
+  // some for loop will be in here
+  int this_focal;
+  this_focal = 1;
+  vector<yx> neighbors_justcoordi_focal;
+  neighbors_justcoordi_focal = find_neighbor(this_focal);
+
+
+int counter;
+counter = 0;
+  vector <int> occupied_neigh;
+  for(int ii = 0; ii < cell_id_presence_vector.size(); ++ii)
+  {
+    for(int jj = 0; jj < neighbors_justcoordi_focal.size(); ++jj)
+    {
+      if(presence[ii].x == neighbors_justcoordi_focal[jj].x  && presence[ii].y == neighbors_justcoordi_focal[jj].y )
+      {
+        // this cell is occupied by the species
+
+
+        occupied_neigh.push_back(ii);
+
+
+      }
+    }
+  }
+
+
+  position_and_id do_this_cell;
+  vector <int> occupied_neigh_1;
+vector <int> id_added_to_this_patch;
+id_added_to_this_patch.push_back(this_focal);
+
+cout << "occupied_neigh before WHILE: " << occupied_neigh.size() << endl;
+
+for(int ii = 0; ii < occupied_neigh.size(); ++ii){
+  cout << "occupied_neigh: " << occupied_neigh[ii] << endl;
+}
+
+if(any_element_match(5,occupied_neigh)){
+  cout << "testing any_element_match 1" << endl;
+} else {
+  cout << "testing any_element_match 2" << endl;
+}
+
+  //while(occupied_neigh.size() > 0)
+  for(int iijj = 0; iijj < occupied_neigh.size(); ++iijj)
+  {
+    cout << "occupied_neigh at WHILE: " << occupied_neigh.size() << endl;
+    vector<yx> neighbors_justcoordi_focal;
+    neighbors_justcoordi_focal = find_neighbor(occupied_neigh[counter]);
+
+    cout << "focal: occupied_neigh[counter]: " << occupied_neigh[counter] << endl;
+
+    id_added_to_this_patch.push_back(occupied_neigh[counter]);
+
+
+
+
+
+    for(int ii = 0; ii < cell_id_presence_vector.size(); ++ii)
+    {
+      for(int jj = 0; jj < neighbors_justcoordi_focal.size(); ++jj)
+      {
+        if(presence[ii].x == neighbors_justcoordi_focal[jj].x  && presence[ii].y == neighbors_justcoordi_focal[jj].y )
+        {
+          // this cell is occupied by the species
+
+          if(any_element_match(ii,id_added_to_this_patch) == false &&any_element_match(ii,occupied_neigh_1) == false){ // otherwise it is a visited cell
+
+
+               occupied_neigh_1.push_back(ii);
+            cout << ii << endl;
+          }
+
+
+
+        }
+      }
+    }
+
+    counter = counter + 1;
+    if(counter  == occupied_neigh.size()){ // it has finished to look into the neighbors of this focal
+      occupied_neigh.clear();
+
+      for(int ii = 0; ii < occupied_neigh_1.size(); ++ii){
+        occupied_neigh.push_back(occupied_neigh_1[ii]);
+        vector <int> occupied_neigh_1;
+      }
+      counter = 0;
+    }
+    cout << "______ at the end of the loop" << endl;
+    cout << "this is counter: " << counter << endl;
+    for(int ii = 0; ii < occupied_neigh.size(); ++ii){
+      cout << "occupied_neigh: " << occupied_neigh[ii] << endl;
+    }
+    for(int ii = 0; ii < occupied_neigh_1.size(); ++ii){
+      cout << "occupied_neigh_1: " << occupied_neigh_1[ii] << endl;
+    }
+    for(int ii = 0; ii < id_added_to_this_patch.size(); ++ii){
+      cout << "id_added_to_this_patch: " << id_added_to_this_patch[ii] << endl;
+    }
+    cout << "______ at the end of the loop" << endl;
+  }
+//////////////////////////////////////////
+
+//
+//     for(int jj = 0; jj < neighbors_focal.size(); ++jj)
+//     {
+//       if(presence[ii].x == neighbors_focal[jj].x  && presence[ii].y == neighbors_focal[jj].y )
+//       {
+//         // this cell is occupied by the species
+//
+//
+//         occupied_neigh.push_back(ii);
+//
+//         // do_this_cell.id_cell.push_back(ii);
+//         // yx coordin;
+//         // coordin.x = presence[ii].x;
+//         // coordin.y = presence[ii].y;
+//         // do_this_cell.position.push_back(coordin);
+//         // all_cells_this_spp.push_back(do_this_cell);
+//
+//       }
+//     }
+//   }
+//
+
+
+
+
+
+
+
+
+
+
+
+
+//int focal_cell;
+//
+// cout << "species presence " << endl;
+//   for(int i = 0; i < presence.size(); ++i)
+//   {
+//   cout << presence[i].x << "_"<< presence[i].y << "map k: " << map1 [presence[i].y - 1][presence[i].x - 1].temperature << endl;
+//   }
+
+
+//focal_cell = give_me_random_uniform(0, (presence.size() - 1) );
+
+//cout << "focal_cell is " <<  focal_cell << " : " <<presence[focal_cell].x << " : "<< presence[focal_cell].y << endl;
+
+
+// cout << "neighbors_focal" << endl;
+// for(int i = 0; i < neighbors_focal.size(); ++i)
+// {
+//   cout << neighbors_focal[i].x << "_"<< neighbors_focal[i].y << endl;
+// }
+
+
+
+
+//
+// vector <int> id_neigh_cells;
+//
+// // find the cells occupied by the species that neighbor the focal cell
+// for(int ii = 0; ii < presence.size(); ++ii)
+// {
+//   for(int jj = 0; jj < neighbors_focal.size(); ++jj)
+//   {
+//     if(presence[ii].x == neighbors_focal[jj].x  && presence[ii].y == neighbors_focal[jj].y )
+//     {
+//       if( ii != focal_cell) // to exclude the focal cell itself
+//       {
+//         // cout << "id_this: " << ii << endl;
+//         id_neigh_cells.push_back(ii);
+//       }
+//
+//     }
+//   }
+// }
+//
+
+
+
+
+}
+
+
+
+
 
 void species::update_latitudinal_borders(double t, bool was_it_expansion){
 
@@ -65,7 +280,7 @@ void species::update_latitudinal_borders(double t, bool was_it_expansion){
       change_northernmost.push_back(-1);
       time_change_northernmost.push_back(t);
       northernmost = fromhere_northmost;
-     // cout << "contract north" << endl;
+      // cout << "contract north" << endl;
     }
   }
 
@@ -1583,7 +1798,7 @@ probabilities_based_traits calculate_probabilities_using_traitstate(vector<speci
       }
       if(colonization_depen_temperature)
       {
-                this_species_gamma = (total_fitnesslike/work_this_species.range) * gamma;
+        this_species_gamma = (total_fitnesslike/work_this_species.range) * gamma;
 
         // being poorly adapted increases the chances that extirpation happens, so this event is more likely to happen
         // I use the range size of the species as that value would be equivalent to populations with the highest
@@ -1990,7 +2205,7 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
     random_cell_to_remove_population = all_cells_id[cell_probabilities_to_pick(generator3)];
   }
   else
-    {
+  {
     random_cell_to_remove_population = give_me_random_uniform(0, presence.size() - 1);
   }
 
