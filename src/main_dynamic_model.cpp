@@ -379,6 +379,16 @@ using namespace std;
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("gene_flow");
@@ -439,11 +449,11 @@ using namespace std;
      list_events_to_do.push_back("mutation");
 
      if(cycles < list_events_to_do.size()){
-      event_to_do = list_events_to_do[cycles - 1];   // to DELETE
+     // event_to_do = list_events_to_do[cycles - 1];   // to DELETE
      }
      cout << "                       event_to_do: " << event_to_do << endl;
 
-     if(cycles == 15){
+     if(cycles == 230){
        all_species[species_to_do].find_patches_distribution();
      }
 

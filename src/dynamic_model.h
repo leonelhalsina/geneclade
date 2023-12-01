@@ -43,10 +43,10 @@ struct yx {
 
 };
 
-class position_and_id {
+class contiguous_patches {
 public:
-  vector <int> id_cell;
-  vector <yx> position;
+  vector <int> id_cells;
+  int patch_size;
 private:
 };
 
@@ -118,14 +118,14 @@ public:
   int total_pop_size;
   vector <yx> presence;
 
-  void find_patches_distribution();
+
+  vector <contiguous_patches> find_patches_distribution();
+  vector <int>  find_patches_distribution_startingonecell(int );
 
   vector <population_structure> populations_this_species;
-void update_latitudinal_borders(double, bool);
-    void happening_population_popchange_this_species(double , landscape **map1, vector<int>  );
-
+  void update_latitudinal_borders(double, bool);
+  void happening_population_popchange_this_species(double , landscape **map1, vector<int>  );
   void happening_gene_flow( double,landscape **map1);
-
   void happening_mutation_this_species() ;
   void happening_trait_evolution(double, double);
   vector <yx> available_neigh_to_colonize_K(int ,int ,int , landscape **map1);
