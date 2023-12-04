@@ -115,7 +115,7 @@ public:
   double saturation_grid_birth;
   double death = 0;
   double trait_state;
-  int total_pop_size;
+  int total_pop_size = 0;
   vector <yx> presence;
 
 
@@ -149,7 +149,7 @@ vector <int> give_me_random_wallenius (int, vector <int>, vector <int> , int );
 void show_all_species_data(vector<species> );
 
 double link_fitnesslike_mu_gamma(yx , population_structure , vector<int> , landscape **map1) ;
-void happening_speciation( vector<species>& , vector<int> , int , double , double,landscape **map1);
+void happening_speciation( vector<species>& , vector<int> , int , double , double,landscape **map1, bool);
 
 void set_landscape(IntegerVector,IntegerVector ,IntegerVector,int , int,landscape **map1);
 void change_temperature_map(int,int,IntegerVector ,IntegerVector ,landscape **map1);
