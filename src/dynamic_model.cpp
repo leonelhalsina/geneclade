@@ -28,7 +28,7 @@ bool any_element_match(int this_element, vector <int> this_vector){
   {
     if(this_vector[ii] == this_element){
       found = true;
-      cout << "any_element_match: "<< this_vector[ii] << " _ "<< this_element<< endl;
+      //cout << "any_element_match: "<< this_vector[ii] << " _ "<< this_element<< endl;
       break;
     }
   }
@@ -60,26 +60,26 @@ vector <int> species::find_patches_distribution_startingonecell(int this_focal){
   vector <int> id_added_to_this_patch;
   id_added_to_this_patch.push_back(this_focal);
 
-  cout << "occupied_neigh before WHILE: " << occupied_neigh.size() << endl;
-
-  for(int ii = 0; ii < occupied_neigh.size(); ++ii){
-    cout << "occupied_neigh: " << occupied_neigh[ii] << endl;
-  }
-
-  if(any_element_match(5,occupied_neigh)){
-    cout << "testing any_element_match 1" << endl;
-  } else {
-    cout << "testing any_element_match 2" << endl;
-  }
+  // cout << "occupied_neigh before WHILE: " << occupied_neigh.size() << endl;
+  //
+  // for(int ii = 0; ii < occupied_neigh.size(); ++ii){
+  //   cout << "occupied_neigh: " << occupied_neigh[ii] << endl;
+  // }
+  //
+  // if(any_element_match(5,occupied_neigh)){
+  //   cout << "testing any_element_match 1" << endl;
+  // } else {
+  //   cout << "testing any_element_match 2" << endl;
+  // }
 
   while(occupied_neigh.size() > 0)
     //for(int iijj = 0; iijj < occupied_neigh.size(); ++iijj)
   {
-    cout << "occupied_neigh at WHILE: " << occupied_neigh.size() << endl;
+    // cout << "occupied_neigh at WHILE: " << occupied_neigh.size() << endl;
     vector<yx> neighbors_justcoordi_focal;
     neighbors_justcoordi_focal = find_neighbor(occupied_neigh[counter]);
 
-    cout << "focal: occupied_neigh[counter]: " << occupied_neigh[counter] << endl;
+    // cout << "focal: occupied_neigh[counter]: " << occupied_neigh[counter] << endl;
 
     id_added_to_this_patch.push_back(occupied_neigh[counter]);
 
@@ -92,7 +92,7 @@ vector <int> species::find_patches_distribution_startingonecell(int this_focal){
           // this cell is occupied by the species
           if(any_element_match(ii,id_added_to_this_patch) == false && any_element_match(ii,occupied_neigh_1) == false && any_element_match(ii,occupied_neigh) == false){ // otherwise it is a visited cell
             occupied_neigh_1.push_back(ii);
-            cout << ii << endl;
+            //cout << ii << endl;
           }
         }
       }
@@ -109,18 +109,18 @@ vector <int> species::find_patches_distribution_startingonecell(int this_focal){
       occupied_neigh_1.clear();
       counter = 0;
     }
-    cout << "______ at the end of the loop" << endl;
-    cout << "this is counter: " << counter << endl;
-    for(int ii = 0; ii < occupied_neigh.size(); ++ii){
-      cout << "occupied_neigh: " << occupied_neigh[ii] << endl;
-    }
-    for(int ii = 0; ii < occupied_neigh_1.size(); ++ii){
-      cout << "occupied_neigh_1: " << occupied_neigh_1[ii] << endl;
-    }
-    for(int ii = 0; ii < id_added_to_this_patch.size(); ++ii){
-      cout << "id_added_to_this_patch: " << id_added_to_this_patch[ii] << endl;
-    }
-    cout << "______ at the end of the loop" << endl;
+    // cout << "______ at the end of the loop" << endl;
+    // cout << "this is counter: " << counter << endl;
+    // for(int ii = 0; ii < occupied_neigh.size(); ++ii){
+    //   cout << "occupied_neigh: " << occupied_neigh[ii] << endl;
+    // }
+    // for(int ii = 0; ii < occupied_neigh_1.size(); ++ii){
+    //   cout << "occupied_neigh_1: " << occupied_neigh_1[ii] << endl;
+    // }
+    // for(int ii = 0; ii < id_added_to_this_patch.size(); ++ii){
+    //   cout << "id_added_to_this_patch: " << id_added_to_this_patch[ii] << endl;
+    // }
+    // cout << "______ at the end of the loop" << endl;
   }
 
 
@@ -143,13 +143,13 @@ vector <contiguous_patches> species::find_patches_distribution(){
 
   while(cell_id_presence_vector.size() > 0){
 
-    for(int jj = 0; jj <   cell_id_presence_vector.size(); ++jj)
-    {
-    cout << "show_pending_cells_toVisit :" << cell_id_presence_vector[jj] << endl;
-    }
+    // for(int jj = 0; jj <   cell_id_presence_vector.size(); ++jj)
+    // {
+    //   cout << "show_pending_cells_toVisit :" << cell_id_presence_vector[jj] << endl;
+    // }
     int this_focal;
     this_focal = cell_id_presence_vector[0];
-cout << "show the focal in this while: " << this_focal << endl;
+    // cout << "show the focal in this while: " << this_focal << endl;
 
     contiguous_patches this_patch;
 
@@ -157,7 +157,7 @@ cout << "show the focal in this while: " << this_focal << endl;
     this_patch.patch_size = this_patch.id_cells.size();
 
     list_patches.push_back(this_patch);
-    cout << "patch size: " << this_patch.patch_size  << endl;
+    //cout << "patch size: " << this_patch.patch_size  << endl;
 
 
 
@@ -172,7 +172,7 @@ cout << "show the focal in this while: " << this_focal << endl;
       }
     }
 
-    cout << "size of cell_id_presence_vector: " << cell_id_presence_vector.size() << endl;
+    //cout << "size of cell_id_presence_vector: " << cell_id_presence_vector.size() << endl;
     cell_id_presence_vector.clear();
     for(int jj = 0; jj <   cell_id_presence_vector_1.size(); ++jj)
     {
@@ -181,7 +181,7 @@ cout << "show the focal in this while: " << this_focal << endl;
     }
     cell_id_presence_vector_1.clear();
 
-    cout << "after updating size of cell_id_presence_vector: " << cell_id_presence_vector.size() << endl;
+    // cout << "after updating size of cell_id_presence_vector: " << cell_id_presence_vector.size() << endl;
 
 
 
@@ -191,7 +191,7 @@ cout << "show the focal in this while: " << this_focal << endl;
   total_range_based_patches = 0;
   for(int jj = 0; jj <   list_patches.size(); ++jj)
   {
-    cout << "patch no.: " << jj + 1 << " "<< list_patches[jj].patch_size << endl;
+    //cout << "patch no.: " << jj + 1 << " "<< list_patches[jj].patch_size << endl;
     total_range_based_patches = total_range_based_patches + list_patches[jj].patch_size;
   }
 
@@ -2171,6 +2171,9 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
 
       //cout << "probab to be selected for contraction " << (1 - computed_rate_based_on_temperature[i]) << endl;
       pop_sizes_vector.push_back((1 - computed_rate_based_on_temperature[i]));
+      if((1 - computed_rate_based_on_temperature[i]) < 0){
+        stop("issue in computed_rate_based_on_temperature");
+      }
     }
 
     discrete_distribution<int> cell_probabilities_to_pick(pop_sizes_vector.begin(), pop_sizes_vector.end());
@@ -2193,9 +2196,6 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
   int current_popsize_map;
   current_popsize_map = map1[(presence[random_cell_to_remove_population].y - 1)][(presence[random_cell_to_remove_population].x - 1)].total_abundance_cell;
   map1[(presence[random_cell_to_remove_population].y - 1)][(presence[random_cell_to_remove_population].x - 1)].total_abundance_cell = current_popsize_map - populations_this_species[random_cell_to_remove_population].pop_size;
-
-
-  // cout << " ++ cells presence Before contraction:" << presence.size() << endl;
   presence.erase(presence.begin() + random_cell_to_remove_population);
   temperature_optimum.erase(temperature_optimum.begin() + random_cell_to_remove_population);
   computed_rate_based_on_temperature.erase(computed_rate_based_on_temperature.begin() + random_cell_to_remove_population);
@@ -2222,9 +2222,6 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
   //   northernmost = northernmost - 1;
   // }
 
-
-
-  // cout << " ++ cells presence After contraction:" << presence.size() << endl;
   if (range == 0)
   { // it died by contraction too much
     death = t;
@@ -2240,6 +2237,7 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
 { // restriction par will be either k or trait dissimilarity
   // If there is any cell available for focal species to expand, colonization will take place
   // empty cells that are surrounded by focal species, will be more likely to be colonized
+
   random_device rd;
   default_random_engine generator4(rd());
   vector<yx> ready_to_colonize2;
@@ -2555,7 +2553,7 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
     species focal;
     species new_species;
     focal = all_species[species_to_do];
-    cout << "____doing vicariance____" << endl;
+
     vector <int> populations_to_remove_from_focal;
     int patch_id;
     vector <contiguous_patches> list_patches;
@@ -2567,104 +2565,162 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
     contiguous_patches patch_becoming_differentsp;
     patch_becoming_differentsp = list_patches[patch_id];
 
-    cout << "patch_becoming_differentsp.patch_size: " << patch_becoming_differentsp.patch_size << endl;
-    for (int i = 0; i < patch_becoming_differentsp.patch_size; ++i)
-    {
+    if(patch_becoming_differentsp.patch_size > 1){
+      //cout << "patch_becoming_differentsp.patch_size: " << patch_becoming_differentsp.patch_size << endl;
+      for (int i = 0; i < patch_becoming_differentsp.patch_size; ++i)
+      {
 
-      new_species.presence.push_back(focal.presence[patch_becoming_differentsp.id_cells[i]]);
+        new_species.presence.push_back(focal.presence[patch_becoming_differentsp.id_cells[i]]);
 
-      cout << "new_species.presence[i].x : " <<new_species.presence[i].x << " y: " <<new_species.presence[i].y << endl;
-      population_structure first_population_newspecies;
-      first_population_newspecies.allelic_a = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_a;
-      first_population_newspecies.allelic_b = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_b;
-      first_population_newspecies.allelic_c = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_c;
-      first_population_newspecies.allelic_d = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_d;
-      first_population_newspecies.allelic_e = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_e;
+        // cout << "new_species.presence[i].x : " <<new_species.presence[i].x << " y: " <<new_species.presence[i].y << endl;
+        population_structure first_population_newspecies;
+        first_population_newspecies.allelic_a = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_a;
+        first_population_newspecies.allelic_b = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_b;
+        first_population_newspecies.allelic_c = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_c;
+        first_population_newspecies.allelic_d = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_d;
+        first_population_newspecies.allelic_e = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_e;
 
-      first_population_newspecies.allelic_v = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_v;
-      first_population_newspecies.allelic_w = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_w;
-      first_population_newspecies.allelic_x = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_x;
-      first_population_newspecies.allelic_y = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_y;
-      first_population_newspecies.allelic_z = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_z;
+        first_population_newspecies.allelic_v = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_v;
+        first_population_newspecies.allelic_w = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_w;
+        first_population_newspecies.allelic_x = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_x;
+        first_population_newspecies.allelic_y = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_y;
+        first_population_newspecies.allelic_z = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_z;
 
-      first_population_newspecies.pop_size = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].pop_size;
-      new_species.total_pop_size = new_species.total_pop_size + first_population_newspecies.pop_size;
-      new_species.populations_this_species.push_back(first_population_newspecies);
+        first_population_newspecies.pop_size = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].pop_size;
+        new_species.total_pop_size = new_species.total_pop_size + first_population_newspecies.pop_size;
+        new_species.populations_this_species.push_back(first_population_newspecies);
 
-      new_species.computed_rate_based_on_temperature.push_back(link_fitnesslike_mu_gamma(focal.presence[patch_becoming_differentsp.id_cells[i]], first_population_newspecies, alleles_adaptation_coef, map1));
+        new_species.computed_rate_based_on_temperature.push_back(link_fitnesslike_mu_gamma(focal.presence[patch_becoming_differentsp.id_cells[i]], first_population_newspecies, alleles_adaptation_coef, map1));
+        new_species.temperature_optimum.push_back(focal.temperature_optimum[patch_becoming_differentsp.id_cells[i]]);
+
+        populations_to_remove_from_focal.push_back(patch_becoming_differentsp.id_cells[i]);
+      }
+      new_species.range = patch_becoming_differentsp.patch_size;
+      new_species.birthplace.x = focal.presence[patch_becoming_differentsp.id_cells[0]].x;
+      new_species.birthplace.y = focal.presence[patch_becoming_differentsp.id_cells[0]].y;
 
 
-      populations_to_remove_from_focal.push_back(patch_becoming_differentsp.id_cells[i]);
+      new_species.update_latitudinal_borders(t,true);
+      new_species.update_latitudinal_borders(t,false);
+      new_species.parent = focal.id;
+      new_species.birth = t;
+      new_species.saturation_grid_birth = full_saturation_indi;
+      new_species.trait_state = focal.trait_state;
+      new_species.alive = true;
+      new_species.id = all_species.size() + 1;
+      new_species.x_coordinate_last_event = focal.presence[patch_becoming_differentsp.id_cells[0]].x;
+      new_species.y_coordinate_last_event = focal.presence[patch_becoming_differentsp.id_cells[0]].y;
+
+
+
+      new_species.classify_elevation_origin(true);
+
+      // cout <<" population new before speciation: " << new_species.total_pop_size << endl;
+
+
+
+      // cout << "id: "<< new_species.id << " range " << new_species.range <<" x_coordinate_last_event  " << new_species.x_coordinate_last_event << "y_coordinate_last_event " << new_species.y_coordinate_last_event << endl;
+      // cout << "new_species.temperature_optimum.size() " << new_species.temperature_optimum.size() << endl;
+      // cout << "new_species.southernmost "<< new_species.southernmost << "new_species.northernmost " << new_species.northernmost << endl;
+      // for (int i = 0; i < new_species.presence.size(); ++i)
+      // {
+      //   cout << "presence here in  " << new_species.presence[i].x << " " << new_species.presence[i].y  << endl;
+      //   cout <<"populations_this_species: " << new_species.populations_this_species[i].pop_size << endl;
+      //   cout <<"temperature_optimum: " << new_species.temperature_optimum[i] << endl;
+      //   cout <<"computed_rate_based_on_temperature: " << new_species.computed_rate_based_on_temperature[i] << endl;
+      //
+      // }
+
+      all_species.push_back(new_species);
+      int counting;
+      counting = 0;
+
+      sort(populations_to_remove_from_focal.begin(), populations_to_remove_from_focal.end());
+
+      int last_number;
+      last_number = -1;
+
+      if(focal.populations_this_species.size() != focal.presence.size()){
+        stop("focal.populations_this_species.size() != focal.presence.size()");
+      }
+      for (int i = 0; i < populations_to_remove_from_focal.size(); ++i)
+      {
+
+        if(last_number > populations_to_remove_from_focal[i]){
+          for (int ii = 0; ii < populations_to_remove_from_focal.size(); ++ii)
+          {
+            cout << "problem with sorting: populations_to_remove_from_focal[ii]:" << populations_to_remove_from_focal[ii] << endl;
+          }
+
+          stop("problem with the sorting");
+        }
+        if((populations_to_remove_from_focal[i] + counting) > focal.presence.size())
+        {
+          stop("problem with the size of the vector in here");
+        }
+
+        focal.presence.erase(focal.presence.begin() + populations_to_remove_from_focal[i] + counting);
+
+        focal.computed_rate_based_on_temperature.erase(focal.computed_rate_based_on_temperature.begin() + populations_to_remove_from_focal[i] + counting);
+        focal.populations_this_species.erase(focal.populations_this_species.begin() + populations_to_remove_from_focal[i] + counting);
+        focal.temperature_optimum.erase(focal.temperature_optimum.begin() + populations_to_remove_from_focal[i] + counting);
+        counting = counting - 1;
+
+
+        last_number = populations_to_remove_from_focal[i];
+      }
+
+      focal.range = focal.range - populations_to_remove_from_focal.size();
+
+     // cout <<" population size_parent before speciation: " << focal.total_pop_size << endl;
+
+      focal.total_pop_size = focal.total_pop_size - new_species.total_pop_size;
+
+     // cout <<" population size_parent after speciation: " << focal.total_pop_size << endl;
+
+      focal.update_latitudinal_borders(t,false);
+      // cout << "allele a focal: " << focal.populations_this_species[0].allelic_a << endl;
+      // cout << "new_species.presence.size() "<< new_species.presence.size() << endl;
+      // cout << "new_species.populations_this_species.size() "<< new_species.populations_this_species.size() << endl;
+      // for(int i = 0; i < new_species.presence.size(); i++)
+      // {
+      //   cout << "    this pop numb:" << i << endl;
+      //   cout << "allele a new: " << new_species.populations_this_species[i].allelic_a << endl;
+      //   cout << "allele b new: " << new_species.populations_this_species[i].allelic_b << endl;
+      //   cout << "allele c new: " << new_species.populations_this_species[i].allelic_c << endl;
+      //   cout << "allele d new: " << new_species.populations_this_species[i].allelic_d << endl;
+      //   cout << "allele e new: " << new_species.populations_this_species[i].allelic_e << endl;
+      //
+      //   cout << "size this pop " << new_species.populations_this_species[i].pop_size   << endl;
+      // }
+
+      // cout << "id: "<< focal.id << " range " << focal.range <<" x_coordinate_last_event  " << focal.x_coordinate_last_event << "y_coordinate_last_event " << focal.y_coordinate_last_event << endl;
+      // cout << "focal.temperature_optimum.size() " << focal.temperature_optimum.size() << endl;
+      // cout << "focal.southernmost "<< focal.southernmost << "focal.northernmost " << focal.northernmost << endl;
+      // for (int i = 0; i < focal.presence.size(); ++i)
+      // {
+      //   cout << "presence here in  " << focal.presence[i].x << " " << focal.presence[i].y  << endl;
+      //   cout <<"populations_this_species: " << focal.populations_this_species[i].pop_size << endl;
+      //   cout <<"temperature_optimum: " << focal.temperature_optimum[i] << endl;
+      //   cout <<"computed_rate_based_on_temperature: " << focal.computed_rate_based_on_temperature[i] << endl;
+      //
+      // }
+
+      if (focal.range == 0)
+      { // it died giving birth
+        focal.death = t;
+        focal.alive = false;
+      }
+      all_species[species_to_do] = focal; // this line updates the all_species vector
+      all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
+
+
+      if(new_species.presence.size() == 0 || focal.presence.size()== 0){
+        stop("new_species.presence.size() == 0");
+      }
+
+
     }
-new_species.range = patch_becoming_differentsp.patch_size;
-    new_species.birthplace.x = focal.presence[patch_becoming_differentsp.id_cells[0]].x;
-    new_species.birthplace.y = focal.presence[patch_becoming_differentsp.id_cells[0]].y;
-
-
-    new_species.update_latitudinal_borders(t,false);
-    new_species.parent = focal.id;
-    new_species.birth = t;
-    new_species.saturation_grid_birth = full_saturation_indi;
-    new_species.trait_state = focal.trait_state;
-    new_species.alive = true;
-    new_species.id = all_species.size() + 1;
-    new_species.x_coordinate_last_event = focal.presence[patch_becoming_differentsp.id_cells[0]].x;
-    new_species.y_coordinate_last_event = focal.presence[patch_becoming_differentsp.id_cells[0]].y;
-    new_species.temperature_optimum.push_back(focal.temperature_optimum[patch_becoming_differentsp.id_cells[0]]);
-    new_species.classify_elevation_origin(true);
-
-     cout <<" population new before speciation: " << new_species.total_pop_size << endl;
-
-    all_species.push_back(new_species);
-
-    int counting;
-    counting = 0;
-
-
-    sort(populations_to_remove_from_focal.begin(), populations_to_remove_from_focal.end());
-
-    for (int i = 0; i < populations_to_remove_from_focal.size(); ++i)
-    {
-      focal.presence.erase(focal.presence.begin() + populations_to_remove_from_focal[i] + counting);
-
-      focal.computed_rate_based_on_temperature.erase(focal.computed_rate_based_on_temperature.begin() + populations_to_remove_from_focal[i] + counting);
-      focal.populations_this_species.erase(focal.populations_this_species.begin() + populations_to_remove_from_focal[i] + counting);
-      focal.temperature_optimum.erase(focal.temperature_optimum.begin() + populations_to_remove_from_focal[i] + counting);
-      counting = counting - 1;
-    }
-
-    focal.range = focal.range - populations_to_remove_from_focal.size();
-
-     cout <<" population size_parent before speciation: " << focal.total_pop_size << endl;
-
-        focal.total_pop_size = focal.total_pop_size - new_species.total_pop_size;
-
-     cout <<" population size_parent after speciation: " << focal.total_pop_size << endl;
-
-    focal.update_latitudinal_borders(t,false);
-    cout << "allele a focal: " << focal.populations_this_species[0].allelic_a << endl;
-    cout << "new_species.presence.size() "<< new_species.presence.size() << endl;
-
-    cout << "new_species.populations_this_species.size() "<< new_species.populations_this_species.size() << endl;
-    for(int i = 0; i < new_species.presence.size(); i++)
-    {
-      cout << "    this pop numb:" << i << endl;
-      cout << "allele a new: " << new_species.populations_this_species[i].allelic_a << endl;
-      cout << "allele b new: " << new_species.populations_this_species[i].allelic_b << endl;
-      cout << "allele c new: " << new_species.populations_this_species[i].allelic_c << endl;
-      cout << "allele d new: " << new_species.populations_this_species[i].allelic_d << endl;
-      cout << "allele e new: " << new_species.populations_this_species[i].allelic_e << endl;
-
-      cout << "allele a new: " << new_species.populations_this_species[i].pop_size   << endl;
-    }
-    if (focal.range == 0)
-    { // it died giving birth
-      focal.death = t;
-      focal.alive = false;
-    }
-    all_species[species_to_do] = focal; // this line updates the all_species vector
-    all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
-
 
   }
   else
@@ -2755,21 +2811,20 @@ new_species.range = patch_becoming_differentsp.patch_size;
     }
 
 
-    cout << "allele a focal: " << focal.populations_this_species[0].allelic_a << endl;
-    cout << "new_species.presence.size() "<< new_species.presence.size() << endl;
-
-    cout << "new_species.populations_this_species.size() "<< new_species.populations_this_species.size() << endl;
-    for(int i = 0; i < new_species.presence.size(); i++)
-    {
-      cout << "    this pop numb:" << i << endl;
-      cout << "allele a new: " << new_species.populations_this_species[i].allelic_a << endl;
-      cout << "allele b new: " << new_species.populations_this_species[i].allelic_b << endl;
-      cout << "allele c new: " << new_species.populations_this_species[i].allelic_c << endl;
-      cout << "allele d new: " << new_species.populations_this_species[i].allelic_d << endl;
-      cout << "allele e new: " << new_species.populations_this_species[i].allelic_e << endl;
-
-      cout << "pop_size: " << new_species.populations_this_species[i].pop_size   << endl;
-    }
+    // cout << "allele a focal: " << focal.populations_this_species[0].allelic_a << endl;
+    // cout << "new_species.presence.size() "<< new_species.presence.size() << endl;
+    // cout << "new_species.populations_this_species.size() "<< new_species.populations_this_species.size() << endl;
+    // for(int i = 0; i < new_species.presence.size(); i++)
+    // {
+    //   cout << "    this pop numb:" << i << endl;
+    //   cout << "allele a new: " << new_species.populations_this_species[i].allelic_a << endl;
+    //   cout << "allele b new: " << new_species.populations_this_species[i].allelic_b << endl;
+    //   cout << "allele c new: " << new_species.populations_this_species[i].allelic_c << endl;
+    //   cout << "allele d new: " << new_species.populations_this_species[i].allelic_d << endl;
+    //   cout << "allele e new: " << new_species.populations_this_species[i].allelic_e << endl;
+    //
+    //   cout << "pop_size: " << new_species.populations_this_species[i].pop_size   << endl;
+    // }
     if (focal.range == 0)
     { // it died giving birth
       focal.death = t;
@@ -2782,7 +2837,7 @@ new_species.range = patch_becoming_differentsp.patch_size;
 
 
 
-    //cout <<" from here population size_parent after speciation: " << focal.total_pop_size << endl;
+  //cout <<" from here population size_parent after speciation: " << focal.total_pop_size << endl;
 
 
 

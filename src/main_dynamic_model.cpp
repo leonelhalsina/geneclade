@@ -360,7 +360,7 @@ using namespace std;
      event_to_do = all_events[events_probabilities_to_pick(generator)];
 
      vector <std::string> list_events_to_do;
-     //list_events_to_do.push_back("gene_flow");
+
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
@@ -386,79 +386,109 @@ using namespace std;
      list_events_to_do.push_back("contraction");
      list_events_to_do.push_back("speciation");
 
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("speciation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("contraction");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
 
      list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("pop_change");
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("contraction");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("gene_flow");
      list_events_to_do.push_back("contraction");
-     list_events_to_do.push_back("pop_change");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("contraction");
      list_events_to_do.push_back("speciation");
-     list_events_to_do.push_back("mutation");
+     list_events_to_do.push_back("expansion");
+
+
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("speciation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("contraction");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     //
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("contraction");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("contraction");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("speciation");
+     // list_events_to_do.push_back("mutation");
 
      if(cycles < list_events_to_do.size()){
-       event_to_do = list_events_to_do[cycles - 1];   // to DELETE
+       //event_to_do = list_events_to_do[cycles - 1];   // to DELETE
      }
-     cout << "                       event_to_do: " << event_to_do << endl;
+     // cout << "                       event_to_do: " << event_to_do << endl;
 
-     if(cycles == 230){
-       all_species[species_to_do].find_patches_distribution();
-     }
+
+     // all_species[species_to_do].find_patches_distribution(); // to DELETE
+
+
+
 
      if (event_to_do == "expansion")
      {
@@ -533,6 +563,25 @@ using namespace std;
      }
      vector_events_tookplace.push_back(event_to_do);
 
+     // cout << "super summary from here" << endl;
+     // for (int iij = 0; iij < all_species.size(); ++iij){
+     //   cout << "id: "<< all_species[iij].id << " range " <<  all_species[iij].range <<" x_coordinate_last_event  " <<  all_species[iij].x_coordinate_last_event << "y_coordinate_last_event " << all_species[iij].y_coordinate_last_event << endl;
+     //   cout << "new_species.temperature_optimum.size() " << all_species[iij].temperature_optimum.size() << endl;
+     //   cout << "new_species.southernmost "<< all_species[iij].southernmost << "new_species.northernmost " << all_species[iij].northernmost << endl;
+     //   cout << "total_rate " <<all_species[iij].total_rate << endl;
+     //   cout << "new_species.birth "<< all_species[iij].birth << "new_species.trait_state " << all_species[iij].trait_state << endl;
+     //   cout << "new_species.total_pop_size "<< all_species[iij].total_pop_size << endl;
+     //   for (int i = 0; i < all_species[iij].presence.size(); ++i)
+     //   {
+     //     cout << "presence here in  " << all_species[iij].presence[i].x << " " << all_species[iij].presence[i].y  << endl;
+     //     cout <<"populations_this_species: " << all_species[iij].populations_this_species[i].pop_size << endl;
+     //     cout <<"temperature_optimum: " << all_species[iij].temperature_optimum[i] << endl;
+     //     cout <<"computed_rate_based_on_temperature: " << all_species[iij].computed_rate_based_on_temperature[i] << endl;
+     //
+     //   }
+     // }
+
+
      // cout << "northermost: "<< all_species[species_to_do].northernmost << "south: " << all_species[species_to_do].southernmost << endl;
      if (total_num_populations == 1 && event_to_do == "contraction")
      {
@@ -540,7 +589,6 @@ using namespace std;
        break;
      }
 
-     cout << "all_species.size(): " << all_species.size() << endl;
 
      bool problem_zero_popsize;
      problem_zero_popsize = false;
@@ -572,15 +620,14 @@ using namespace std;
        stop("some issue with population below zero");
        break;
      } // end of checks
-
    } // End of While loop
 
    int final_richness;
    final_richness = 0;
    int final_numb_pop;
-    final_numb_pop = 0;
-    int final_indviduals;
-    final_indviduals = 0;
+   final_numb_pop = 0;
+   int final_indviduals;
+   final_indviduals = 0;
    for(int iji = 0; iji < all_species.size(); ++iji)
    {
      if(all_species[iji].alive)
