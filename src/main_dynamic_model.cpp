@@ -505,17 +505,25 @@ using namespace std;
      {
        //  cout << "                   i will speciate" << endl;
 
+       int rich_in_here;
+       rich_in_here = all_species.size();
 
        if(vicariant_speciation){
          vector <contiguous_patches> list_patches;
          list_patches = all_species[species_to_do].find_patches_distribution();
-
-         if(list_patches.size() > 1)// vacariance is possible
-         {
+         if(all_species[species_to_do].range > 2){
            happening_speciation( all_species, alleles_adaptation_coef, species_to_do, t, full_saturation_indi,map1, vicariant_speciation);
            all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
            total_speciation_events = total_speciation_events + 1;
+
+
+        if(all_species.size() != (rich_in_here + 1)){
+
+          stop("speciation did not work out");
+        }
          }
+
+
        } else {
          happening_speciation( all_species, alleles_adaptation_coef, species_to_do, t, full_saturation_indi,map1, vicariant_speciation);
          all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
