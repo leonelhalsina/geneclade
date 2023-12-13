@@ -13,6 +13,6 @@ library(devtools)
 .libPaths("/uoa/scratch/users/s06lh9/R/x86_64-pc-linux-gnu-library/4.1")
 
 remotes::install_github("leonelhalsina/geneclade")
-
+remotes::install_github("leonelhalsina/geneclade",ref="developer")
 
 ```
