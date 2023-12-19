@@ -107,7 +107,8 @@ public:
   vector <int> change_southernmost;
   vector <double> time_change_northernmost;
   vector <double> time_change_southernmost;
-  yx birthplace;
+  int birthplace_northmost;
+  int birthplace_southmost;
   double total_rate;
   vector <double> temperature_optimum;
   vector <double> computed_rate_based_on_temperature;
@@ -123,7 +124,7 @@ public:
   vector <int>  find_patches_distribution_startingonecell(int );
 
   vector <population_structure> populations_this_species;
-  void update_latitudinal_borders(double, bool);
+  void update_latitudinal_borders(double, bool,bool);
   void happening_population_popchange_this_species(double , landscape **map1, vector<int>  );
   void happening_gene_flow( double,landscape **map1);
   void happening_mutation_this_species() ;

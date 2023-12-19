@@ -208,7 +208,7 @@ vector <contiguous_patches> species::find_patches_distribution(){
 
 
 
-void species::update_latitudinal_borders(double t, bool was_it_expansion){
+void species::update_latitudinal_borders(double t, bool was_it_expansion, bool was_it_newborn){
 
 
   vector <int> all_ys;
@@ -222,7 +222,10 @@ void species::update_latitudinal_borders(double t, bool was_it_expansion){
   int fromhere_northmost;
   fromhere_northmost = *min_element(all_ys.begin(),all_ys.end());
 
-
+if(was_it_newborn){
+  southernmost = fromhere_southmost;
+  northernmost = fromhere_northmost;
+} else {
   if(was_it_expansion){
     if(fromhere_southmost > southernmost){
       change_southernmost.push_back(1);
@@ -255,6 +258,8 @@ void species::update_latitudinal_borders(double t, bool was_it_expansion){
       // cout << "contract north" << endl;
     }
   }
+}
+
 
 }
 
@@ -2229,7 +2234,7 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
   }
   else
   {
-    update_latitudinal_borders(t,false);
+    update_latitudinal_borders(t,false,false);
   }
 }
 
@@ -2530,7 +2535,7 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
         stop(" +++++++++++++ Error: original populatio did not split correctly (pop_size) ++++++++++++++");
       }
 
-      update_latitudinal_borders(t,true);
+      update_latitudinal_borders(t,true,false);
 
     }
     else
@@ -2653,12 +2658,12 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
       populations_to_remove_from_focal.push_back(patch_becoming_differentsp.id_cells[i]);
     }
     new_species.range = patch_becoming_differentsp.patch_size;
-    new_species.birthplace.x = focal.presence[patch_becoming_differentsp.id_cells[0]].x;
-    new_species.birthplace.y = focal.presence[patch_becoming_differentsp.id_cells[0]].y;
 
 
-    new_species.update_latitudinal_borders(t,true);
-    new_species.update_latitudinal_borders(t,false);
+    new_species.update_latitudinal_borders(t,true,true);
+    new_species.birthplace_northmost = new_species.northernmost;
+    new_species.birthplace_southmost = new_species.southernmost;
+
     new_species.parent = focal.id;
     new_species.birth = t;
     new_species.saturation_grid_birth = full_saturation_indi;
@@ -2738,7 +2743,7 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
 
     // cout <<" population size_parent after speciation: " << focal.total_pop_size << endl;
 
-    focal.update_latitudinal_borders(t,false);
+    focal.update_latitudinal_borders(t,false,false);
     // cout << "allele a focal: " << focal.populations_this_species[0].allelic_a << endl;
     // cout << "new_species.presence.size() "<< new_species.presence.size() << endl;
     // cout << "new_species.populations_this_species.size() "<< new_species.populations_this_species.size() << endl;
@@ -2811,8 +2816,11 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
       //  cout <<" numb of pop parent before speciation: " << focal.populations_this_species.size() << endl;
 
       new_species.initial_position(focal.presence[random_cell_to_mutate]);
-      new_species.birthplace.x = focal.presence[random_cell_to_mutate].x;
-      new_species.birthplace.y = focal.presence[random_cell_to_mutate].y;
+
+      new_species.update_latitudinal_borders(t,true,true);
+      new_species.birthplace_northmost = new_species.northernmost;
+      new_species.birthplace_southmost = new_species.southernmost;
+
       new_species.southernmost = focal.presence[random_cell_to_mutate].y;
       new_species.northernmost = focal.presence[random_cell_to_mutate].y;
       new_species.parent = focal.id;
@@ -3214,8 +3222,8 @@ List extract_species_data(vector<species> process_all_species)
   vector<int> extract_id;
   vector<int> extract_parent;
   vector<double> extract_birth;
-  vector <int> extract_birthplace_x;
-  vector <int> extract_birthplace_y;
+  vector <int> extract_birthplace_northmost;
+  vector <int> extract_birthplace_southmost;
   vector <double> extract_saturation_grid_birth;
   vector<double> extract_death;
   vector<double> extract_trait;
@@ -3234,8 +3242,8 @@ List extract_species_data(vector<species> process_all_species)
     extract_id.push_back(process_one_species.id);
     extract_parent.push_back(process_one_species.parent);
     extract_birth.push_back(process_one_species.birth);
-    extract_birthplace_x.push_back(process_one_species.birthplace.x);
-    extract_birthplace_y.push_back(process_one_species.birthplace.y);
+    extract_birthplace_northmost.push_back(process_one_species.birthplace_northmost);
+    extract_birthplace_southmost.push_back(process_one_species.birthplace_southmost);
     extract_death.push_back(process_one_species.death);
     extract_trait.push_back(process_one_species.trait_state);
     extract_range.push_back(process_one_species.range);
@@ -3249,8 +3257,8 @@ List extract_species_data(vector<species> process_all_species)
   List list_extract_species_data = List::create(Named("ID") = extract_id,
                                                 _["Parent"] = extract_parent,
                                                 _["Birth"] = extract_birth,
-                                                _["BirthPlaceX"] = extract_birthplace_x,
-                                                _["BirthPlaceY"] = extract_birthplace_y,
+                                                _["Birth_southmost"] = extract_birthplace_southmost,
+                                                _["Birth_northmost"] = extract_birthplace_northmost,
                                                 _["Death"] = extract_death,
                                                 _["TraitValue"] = extract_trait,
                                                 _["RangeSize"] = extract_range,
@@ -3282,8 +3290,8 @@ vector<species> get_species_intocpp(vector<species> all_species, IntegerVector a
     put_one_species.y_coordinate_last_event = all_y[i];
     put_one_species.temperature_optimum.push_back(all_traits[i]);
     put_one_species.total_pop_size = all_popsize[i];
-    put_one_species.birthplace.x = all_x[i];
-    put_one_species.birthplace.y = all_y[i];
+     put_one_species.birthplace_southmost = all_y[i];
+     put_one_species.birthplace_northmost = all_y[i];
     put_one_species.northernmost = all_x[i];
     put_one_species.southernmost = all_x[i];
     put_one_species.saturation_grid_birth = 0;
