@@ -3232,6 +3232,7 @@ List extract_species_data(vector<species> process_all_species)
   vector <int> extract_succefulgeneflow;
   vector <int> extract_southernmost;
   vector <int> extract_northernmost;
+  vector <int> extract_swisscheese;
 
 
 
@@ -3239,6 +3240,12 @@ List extract_species_data(vector<species> process_all_species)
   for (int i = 0; i < process_all_species.size(); ++i)
   {
     species process_one_species = process_all_species[i];
+
+    vector <contiguous_patches> list_patches;
+    list_patches = process_one_species.find_patches_distribution();
+
+
+    extract_swisscheese.push_back(list_patches.size());
     extract_id.push_back(process_one_species.id);
     extract_parent.push_back(process_one_species.parent);
     extract_birth.push_back(process_one_species.birth);
@@ -3262,6 +3269,7 @@ List extract_species_data(vector<species> process_all_species)
                                                 _["Death"] = extract_death,
                                                 _["TraitValue"] = extract_trait,
                                                 _["RangeSize"] = extract_range,
+                                                _["swisscheese"] = extract_swisscheese,
                                                 _["populationSize"] = extract_popsize,
                                                 _["saturation_grid_birth"] = extract_saturation_grid_birth,
                                                 _["geneflow_events"] =  extract_succefulgeneflow,
