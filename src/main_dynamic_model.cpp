@@ -32,11 +32,11 @@ using namespace std;
    mu = the_mus[0];
    second_mu = the_mus[1];
 
-   if (all_ranges.size() > 1)
-   {
-
-     stop("initialization of simulation should be with one population only, or go and work on get_species_intocpp function" );
-   }
+   // if (all_ranges.size() > 1)
+   // {
+   //
+   //   stop("initialization of simulation should be with one population only, or go and work on get_species_intocpp function" );
+   // }
    int total_pop_from_allelevector;
    total_pop_from_allelevector = 0;
    for(int ij = 0; ij < all_alleles.size(); ++ij){
