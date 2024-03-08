@@ -16,8 +16,8 @@ using namespace std;
 // ifstream mapp;
 // std::string name1 = "map_medium.txt";
 
-const int x_max = 22;
-const int y_max = 22;
+const int x_max = 42;
+const int y_max = 42;
 // vector <species> all_species;
 
 bool any_element_match(int this_element, vector <int> this_vector){
