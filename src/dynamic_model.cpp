@@ -1267,7 +1267,7 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
     }
 
   }
-  //change_in_population = 5; // to DELETE
+  change_in_population = abs(change_in_population); // to DELETE?
 
 
   // if the population grows, it cannot exceed K
