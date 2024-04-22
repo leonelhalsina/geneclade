@@ -2644,7 +2644,10 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
     }
     new_species.range = patch_becoming_differentsp.patch_size;
 
-new_species.percentage_parental_range = new_species.range/focal.range;
+    cout << "new_species.range" << new_species.range << endl;
+    cout << "focal.range" << focal.range << endl;
+
+new_species.percentage_parental_range = float(new_species.range)/float(focal.range);
     new_species.update_latitudinal_borders(t,true,true);
     new_species.birthplace_northmost = new_species.northernmost;
     new_species.birthplace_southmost = new_species.southernmost;
