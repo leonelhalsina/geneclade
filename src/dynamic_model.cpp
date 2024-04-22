@@ -354,7 +354,6 @@ bool final_check(vector<species> all_species,landscape **map1)
     map_for_check[i] = new landscape[x_max];
   }
 
-
   for (int i = 0; i < y_max; i++)
   {
     for (int j = 0; j < x_max; j++)
@@ -362,8 +361,6 @@ bool final_check(vector<species> all_species,landscape **map1)
       map_for_check[i][j].total_abundance_cell = 0;
     }
   }
-
-
 
   for(int iji = 0; iji < all_species.size(); ++iji)
   {
@@ -376,15 +373,9 @@ bool final_check(vector<species> all_species,landscape **map1)
       total_pop_size_from_individual_populations = 0;
       for(int iij = 0; iij < do_this_species.presence.size(); ++iij)
       {
-
         int current_abundance_this_cell_from_map;
-
         current_abundance_this_cell_from_map = map_for_check[do_this_species.presence[iij].y - 1 ][do_this_species.presence[iij].x - 1].total_abundance_cell;
-
         map_for_check[do_this_species.presence[iij].y - 1 ][do_this_species.presence[iij].x - 1].total_abundance_cell = current_abundance_this_cell_from_map + do_this_species.populations_this_species[iij].pop_size;
-
-
-
 
         population_structure do_this_population;
         do_this_population = do_this_species.populations_this_species[iij];
@@ -1229,7 +1220,7 @@ void show_all_species_data(vector <species> all_species)
   }
 
 }
-void species::happening_population_popchange_this_species(double sd_normal_distribution, landscape **map1, vector<int> alleles_adaptation_coef)
+void species::happening_population_popchange_this_species(double sd_normal_distribution_pop_change, landscape **map1, vector<int> alleles_adaptation_coef)
 {
 
   int random_population_to_popchange;
@@ -1238,12 +1229,12 @@ void species::happening_population_popchange_this_species(double sd_normal_distr
   int original_size_this_pop;
   this_cell = presence[random_population_to_popchange - 1];
   original_size_this_pop = populations_this_species[random_population_to_popchange - 1].pop_size;
-  populations_this_species[random_population_to_popchange - 1].happening_population_popchange(map1, sd_normal_distribution, alleles_adaptation_coef, this_cell); // -1 as it is index
+  populations_this_species[random_population_to_popchange - 1].happening_population_popchange(map1, sd_normal_distribution_pop_change, alleles_adaptation_coef, this_cell); // -1 as it is index
   total_pop_size = total_pop_size + (populations_this_species[random_population_to_popchange - 1].pop_size - original_size_this_pop);
   computed_rate_based_on_temperature[random_population_to_popchange - 1] = link_fitnesslike_mu_gamma(this_cell, populations_this_species[random_population_to_popchange - 1], alleles_adaptation_coef, map1);
 }
 
-void population_structure::happening_population_popchange(landscape **map1,double sd_normal_distribution, vector<int> alleles_adaptation_coef, yx this_cell)
+void population_structure::happening_population_popchange(landscape **map1,double sd_normal_distribution_pop_change, vector<int> alleles_adaptation_coef, yx this_cell)
 {
   int cell_temperature;
   cell_temperature = map1[this_cell.y - 1][this_cell.x - 1].temperature;
@@ -1253,7 +1244,7 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
   k_this_cell = map1[this_cell.y - 1][this_cell.x - 1].k_patch;
   int change_in_population;
   int new_pop_size;
-  change_in_population = round(give_me_random_normal(0, sd_normal_distribution));
+  change_in_population = round(give_me_random_normal(0, sd_normal_distribution_pop_change));
   if(change_in_population == 0){
     int random_value_to_decide;
     random_value_to_decide = give_me_random_normal(0,1);
@@ -1327,8 +1318,6 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
       change_allelic_frequency = give_me_random_wallenius(number_alelles,current_allelic_frequency, weights_for_wallenius, number_items_sample);
       //  cout << "now NEUTRAL " << endl;
       change_allelic_frequency_neutral = give_me_random_wallenius(number_alelles,current_allelic_frequency_neutral, weights_for_wallenius_neutral, number_items_sample);
-
-
       //   cout << "now NEUTRAL " << endl;
       //  cout << "allelic_freq"<<current_allelic_frequency_neutral[0] <<current_allelic_frequency_neutral[1] << current_allelic_frequency_neutral[2] << current_allelic_frequency_neutral[3] << current_allelic_frequency_neutral[4] << endl;
 
@@ -1337,8 +1326,6 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
       // {
       //   cout << "show this sampling from wallenius " << change_allelic_frequency[ii] << endl;
       // }
-
-
       allelic_a = allelic_a - change_allelic_frequency[0];
       allelic_b = allelic_b - change_allelic_frequency[1];
       allelic_c = allelic_c - change_allelic_frequency[2];
@@ -1350,8 +1337,6 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
       allelic_x = allelic_x - change_allelic_frequency_neutral[2];
       allelic_y = allelic_y - change_allelic_frequency_neutral[3];
       allelic_z = allelic_z - change_allelic_frequency_neutral[4];
-
-
     }
     else // population grows
     {
@@ -1463,7 +1448,6 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
       //  cout << "allelic_freq: "<<current_allelic_frequency_neutral[0] << " "<< current_allelic_frequency_neutral[1] << " "<< current_allelic_frequency_neutral[2] << " "<<
       //    current_allelic_frequency_neutral[3] <<" "<< current_allelic_frequency_neutral[4]<< " "<< endl;
       change_allelic_frequency_neutral = give_me_random_wallenius(number_alelles,current_allelic_frequency_neutral, weights_for_wallenius_neutral, number_items_sample);
-
 
       allelic_a = allelic_a + change_allelic_frequency[0];
       allelic_b = allelic_b + change_allelic_frequency[1];
@@ -1652,11 +1636,14 @@ void species::initial_position(yx initial)
   presence.push_back(initial);
 }
 
-void species::happening_trait_evolution(double mean_normal_distribution, double sd_normal_distribution)
+void species::happening_trait_evolution(double mean_normal_distribution_traitevol, double sd_normal_distribution_traitevol)
 {
   double evol_rate;
-  evol_rate = give_me_random_normal(mean_normal_distribution, sd_normal_distribution);
-  trait_state = trait_state + evol_rate;
+  //evol_rate = give_me_random_normal(mean_normal_distribution_traitevol, sd_normal_distribution_traitevol);
+  //trait_state = trait_state + evol_rate;
+
+  trait_state = give_me_random_normal(trait_state, sd_normal_distribution_traitevol);
+
 }
 
 vector<yx> species::find_neighbor(int cell)
@@ -1732,7 +1719,7 @@ vector<yx> species::find_neighbor(int cell)
   return adjacent_cells;
 }
 
-probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> all_species, landscape **map1, bool extirpation_depen_temperature, bool colonization_depen_temperature, double mutation_rate, double geneflow_rate, double popchange_rate, double lambda, double gamma, double mu, vector<int> id_alive_species, double v)
+probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> all_species, landscape **map1, bool extirpation_depen_temperature, bool colonization_depen_temperature,bool species_trait_state_gamma, double mutation_rate, double geneflow_rate, double popchange_rate, double lambda, double gamma, double mu, vector<int> id_alive_species, double v)
 {
   // int species_to_do;
   // species_to_do = id_alive_species[give_me_random_uniform(0, (id_alive_species.size()-1))];
@@ -1785,6 +1772,19 @@ probabilities_based_traits calculate_probabilities_using_traitstate(vector<speci
       else
       {
         this_species_gamma = work_this_species.range * gamma;
+      }
+
+      if(species_trait_state_gamma){
+
+        double use_this_percentage;
+        use_this_percentage = work_this_species.trait_state;
+        if(work_this_species.trait_state > 200.0){
+          use_this_percentage = 199.0;
+        }
+        if(work_this_species.trait_state < 1.1){
+          use_this_percentage = 1.0;
+        }
+          this_species_gamma = ((this_species_gamma * use_this_percentage)/100.0);
       }
 
       this_species_geneflow = work_this_species.range * geneflow_rate;
@@ -2162,11 +2162,8 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
   default_random_engine generator3(rd());
   int random_cell_to_remove_population;
 
-
-
   if (extirpation_depen_temperature)
   {
-
     vector<int> all_cells_id;
     vector <int> pop_sizes_vector;
     for (int i = 0; i < presence.size(); ++i)
@@ -2180,7 +2177,6 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
         stop("issue in computed_rate_based_on_temperature");
       }
     }
-
     discrete_distribution<int> cell_probabilities_to_pick(pop_sizes_vector.begin(), pop_sizes_vector.end());
     random_cell_to_remove_population = all_cells_id[cell_probabilities_to_pick(generator3)];
   }
@@ -2210,8 +2206,6 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
   total_pop_size = total_pop_size - populations_this_species[random_cell_to_remove_population].pop_size;
   // cout << "total_pop_size from here: "<< total_pop_size << endl;
   populations_this_species.erase(populations_this_species.begin() + random_cell_to_remove_population);
-
-
   // part to see whether there was a latitudinal contraction
 
   // if(presence[random_cell_to_remove_population].y == (southernmost + 1))
@@ -2318,8 +2312,7 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       //     // cout << "after " << southernmost << endl;
       //    }
 
-
-      // the part where the new population could have evolved a different temperature from parental population
+            // the part where the new population could have evolved a different temperature from parental population
       double evol_rate;
       double current_temperature_sender;
       double temperature_new_population;
@@ -2380,8 +2373,6 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
         neutral_weights_for_wallenius.push_back(1);
       }
 
-
-
       vector<int> current_allelic_frequency;
       current_allelic_frequency.push_back(current_population_sender.allelic_a);
       current_allelic_frequency.push_back(current_population_sender.allelic_b);
@@ -2414,7 +2405,6 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       vector<int> allelic_frequency_new;
       vector<int> allelic_frequency_new_neutral;
 
-
       int pop_size_from_sum_alle;
       pop_size_from_sum_alle = std::accumulate(current_allelic_frequency.begin(),current_allelic_frequency.end(),
                                                decltype(current_allelic_frequency)::value_type(0));
@@ -2427,7 +2417,6 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       // cout << "now neutral" << endl;
       // cout << "vector_alleliccurrent NEUTRAL"<<current_allelic_frequency_neutral[0] << current_allelic_frequency_neutral[1] <<current_allelic_frequency_neutral[2] << current_allelic_frequency_neutral[3] <<current_allelic_frequency_neutral[4] << endl;
       allelic_frequency_new_neutral = give_me_random_wallenius(number_alelles,current_allelic_frequency_neutral, neutral_weights_for_wallenius, new_pop_size);
-
 
       new_population.allelic_a = allelic_frequency_new[0];
       new_population.allelic_b = allelic_frequency_new[1];
@@ -2471,7 +2460,6 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       current_population_sender.pop_size =  current_population_sender.pop_size - new_population.pop_size;
       //      cout << "current_population_sender.pop_size after: " << current_population_sender.pop_size << endl;
 
-
       double new_fitnesslike;
       new_fitnesslike = link_fitnesslike_mu_gamma(ready_to_colonize2[random_cell_to_go - 1], new_population, alleles_adaptation_coef, map1);
       computed_rate_based_on_temperature.push_back(new_fitnesslike);
@@ -2495,7 +2483,6 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       int current_richness_map;
       current_richness_map = map1[(ready_to_colonize2[random_cell_to_go - 1].y - 1)][(ready_to_colonize2[random_cell_to_go - 1].x - 1)].Nspp;
       map1[(ready_to_colonize2[random_cell_to_go - 1].y - 1)][(ready_to_colonize2[random_cell_to_go - 1].x - 1)].Nspp = current_richness_map + 1;
-
 
       // for the new colonized cell
       map1[(ready_to_colonize2[random_cell_to_go - 1].y - 1)][(ready_to_colonize2[random_cell_to_go - 1].x - 1)].total_abundance_cell = abundance_individuals_cell_to_go + new_pop_size;
@@ -2523,7 +2510,6 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
         stop(" +++++++++++++ Error: mistmatch between neutral and adaptive loci ++++++++++++++");
 
       }
-
 
       if((new_sum_from_allele + sender_sum_from_allele) != original_population_sender_pop_size)
       {
@@ -2631,7 +2617,6 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
 
     for (int i = 0; i < patch_becoming_differentsp.patch_size; ++i)
     {
-
       new_species.presence.push_back(focal.presence[patch_becoming_differentsp.id_cells[i]]);
 
       // cout << "new_species.presence[i].x : " <<new_species.presence[i].x << " y: " <<new_species.presence[i].y << endl;
@@ -2659,11 +2644,10 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
     }
     new_species.range = patch_becoming_differentsp.patch_size;
 
-
+new_species.percentage_parental_range = new_species.range/focal.range;
     new_species.update_latitudinal_borders(t,true,true);
     new_species.birthplace_northmost = new_species.northernmost;
     new_species.birthplace_southmost = new_species.southernmost;
-
     new_species.parent = focal.id;
     new_species.birth = t;
     new_species.saturation_grid_birth = full_saturation_indi;
@@ -2672,9 +2656,6 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
     new_species.id = all_species.size() + 1;
     new_species.x_coordinate_last_event = focal.presence[patch_becoming_differentsp.id_cells[0]].x;
     new_species.y_coordinate_last_event = focal.presence[patch_becoming_differentsp.id_cells[0]].y;
-
-
-
     new_species.classify_elevation_origin(true);
 
     // cout <<" population new before speciation: " << new_species.total_pop_size << endl;
@@ -2737,8 +2718,6 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
     // cout <<" population size_parent before speciation: " << new_species.total_pop_size << endl;
     //
     //stop("E");
-
-
     focal.total_pop_size = focal.total_pop_size - new_species.total_pop_size;
 
     // cout <<" population size_parent after speciation: " << focal.total_pop_size << endl;
@@ -2786,9 +2765,6 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
       stop("new_species.presence.size() == 0");
     }
 
-
-
-
   }
   else
   {
@@ -2820,7 +2796,7 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
       new_species.update_latitudinal_borders(t,true,true);
       new_species.birthplace_northmost = new_species.northernmost;
       new_species.birthplace_southmost = new_species.southernmost;
-
+new_species.percentage_parental_range = 1.1;
       new_species.southernmost = focal.presence[random_cell_to_mutate].y;
       new_species.northernmost = focal.presence[random_cell_to_mutate].y;
       new_species.parent = focal.id;
@@ -2856,10 +2832,6 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
       // cout << " +++++  cells presence before speciation:" << focal.presence.size() << endl;
       // focal.x_coordinate_last_event = focal.presence[random_cell_to_mutate].x;
       // focal.y_coordinate_last_event = focal.presence[random_cell_to_mutate].y;
-
-
-
-
       // focal.classify_elevation(false, map1);
       focal.presence.erase(focal.presence.begin() + random_cell_to_mutate);
       focal.computed_rate_based_on_temperature.erase(focal.computed_rate_based_on_temperature.begin() + random_cell_to_mutate);
@@ -2868,7 +2840,6 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
       focal.range = focal.range - 1;
       focal.total_pop_size = focal.total_pop_size - first_population_newspecies.pop_size;
       // latitudinal limits have changed with a population turning into a different species?
-
       vector <int> all_ys_this_species;
       for(int i = 0; i < focal.presence.size(); i++)
       {
@@ -2879,8 +2850,6 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
 
       focal.southernmost = *max_element(all_ys_this_species.begin(),all_ys_this_species.end());
     }
-
-
     // cout << "allele a focal: " << focal.populations_this_species[0].allelic_a << endl;
     // cout << "new_species.presence.size() "<< new_species.presence.size() << endl;
     // cout << "new_species.populations_this_species.size() "<< new_species.populations_this_species.size() << endl;
@@ -2905,17 +2874,8 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
 
   }
 
-
-
   //cout <<" from here population size_parent after speciation: " << focal.total_pop_size << endl;
-
-
-
-
   //  cout <<" population size_parent before speciation: " << focal.total_pop_size << endl;
-
-
-
   // cout <<" population size_parent after speciation: " << focal.total_pop_size << endl;
   // cout <<" numb of pop parent after speciation: " << focal.populations_this_species.size() << endl;
   // cout <<" population size_child: " << first_population_newspecies.pop_size << endl;
@@ -2948,7 +2908,6 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
   // cout << " +++++  cells presence After speciation:" << focal.presence.size() << endl;
   // cout << "richness in here: " << all_species.size() << endl;
   //show_all_species_data(all_species);
-
 
 }
 
@@ -3050,8 +3009,6 @@ vector<double> extract_temperature_func(species process_one_species)
   return extract_temperature;
 }
 
-
-
 List get_me_output (vector<species> all_species, double t)
 {
   List list_all_species_distribution = List::create();
@@ -3112,7 +3069,6 @@ List get_me_output (vector<species> all_species, double t)
       vector <int> popsize_perPop;
       for(int ii = 0; ii < take_one_ouput.populations_this_species.size(); ++ii)
       {
-
 
         allele_A_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_a);
         allele_B_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_b);
@@ -3222,6 +3178,7 @@ List extract_species_data(vector<species> process_all_species)
   vector<int> extract_id;
   vector<int> extract_parent;
   vector<double> extract_birth;
+  vector<double> percentage_parental_range;
   vector <int> extract_birthplace_northmost;
   vector <int> extract_birthplace_southmost;
   vector <double> extract_saturation_grid_birth;
@@ -3234,9 +3191,6 @@ List extract_species_data(vector<species> process_all_species)
   vector <int> extract_northernmost;
   vector <int> extract_swisscheese;
 
-
-
-
   for (int i = 0; i < process_all_species.size(); ++i)
   {
     species process_one_species = process_all_species[i];
@@ -3244,11 +3198,11 @@ List extract_species_data(vector<species> process_all_species)
     vector <contiguous_patches> list_patches;
     list_patches = process_one_species.find_patches_distribution();
 
-
     extract_swisscheese.push_back(list_patches.size());
     extract_id.push_back(process_one_species.id);
     extract_parent.push_back(process_one_species.parent);
     extract_birth.push_back(process_one_species.birth);
+    percentage_parental_range.push_back(process_one_species.percentage_parental_range);
     extract_birthplace_northmost.push_back(process_one_species.birthplace_northmost);
     extract_birthplace_southmost.push_back(process_one_species.birthplace_southmost);
     extract_death.push_back(process_one_species.death);
@@ -3264,6 +3218,7 @@ List extract_species_data(vector<species> process_all_species)
   List list_extract_species_data = List::create(Named("ID") = extract_id,
                                                 _["Parent"] = extract_parent,
                                                 _["Birth"] = extract_birth,
+                                                _["percentage_parental_range"] = percentage_parental_range,
                                                 _["Birth_southmost"] = extract_birthplace_southmost,
                                                 _["Birth_northmost"] = extract_birthplace_northmost,
                                                 _["Death"] = extract_death,
@@ -3290,6 +3245,7 @@ vector<species> get_species_intocpp(vector<species> all_species, IntegerVector a
   {
     species put_one_species;
     put_one_species.id = all_IDs[i];
+    put_one_species.percentage_parental_range = 1.1;
     put_one_species.parent = all_parents[i];
     put_one_species.range = all_ranges[i];
     put_one_species.birth = all_births[i];

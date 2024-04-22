@@ -17,7 +17,15 @@ using namespace std;
 //default_random_engine &generator;
 //' @export
  // [[Rcpp::export]]
- List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, bool extirpation_depen_temperature, bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow, double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,double t_change_rates, IntegerVector ice_age_change, double q, double lambda, double sd_normal_distribution, double starting_time, double simulated_time, int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map, double v, IntegerVector alleles_adaptation_coef2,bool global_reducing, bool vicariant_speciation)
+ List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, bool extirpation_depen_temperature,
+                    bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y,
+                    IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths,
+                    NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,
+                    IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow,
+                    double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,double t_change_rates,
+                    IntegerVector ice_age_change, double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
+                    double sd_normal_distribution_pop_change,double starting_time,double simulated_time, int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
+                    double v, IntegerVector alleles_adaptation_coef2,bool global_reducing, bool vicariant_speciation)
  {
 
    random_device rd;
@@ -103,6 +111,7 @@ using namespace std;
    int total_speciation_events = 0;
    int total_geneflow_events = 0;
    int total_popchange_events = 0;
+   int total_traitevolution_events = 0;
    std::string event_to_do;
 
    int full_saturation_indi;
@@ -164,7 +173,7 @@ using namespace std;
      vector<double> total_probability_species;
      probabilities_based_traits calculation_probabilities;
 
-     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1,  extirpation_depen_temperature, colonization_depen_temperature, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
+     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1,  extirpation_depen_temperature, colonization_depen_temperature, species_trait_state_gamma, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
      total_probability_species = calculation_probabilities.total_probability_species;
      discrete_distribution<int> species_probabilities_to_pick(total_probability_species.begin(), total_probability_species.end());
      species_to_do = id_alive_species[species_probabilities_to_pick(generator)];
@@ -343,18 +352,21 @@ using namespace std;
      // cout << "calculation_probabilities.popchange_rate_total " << calculation_probabilities.popchange_rate_total  << endl;
      // cout << "calculation_probabilities.mutation_rate_total " << calculation_probabilities.mutation_rate_total  << endl;
 
-
+double total_rate_traitevol;
+     //   I take the total rate to do trait evolution
+     total_rate_traitevol = ((calculation_probabilities.popchange_rate_total * q)/100.0);
      // to pick and event
-     discrete_distribution <int> events_probabilities_to_pick({calculation_probabilities.gammas_total, calculation_probabilities.mus_total, calculation_probabilities.popchange_rate_total, calculation_probabilities.lambdas_total,calculation_probabilities.geneflow_rate_total,calculation_probabilities.mutation_rate_total});
+     discrete_distribution <int> events_probabilities_to_pick({calculation_probabilities.gammas_total, calculation_probabilities.mus_total, calculation_probabilities.popchange_rate_total, calculation_probabilities.lambdas_total,calculation_probabilities.geneflow_rate_total,calculation_probabilities.mutation_rate_total,total_rate_traitevol});
      // cout << "gammas " << calculation_probabilities.gammas_total << "mus " << calculation_probabilities.mus_total << "qs "<<  calculation_probabilities.qs_total << "lambdas " << calculation_probabilities.lambdas_total << endl;
 
-     std::string all_events[6];
+     std::string all_events[7];
      all_events[0] = "expansion";
      all_events[1] = "contraction";
      all_events[2] = "pop_change";
      all_events[3] = "speciation";
      all_events[4] = "gene_flow";
      all_events[5] =  "mutation";
+     all_events[6] =  "trait_evolution";
 
 
      event_to_do = all_events[events_probabilities_to_pick(generator)];
@@ -534,6 +546,13 @@ using namespace std;
 
 
      }
+
+     if (event_to_do == "trait_evolution"){
+
+       all_species[species_to_do].happening_trait_evolution(mean_normal_distribution_traitevol,sd_normal_distribution_traitevol);
+       all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
+       total_traitevolution_events = total_traitevolution_events + 1;
+     }
      if (event_to_do == "gene_flow")
      {
        // cout << "                   i will gene_flow" << endl;
@@ -557,7 +576,7 @@ using namespace std;
      {
        // cout << "                  i will pop_change" << endl;
 
-       all_species[species_to_do].happening_population_popchange_this_species(sd_normal_distribution, map1, alleles_adaptation_coef);
+       all_species[species_to_do].happening_population_popchange_this_species(sd_normal_distribution_pop_change, map1, alleles_adaptation_coef);
        all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
        total_popchange_events = total_popchange_events + 1;
      }
@@ -656,6 +675,7 @@ using namespace std;
    cout << "total_expansion_events " << total_expansion_events << endl;
    cout << "total_contraction_events " << total_contraction_events << endl;
    cout << "total_mutation_events " << total_mutation_events << endl;
+   cout << "total_traitevolution_events" << total_traitevolution_events << endl;
    cout << "attempted_geneflow_events " << attempted_geneflow_events << endl;
    cout << "total_geneflow_events " << total_geneflow_events << endl;
    cout << "total_speciation_events " << total_speciation_events << endl;

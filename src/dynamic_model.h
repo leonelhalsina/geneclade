@@ -94,6 +94,7 @@ public:
   int elevation_origin;
   int parent;
   int range = 1;
+  double percentage_parental_range;
   int x_coordinate_last_event;
   int y_coordinate_last_event;
   int range_highlands = 0;
@@ -156,7 +157,7 @@ void set_landscape(IntegerVector,IntegerVector ,IntegerVector,int , int,landscap
 void change_temperature_map(int,int,IntegerVector ,IntegerVector ,landscape **map1);
 vector <double> extract_temperature_func ( species);
 vector <species> get_species_intocpp(vector<species> , IntegerVector ,IntegerVector, IntegerVector , IntegerVector , IntegerVector , IntegerVector , IntegerVector , NumericVector , NumericVector , NumericVector , IntegerVector , int , landscape **map1, vector<int> , double , double , double , bool, bool);
-probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> , landscape **map1, bool , bool ,double, double, double , double , double , double , vector<int> , double  );
+probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> , landscape **map1, bool , bool ,bool, double, double, double , double , double , double , vector<int> , double  );
 void populate_landscape(vector <species> all_species,landscape **map1);
 void to_show_richness_map(std::string,vector<species>,landscape **map1);
 List extract_species_data(vector <species> process_all_species);
