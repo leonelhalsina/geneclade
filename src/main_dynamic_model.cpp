@@ -24,7 +24,7 @@ using namespace std;
                     IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow,
                     double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,double t_change_rates,
                     IntegerVector ice_age_change, double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
-                    double sd_normal_distribution_pop_change,double starting_time,double simulated_time, int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
+                    double sd_normal_distribution_pop_change,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
                     double v, IntegerVector alleles_adaptation_coef2,bool global_reducing, bool vicariant_speciation)
  {
 
@@ -312,7 +312,7 @@ using namespace std;
 
 
      // end of it
-     if (t >= simulated_time)
+     if (t >= simulated_time || id_alive_species.size() >= max_spp)
      {
        cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
        // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
