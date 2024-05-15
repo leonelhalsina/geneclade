@@ -121,13 +121,13 @@ public:
   vector <yx> presence;
 
 
-  vector <contiguous_patches> find_patches_distribution();
-  vector <int>  find_patches_distribution_startingonecell(int );
+  vector <contiguous_patches> find_patches_distribution(int,int);
+  vector <int>  find_patches_distribution_startingonecell(int,int,int );
 
   vector <population_structure> populations_this_species;
   void update_latitudinal_borders(double, bool,bool);
   void happening_population_popchange_this_species(double , landscape **map1, vector<int>  );
-  void happening_gene_flow( double,landscape **map1);
+  void happening_gene_flow(int,int, double,landscape **map1);
   void happening_mutation_this_species() ;
   void happening_trait_evolution(double, double);
   vector <yx> available_neigh_to_colonize_K(int ,int ,int , landscape **map1);
@@ -137,7 +137,7 @@ public:
   void classify_elevation(bool,landscape **map1);
   void classify_elevation_origin(bool);
   void initial_position(yx);
-  vector <yx> find_neighbor(int cell);
+  vector <yx> find_neighbor(int,int, int cell);
 private:
 };
 
@@ -151,18 +151,18 @@ vector <int> give_me_random_wallenius (int, vector <int>, vector <int> , int );
 void show_all_species_data(vector<species> );
 
 double link_fitnesslike_mu_gamma(yx , population_structure , vector<int> , landscape **map1) ;
-void happening_speciation( vector<species>& , vector<int> , int , double , double,landscape **map1, bool);
+void happening_speciation( int, int, vector<species>& , vector<int> , int , double , double,landscape **map1, bool);
 
 void set_landscape(IntegerVector,IntegerVector ,IntegerVector,int , int,landscape **map1);
 void change_temperature_map(int,int,IntegerVector ,IntegerVector ,landscape **map1);
 vector <double> extract_temperature_func ( species);
 vector <species> get_species_intocpp(vector<species> , IntegerVector ,IntegerVector, IntegerVector , IntegerVector , IntegerVector , IntegerVector , IntegerVector , NumericVector , NumericVector , NumericVector , IntegerVector , int , landscape **map1, vector<int> , double , double , double , bool, bool);
 probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> , landscape **map1, bool , bool ,bool, double, double, double , double , double , double , vector<int> , double  );
-void populate_landscape(vector <species> all_species,landscape **map1);
-void to_show_richness_map(std::string,vector<species>,landscape **map1);
-List extract_species_data(vector <species> process_all_species);
-List get_me_output(vector <species>,double );
+void populate_landscape(int, int, vector <species> all_species,landscape **map1);
+void to_show_richness_map(int,int, std::string,vector<species>,landscape **map1);
+List extract_species_data(int, int, vector <species> process_all_species);
+List get_me_output(int,int,vector <species>,double );
 vector <int> extract_yx_func(species, std::string );
-bool final_check(vector<species>,landscape **map1);
+bool final_check(int, int, vector<species>,landscape **map1);
 bool any_element_match(int , vector <int> );
 #endif

@@ -16,8 +16,8 @@ using namespace std;
 // ifstream mapp;
 // std::string name1 = "map_medium.txt";
 
-const int x_max = 42;
-const int y_max = 42;
+// const int x_max = 42;
+// const int y_max = 42;
 // vector <species> all_species;
 
 bool any_element_match(int this_element, vector <int> this_vector){
@@ -36,9 +36,9 @@ bool any_element_match(int this_element, vector <int> this_vector){
 }
 
 
-vector <int> species::find_patches_distribution_startingonecell(int this_focal){
+vector <int> species::find_patches_distribution_startingonecell(int y_max,int x_max, int this_focal){
   vector<yx> neighbors_justcoordi_focal;
-  neighbors_justcoordi_focal = find_neighbor(this_focal);
+  neighbors_justcoordi_focal = find_neighbor(y_max,x_max,this_focal);
 
 
   int counter;
@@ -77,7 +77,7 @@ vector <int> species::find_patches_distribution_startingonecell(int this_focal){
   {
     // cout << "occupied_neigh at WHILE: " << occupied_neigh.size() << endl;
     vector<yx> neighbors_justcoordi_focal;
-    neighbors_justcoordi_focal = find_neighbor(occupied_neigh[counter]);
+    neighbors_justcoordi_focal = find_neighbor(y_max,x_max,occupied_neigh[counter]);
 
     // cout << "focal: occupied_neigh[counter]: " << occupied_neigh[counter] << endl;
 
@@ -129,7 +129,7 @@ vector <int> species::find_patches_distribution_startingonecell(int this_focal){
   return id_added_to_this_patch;
 }
 
-vector <contiguous_patches> species::find_patches_distribution(){
+vector <contiguous_patches> species::find_patches_distribution(int y_max,int x_max){
 
   vector <contiguous_patches> list_patches;
 
@@ -153,7 +153,7 @@ vector <contiguous_patches> species::find_patches_distribution(){
 
     contiguous_patches this_patch;
 
-    this_patch.id_cells = find_patches_distribution_startingonecell(this_focal);
+    this_patch.id_cells = find_patches_distribution_startingonecell(y_max,x_max,this_focal);
     this_patch.patch_size = this_patch.id_cells.size();
 
     list_patches.push_back(this_patch);
@@ -335,7 +335,7 @@ void change_temperature_map(int x_max, int y_max, IntegerVector map_temperature_
 
 
 
-bool final_check(vector<species> all_species,landscape **map1)
+bool final_check(int y_max, int x_max,vector<species> all_species,landscape **map1)
 {
   cout << "doing all sort of checks" << endl;
   bool no_failure;
@@ -833,7 +833,7 @@ void species::happening_mutation_this_species()
 
 
 // happening_gene_flow with assymetrical exchange
-void species::happening_gene_flow(double percentage_flow,landscape **map1)
+void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,landscape **map1)
 {
   int focal_cell;
   //
@@ -848,7 +848,7 @@ void species::happening_gene_flow(double percentage_flow,landscape **map1)
 
   //cout << "focal_cell is " <<  focal_cell << " : " <<presence[focal_cell].x << " : "<< presence[focal_cell].y << endl;
   vector<yx> neighbors_focal;
-  neighbors_focal = find_neighbor(focal_cell);
+  neighbors_focal = find_neighbor(y_max,x_max,focal_cell);
 
 
   // cout << "neighbors_focal" << endl;
@@ -1646,7 +1646,7 @@ void species::happening_trait_evolution(double mean_normal_distribution_traitevo
 
 }
 
-vector<yx> species::find_neighbor(int cell)
+vector<yx> species::find_neighbor(int y_max, int x_max,int cell)
 {
 
   yx neighbor_a;
@@ -1828,7 +1828,7 @@ probabilities_based_traits calculate_probabilities_using_traitstate(vector<speci
   return calculation_probabilities;
 }
 
-void to_show_richness_map(std::string show_richness_map,vector<species>all_species, landscape **map1)
+void to_show_richness_map(int y_max, int x_max, std::string show_richness_map,vector<species>all_species, landscape **map1)
 {
   // create_dynamic_map ( x_max, y_max);
   //populate_landscape(all_species, map1);
@@ -1893,7 +1893,7 @@ void to_show_richness_map(std::string show_richness_map,vector<species>all_speci
   }
 }
 
-void populate_landscape(vector<species> all_species, landscape **map1)
+void populate_landscape(int y_max, int x_max, vector<species> all_species, landscape **map1)
 {
   for (int ii = 0; ii < all_species.size(); ii++)
   {
@@ -1935,7 +1935,7 @@ void populate_landscape(vector<species> all_species, landscape **map1)
 vector<yx> species::available_neigh_to_colonize_K(int x_max, int y_max, int focal_cell, landscape **map1)
 {
   vector<yx> neighbors_focal;
-  neighbors_focal = find_neighbor(focal_cell);
+  neighbors_focal = find_neighbor(y_max,x_max,focal_cell);
   // to get rid of the -9 from map
   vector<yx> neighbors_focal_good_habitat;
   for (int i = 0; i < neighbors_focal.size(); i++)
@@ -2009,7 +2009,7 @@ vector<yx> species::available_neigh_to_colonize_K(int x_max, int y_max, int foca
 vector<yx> species::available_neigh_to_colonize_trait(int x_max, int y_max, int focal_cell, double trait_dissimilarity_threshold, landscape **map1)
 {
   vector<yx> neighbors_focal;
-  neighbors_focal = find_neighbor(focal_cell);
+  neighbors_focal = find_neighbor(y_max,x_max,focal_cell);
   // to get rid of the -9 from map
   vector<yx> neighbors_focal_good_habitat;
   for (int i = 0; i < neighbors_focal.size(); i++)
@@ -2533,7 +2533,7 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
   }
 }
 
-void happening_speciation(vector<species>& all_species, vector<int> alleles_adaptation_coef, int species_to_do, double t, double full_saturation_indi, landscape **map1,bool vicariant_speciation)
+void happening_speciation(int y_max,int x_max, vector<species>& all_species, vector<int> alleles_adaptation_coef, int species_to_do, double t, double full_saturation_indi, landscape **map1,bool vicariant_speciation)
 {
   //cout << "trying to speciate" << endl;
   random_device rd;
@@ -2550,7 +2550,7 @@ void happening_speciation(vector<species>& all_species, vector<int> alleles_adap
     vector <int> populations_to_remove_from_focal;
     int patch_id;
     vector <contiguous_patches> list_patches;
-    list_patches = focal.find_patches_distribution();
+    list_patches = focal.find_patches_distribution(y_max,x_max);
 
     contiguous_patches patch_becoming_differentsp;
    // cout << "list_patches.size(): " << list_patches.size() << endl;
@@ -3012,7 +3012,7 @@ vector<double> extract_temperature_func(species process_one_species)
   return extract_temperature;
 }
 
-List get_me_output (vector<species> all_species, double t)
+List get_me_output (int y_max, int x_max, vector<species> all_species, double t)
 {
   List list_all_species_distribution = List::create();
   List list_all_species_allele_A = List::create();
@@ -3146,7 +3146,7 @@ List get_me_output (vector<species> all_species, double t)
   }
   list_time.push_back(t);
   List list_extract_species_data = List::create();
-  list_extract_species_data = extract_species_data(all_species);
+  list_extract_species_data = extract_species_data(y_max,x_max,all_species);
   //}
 
   List model_output = List::create(Named("Distribution") = list_all_species_distribution,
@@ -3176,7 +3176,7 @@ List get_me_output (vector<species> all_species, double t)
 
 
 
-List extract_species_data(vector<species> process_all_species)
+List extract_species_data(int y_max,int x_max, vector<species> process_all_species)
 {
   vector<int> extract_id;
   vector<int> extract_parent;
@@ -3199,7 +3199,7 @@ List extract_species_data(vector<species> process_all_species)
     species process_one_species = process_all_species[i];
 
     vector <contiguous_patches> list_patches;
-    list_patches = process_one_species.find_patches_distribution();
+    list_patches = process_one_species.find_patches_distribution(y_max,x_max);
 
     extract_swisscheese.push_back(list_patches.size());
     extract_id.push_back(process_one_species.id);

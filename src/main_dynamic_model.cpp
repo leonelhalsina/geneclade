@@ -28,6 +28,10 @@ using namespace std;
                     double v, IntegerVector alleles_adaptation_coef2,bool global_reducing, bool vicariant_speciation)
  {
 
+   if((x_max * y_max ) != map_k_vector.size()){
+     stop("map size does not match y_max and/or x_max");
+   }
+
    random_device rd;
    default_random_engine generator(rd());
    double gamma;
@@ -136,8 +140,8 @@ using namespace std;
    // for (int cycles = 0; cycles < maximum_cycles; ++cycles) {
    //
    set_landscape(map_elevation_vector, map_k_vector, map_temperature_vector, y_max, x_max, map1);
-   populate_landscape(all_species, map1);
-   to_show_richness_map(show_richness_map,all_species,map1);
+   populate_landscape(y_max,x_max,all_species, map1);
+   to_show_richness_map(y_max,x_max,show_richness_map,all_species,map1);
    while (t < simulated_time && total_num_populations > 0 && cycles < maximum_cycles)
    {
 
@@ -522,9 +526,9 @@ double total_rate_traitevol;
 
        if(vicariant_speciation){
          vector <contiguous_patches> list_patches;
-         list_patches = all_species[species_to_do].find_patches_distribution();
+         list_patches = all_species[species_to_do].find_patches_distribution(y_max,x_max);
          if(all_species[species_to_do].range > 2){
-           happening_speciation( all_species, alleles_adaptation_coef, species_to_do, t, full_saturation_indi,map1, vicariant_speciation);
+           happening_speciation(y_max,x_max, all_species, alleles_adaptation_coef, species_to_do, t, full_saturation_indi,map1, vicariant_speciation);
            all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
            total_speciation_events = total_speciation_events + 1;
 
@@ -537,7 +541,7 @@ double total_rate_traitevol;
 
 
        } else {
-         happening_speciation( all_species, alleles_adaptation_coef, species_to_do, t, full_saturation_indi,map1, vicariant_speciation);
+         happening_speciation(y_max,x_max, all_species, alleles_adaptation_coef, species_to_do, t, full_saturation_indi,map1, vicariant_speciation);
          all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
          total_speciation_events = total_speciation_events + 1;
        }
@@ -557,7 +561,7 @@ double total_rate_traitevol;
      {
        // cout << "                   i will gene_flow" << endl;
 
-       all_species[species_to_do].happening_gene_flow(percentage_flow,map1);
+       all_species[species_to_do].happening_gene_flow(y_max,x_max,percentage_flow,map1);
 
        all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
        attempted_geneflow_events = attempted_geneflow_events + 1;
@@ -683,10 +687,10 @@ double total_rate_traitevol;
 
 
    cout << "time: " << t << " cycle: " << cycles << " richness:" << final_richness <<  " populations: " << final_numb_pop << " indviduals: " << final_indviduals<< " ind_saturation %: " << full_saturation_indi << endl;
-   to_show_richness_map(show_richness_map,all_species,map1);
+   to_show_richness_map(y_max,x_max,show_richness_map,all_species,map1);
 
    bool no_failure;
-   no_failure = final_check(all_species,map1);
+   no_failure = final_check(y_max,x_max,all_species,map1);
    if(no_failure)
    {
      cout << "OK" << endl;
@@ -696,7 +700,7 @@ double total_rate_traitevol;
    // for RcPP
 
    List model_output = List::create();
-   model_output = get_me_output(all_species,t);
+   model_output = get_me_output(y_max,x_max,all_species,t);
 
    // end for Rcpp
    //
