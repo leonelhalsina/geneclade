@@ -17,15 +17,15 @@ using namespace std;
 //default_random_engine &generator;
 //' @export
  // [[Rcpp::export]]
- List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, bool extirpation_depen_temperature,
+ List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, IntegerVector map_temperature_vector2,bool extirpation_depen_temperature,
                     bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y,
                     IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths,
                     NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,
                     IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow,
-                    double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,double t_change_rates,
-                    IntegerVector ice_age_change, double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
+                    double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,
+                     double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
                     double sd_normal_distribution_pop_change,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
-                    double v, IntegerVector alleles_adaptation_coef2,bool global_reducing, bool vicariant_speciation)
+                    double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation)
  {
 
    if((x_max * y_max ) != map_k_vector.size()){
@@ -266,12 +266,12 @@ using namespace std;
          if(this_variance == 0){
            cout << "equilibrium found: " << endl;
            equilibrium_achieved = true;
-           if(global_reducing == false ){
+           if(do_change_map_rates == false ){
 
              break;
            }
 
-           if(global_reducing  && pending_change_in_rates == false)
+           if(do_change_map_rates  && pending_change_in_rates == false)
            {
              cout << "second equilibrium found" << endl;
              break;
@@ -285,9 +285,9 @@ using namespace std;
        }
      }
 
-     if(equilibrium_achieved && global_reducing && pending_change_in_rates)
+     if(equilibrium_achieved && do_change_map_rates && pending_change_in_rates)
      {
-       change_temperature_map(x_max,y_max,map_temperature_vector, ice_age_change,map1);
+       change_temperature_map(x_max,y_max,map_temperature_vector2,map1);
        gamma = second_gamma;
        mu =  second_mu;
        pending_change_in_rates = false;
@@ -297,13 +297,13 @@ using namespace std;
 
      }
 
-     // if(equilibrium_achieved && global_reducing && pending_change_in_rates == false  && full_saturation_indi == stop_at_saturation)
+     // if(equilibrium_achieved && do_change_map_rates && pending_change_in_rates == false  && full_saturation_indi == stop_at_saturation)
      // {
      //   cout << "---- Equilibrium was reached, then the changes of mu or map temperature were changed, saturation decreased until stop_at_saturation " << endl;
      //   break;
      // }
      //
-     // if(global_reducing == false && full_saturation_indi == stop_at_saturation){
+     // if(do_change_map_rates == false && full_saturation_indi == stop_at_saturation){
      //
      //   cout << "--- saturation reached the required level, no change in rates/maps nor equilibrium was met" << endl;
      //   break;

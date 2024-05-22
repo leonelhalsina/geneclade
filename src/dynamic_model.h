@@ -154,7 +154,7 @@ double link_fitnesslike_mu_gamma(yx , population_structure , vector<int> , lands
 void happening_speciation( int, int, vector<species>& , vector<int> , int , double , double,landscape **map1, bool);
 
 void set_landscape(IntegerVector,IntegerVector ,IntegerVector,int , int,landscape **map1);
-void change_temperature_map(int,int,IntegerVector ,IntegerVector ,landscape **map1);
+void change_temperature_map(int,int,IntegerVector ,landscape **map1);
 vector <double> extract_temperature_func ( species);
 vector <species> get_species_intocpp(vector<species> , IntegerVector ,IntegerVector, IntegerVector , IntegerVector , IntegerVector , IntegerVector , IntegerVector , NumericVector , NumericVector , NumericVector , IntegerVector , int , landscape **map1, vector<int> , double , double , double , bool, bool);
 probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> , landscape **map1, bool , bool ,bool, double, double, double , double , double , double , vector<int> , double  );

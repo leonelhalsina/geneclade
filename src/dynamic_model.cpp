@@ -280,56 +280,16 @@ double calculate_variance(vector<int> vector_values){
   return variance;
 }
 
-void change_temperature_map(int x_max, int y_max, IntegerVector map_temperature_vector,IntegerVector ice_age_change,landscape **map1){
-
-  vector <int> temperature_bands1;
-  for(int ij = 0; ij < map_temperature_vector.size();ij ++)
+void change_temperature_map(int x_max, int y_max, IntegerVector map_temperature_vector2,landscape **map1){
+  for (int i = 0; i < y_max; i++)
   {
-    if(map_temperature_vector[ij] > 0)
+    for (int j = 0; j < x_max; j++)
     {
-      temperature_bands1.push_back(map_temperature_vector[ij]);
+      map1[i][j].temperature = map_temperature_vector2[(i * y_max) + j];
     }
+    // cout << endl;
   }
 
-  vector<int>::iterator ip;
-  // Sorting the array
-  std::sort(temperature_bands1.begin(), temperature_bands1.end());
-  // Now vector becomes 1 1 2 2 3 3 3 3 7 7 8 10
-  // Using std::unique
-  ip = std::unique(temperature_bands1.begin(), temperature_bands1.begin() + temperature_bands1.size());
-  // Now vector becomes {1 2 3 7 8 10 * * * * * *}
-  // * means undefined
-  // Resizing the vector so as to remove the undefined terms
-  temperature_bands1.resize(std::distance(temperature_bands1.begin(), ip));
-
-  if(ice_age_change.size() != temperature_bands1.size() )
-  {
-    stop("ice_age_change needs to be same length than the number of temperature bands");
-  }
-
-  for (int i = 0; i < x_max; i++)
-  {
-    for (int j = 0; j < y_max; j++)
-    {
-
-      int this_temperature;
-      this_temperature = map1[i][j].temperature;
-      if(this_temperature > 0){
-        int identi_band;
-        for(int jj = 0;  jj < temperature_bands1.size(); jj++)
-        {
-          if(this_temperature == temperature_bands1[jj])
-          {
-            identi_band = jj;
-          }
-        }
-        map1[i][j].temperature = (this_temperature + ice_age_change[identi_band]);
-
-      }
-
-
-    }
-  }
 }
 
 
@@ -1879,6 +1839,19 @@ void to_show_richness_map(int y_max, int x_max, std::string show_richness_map,ve
       for (int j = 0; j < x_max; j++)
       {
         cout << map1[i][j].Nspp << "\t";
+      }
+      cout << endl;
+    }
+  }
+  if (show_richness_map == "temperature")
+  {
+    cout << endl;
+    cout << "this is temperature map" << endl;
+    for (int i = 0; i < y_max; i++)
+    {
+      for (int j = 0; j < x_max; j++)
+      {
+        cout << map1[i][j].temperature << "\t";
       }
       cout << endl;
     }
