@@ -104,6 +104,7 @@ public:
   int succesful_geneflow_events = 0;
   int southernmost;
   int northernmost;
+  int expansion_failure_becauseK = 0;
   vector <int> change_northernmost;
   vector <int> change_southernmost;
   vector <double> time_change_northernmost;

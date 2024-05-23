@@ -1975,6 +1975,11 @@ vector<yx> species::available_neigh_to_colonize_K(int x_max, int y_max, int foca
       available_to_colonize.push_back(neighbors_focal_good_habitat2[i]);
     }
   }
+  if(neighbors_focal_good_habitat2.size() > 1 && available_to_colonize.size() == 0)
+  {
+    expansion_failure_becauseK = expansion_failure_becauseK + 1;
+//stop("expansion_failure_becauseK");
+  }
   //cout << "num cells to colonize:" << available_to_colonize.size() << endl;
   return available_to_colonize;
 }
@@ -2826,6 +2831,9 @@ new_species.percentage_parental_range = 1.1;
 
       focal.southernmost = *max_element(all_ys_this_species.begin(),all_ys_this_species.end());
     }
+    // reset the number of geneflow events and the number of failed dispersion events due to K taking place
+    focal.succesful_geneflow_events = 0;
+    focal.expansion_failure_becauseK = 0;
     // cout << "allele a focal: " << focal.populations_this_species[0].allelic_a << endl;
     // cout << "new_species.presence.size() "<< new_species.presence.size() << endl;
     // cout << "new_species.populations_this_species.size() "<< new_species.populations_this_species.size() << endl;
@@ -3166,6 +3174,7 @@ List extract_species_data(int y_max,int x_max, vector<species> process_all_speci
   vector <int> extract_southernmost;
   vector <int> extract_northernmost;
   vector <int> extract_swisscheese;
+  vector <int> extract_expansion_failure_becauseK;
 
   for (int i = 0; i < process_all_species.size(); ++i)
   {
@@ -3188,6 +3197,7 @@ List extract_species_data(int y_max,int x_max, vector<species> process_all_speci
     extract_succefulgeneflow.push_back(process_one_species.succesful_geneflow_events);
     extract_southernmost.push_back(process_one_species.southernmost);
     extract_northernmost.push_back(process_one_species.northernmost);
+    extract_expansion_failure_becauseK.push_back(process_one_species.expansion_failure_becauseK);
     // cout << "process_one_species.saturation_grid_birth " << process_one_species.saturation_grid_birth << endl;
     extract_saturation_grid_birth.push_back(process_one_species.saturation_grid_birth);
   }
@@ -3205,7 +3215,8 @@ List extract_species_data(int y_max,int x_max, vector<species> process_all_speci
                                                 _["saturation_grid_birth"] = extract_saturation_grid_birth,
                                                 _["geneflow_events"] =  extract_succefulgeneflow,
                                                 _["northernnmost_locat"] =   extract_northernmost,
-                                                _["southernmost_locat"] =   extract_southernmost);
+                                                _["southernmost_locat"] =   extract_southernmost,
+                                                _["expansion_failure_becauseK"] = extract_expansion_failure_becauseK);
 
 
   return list_extract_species_data;
