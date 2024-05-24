@@ -106,7 +106,9 @@ public:
   int northernmost;
   int expansion_failure_becauseK = 0;
   vector <int> change_northernmost;
+  int total_change_northernmost = 0;
   vector <int> change_southernmost;
+  int total_change_southernmost = 0;
   vector <double> time_change_northernmost;
   vector <double> time_change_southernmost;
   int birthplace_northmost;

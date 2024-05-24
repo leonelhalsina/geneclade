@@ -231,11 +231,13 @@ if(was_it_newborn){
       change_southernmost.push_back(1);
       time_change_southernmost.push_back(t);
       southernmost = fromhere_southmost;
+      total_change_southernmost = total_change_southernmost + 1;
     }
     if(fromhere_northmost < northernmost){
       change_northernmost.push_back(1);
       time_change_northernmost.push_back(t);
       northernmost = fromhere_northmost;
+      total_change_northernmost = total_change_northernmost + 1;
 
     }
 
@@ -247,6 +249,7 @@ if(was_it_newborn){
       change_southernmost.push_back(-1);
       time_change_southernmost.push_back(t);
       southernmost = fromhere_southmost;
+      total_change_southernmost = total_change_southernmost + 1;
       //cout << "contract south" << endl;
     }
 
@@ -255,6 +258,7 @@ if(was_it_newborn){
       change_northernmost.push_back(-1);
       time_change_northernmost.push_back(t);
       northernmost = fromhere_northmost;
+      total_change_northernmost = total_change_northernmost + 1;
       // cout << "contract north" << endl;
     }
   }
@@ -2700,7 +2704,10 @@ new_species.percentage_parental_range = float(new_species.range)/float(focal.ran
     //
     //stop("E");
     focal.total_pop_size = focal.total_pop_size - new_species.total_pop_size;
-
+    focal.succesful_geneflow_events = 0;
+    focal.expansion_failure_becauseK = 0;
+    focal.total_change_northernmost = 0;
+    focal.total_change_southernmost = 0;
     // cout <<" population size_parent after speciation: " << focal.total_pop_size << endl;
 
     focal.update_latitudinal_borders(t,false,false);
@@ -3175,6 +3182,8 @@ List extract_species_data(int y_max,int x_max, vector<species> process_all_speci
   vector <int> extract_northernmost;
   vector <int> extract_swisscheese;
   vector <int> extract_expansion_failure_becauseK;
+  vector <int> extract_total_change_northernmost;
+  vector <int> extract_total_change_southernmost;
 
   for (int i = 0; i < process_all_species.size(); ++i)
   {
@@ -3198,6 +3207,8 @@ List extract_species_data(int y_max,int x_max, vector<species> process_all_speci
     extract_southernmost.push_back(process_one_species.southernmost);
     extract_northernmost.push_back(process_one_species.northernmost);
     extract_expansion_failure_becauseK.push_back(process_one_species.expansion_failure_becauseK);
+    extract_total_change_northernmost.push_back(process_one_species.total_change_northernmost);
+    extract_total_change_southernmost.push_back(process_one_species.total_change_southernmost);
     // cout << "process_one_species.saturation_grid_birth " << process_one_species.saturation_grid_birth << endl;
     extract_saturation_grid_birth.push_back(process_one_species.saturation_grid_birth);
   }
@@ -3216,7 +3227,9 @@ List extract_species_data(int y_max,int x_max, vector<species> process_all_speci
                                                 _["geneflow_events"] =  extract_succefulgeneflow,
                                                 _["northernnmost_locat"] =   extract_northernmost,
                                                 _["southernmost_locat"] =   extract_southernmost,
-                                                _["expansion_failure_becauseK"] = extract_expansion_failure_becauseK);
+                                                _["expansion_failure_becauseK"] = extract_expansion_failure_becauseK,
+                                                _["total_change_northernmost"] = extract_total_change_northernmost,
+                                                _["total_change_southernmost"] = extract_total_change_southernmost);
 
 
   return list_extract_species_data;
