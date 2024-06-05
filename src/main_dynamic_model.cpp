@@ -25,7 +25,7 @@ using namespace std;
                     double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,
                      double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
                     double sd_normal_distribution_pop_change,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
-                    double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation)
+                    double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation, double time_percent_stop_after_first_equilibrium_and_disturbance)
  {
 
    if((x_max * y_max ) != map_k_vector.size()){
@@ -121,7 +121,10 @@ using namespace std;
    int full_saturation_indi;
    int total_indviduals;
 
-
+   double first_equi_at;
+   int richness_at_equilibrium;
+   int populations_at_equilibrium;
+   int individuals_at_equilibrium;
    double t;
    t = starting_time;
    bool pending_change_in_rates;
@@ -290,6 +293,16 @@ using namespace std;
        change_temperature_map(x_max,y_max,map_temperature_vector2,map1);
        gamma = second_gamma;
        mu =  second_mu;
+       if(time_percent_stop_after_first_equilibrium_and_disturbance != 0)
+       {
+
+         first_equi_at = t;
+         richness_at_equilibrium = id_alive_species.size();
+         populations_at_equilibrium = total_num_populations;
+         individuals_at_equilibrium = total_indviduals;
+         simulated_time = t + (t * (time_percent_stop_after_first_equilibrium_and_disturbance/100)); // to stop the simulation some time (some % of time) after the change in map/rates.
+       }
+
        pending_change_in_rates = false;
        accumul_satu_values.clear();
        //cout << "size_ accumul_satu_values.clear() "<<  accumul_satu_values.size() << endl;
@@ -672,8 +685,16 @@ double total_rate_traitevol;
 
 
    cout << "____ Summary____" << endl;
-   if(pending_change_in_rates == false){
+   if(pending_change_in_rates == false)
+    {
      cout << "change in rates and/or temperature did take place" << endl;
+     if(time_percent_stop_after_first_equilibrium_and_disturbance  != 0){
+        cout << "first_equi_at: " << first_equi_at << endl;
+        cout << "and it let the model run some more time and stop at: " << simulated_time << " which is "<< time_percent_stop_after_first_equilibrium_and_disturbance <<" % more of the time the simulation had already run for" << endl;
+        cout << " richness_at_equilibrium: " << richness_at_equilibrium << " populations_at_equilibrium: " << populations_at_equilibrium << " individuals_at_equilibrium: " << individuals_at_equilibrium <<endl;
+
+     }
+
    }
    cout << "events took place: " << endl;
    cout << "total_expansion_events " << total_expansion_events << endl;
