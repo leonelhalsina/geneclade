@@ -23,7 +23,7 @@ using namespace std;
                     NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,
                     IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow,
                     double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,
-                     double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
+                    double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
                     double sd_normal_distribution_pop_change,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
                     double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation, double time_percent_stop_after_first_equilibrium_and_disturbance)
  {
@@ -323,13 +323,17 @@ using namespace std;
      // }
 
 
-
+     if(id_alive_species.size() >= max_spp)
+     {
+       lambda = 0;
+     }
 
 
 
 
      // end of it
-     if (t >= simulated_time || id_alive_species.size() >= max_spp)
+     //if (t >= simulated_time || id_alive_species.size() >= max_spp)
+     if (t >= simulated_time )
      {
        cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
        // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
@@ -369,7 +373,7 @@ using namespace std;
      // cout << "calculation_probabilities.popchange_rate_total " << calculation_probabilities.popchange_rate_total  << endl;
      // cout << "calculation_probabilities.mutation_rate_total " << calculation_probabilities.mutation_rate_total  << endl;
 
-double total_rate_traitevol;
+     double total_rate_traitevol;
      //   I take the total rate to do trait evolution
      total_rate_traitevol = ((calculation_probabilities.popchange_rate_total * q)/100.0);
      // to pick and event
@@ -546,10 +550,10 @@ double total_rate_traitevol;
            total_speciation_events = total_speciation_events + 1;
 
 
-        if(all_species.size() != (rich_in_here + 1)){
+           if(all_species.size() != (rich_in_here + 1)){
 
-          stop("speciation did not work out");
-        }
+             stop("speciation did not work out");
+           }
          }
 
 
@@ -686,12 +690,12 @@ double total_rate_traitevol;
 
    cout << "____ Summary____" << endl;
    if(pending_change_in_rates == false)
-    {
+   {
      cout << "change in rates and/or temperature did take place" << endl;
      if(time_percent_stop_after_first_equilibrium_and_disturbance  != 0){
-        cout << "first_equi_at: " << first_equi_at << endl;
-        cout << "and it let the model run some more time and stop at: " << simulated_time << " which is "<< time_percent_stop_after_first_equilibrium_and_disturbance <<" % more of the time the simulation had already run for" << endl;
-        cout << " richness_at_equilibrium: " << richness_at_equilibrium << " populations_at_equilibrium: " << populations_at_equilibrium << " individuals_at_equilibrium: " << individuals_at_equilibrium <<endl;
+       cout << "first_equi_at: " << first_equi_at << endl;
+       cout << "and it let the model run some more time and stop at: " << simulated_time << " which is "<< time_percent_stop_after_first_equilibrium_and_disturbance <<" % more of the time the simulation had already run for" << endl;
+       cout << " richness_at_equilibrium: " << richness_at_equilibrium << " populations_at_equilibrium: " << populations_at_equilibrium << " individuals_at_equilibrium: " << individuals_at_equilibrium <<endl;
 
      }
 
