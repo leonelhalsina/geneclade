@@ -25,7 +25,7 @@ using namespace std;
                     double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,
                     double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
                     double sd_normal_distribution_pop_change,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
-                    double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation,bool speciation_rangesize_unlinked, double time_percent_stop_after_first_equilibrium_and_disturbance)
+                    double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation,bool speciation_rangesize_unlinked, bool colonization_rangesize_unlinked, double time_percent_stop_after_first_equilibrium_and_disturbance)
  {
 
    if((x_max * y_max ) != map_k_vector.size()){
@@ -525,6 +525,13 @@ using namespace std;
 
      if (event_to_do == "expansion")
      {
+
+       if(colonization_rangesize_unlinked)
+       {
+         int random_spp_speciation;
+         species_to_do = give_me_random_uniform(0, id_alive_species.size() - 1);
+         //stop("stop here");
+       }
        // cout << "                  i will expand" << endl;
 
        //  cout << "                   species  BEFORE expansion: " << all_species[species_to_do].presence.size() << endl;
