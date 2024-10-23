@@ -25,8 +25,11 @@ using namespace std;
                     double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,
                     double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
                     double sd_normal_distribution_pop_change,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
-                    double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation,bool speciation_rangesize_unlinked, bool colonization_rangesize_unlinked, double time_percent_stop_after_first_equilibrium_and_disturbance)
+                    double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation,bool speciation_rangesize_unlinked, bool colonization_rangesize_unlinked,
+                    double time_percent_stop_after_first_equilibrium_and_disturbance,IntegerVector time_slices,IntegerVector manual_speciation_events_timing)
  {
+
+   List time_slices_model_output = List::create();
 
    if((x_max * y_max ) != map_k_vector.size()){
      stop("map size does not match y_max and/or x_max");
@@ -241,24 +244,27 @@ using namespace std;
 
 
 
-     if(event_to_do == "speciation" ||event_to_do == "contraction" || event_to_do == "expansion" ){
+     if(event_to_do == "speciation" ||event_to_do == "contraction" || event_to_do == "expansion" ){ // these are the events that change range size
        //
        //      cout << "this full_saturation_indi " << full_saturation_indi << " at cyle: " << cycles << endl;
        accumul_satu_values.push_back(full_saturation_indi);
-       //     cout << "lenghth accumul_satu_values: " << accumul_satu_values.size() << endl;
+      //      cout << "lenghth accumul_satu_values: " << accumul_satu_values.size() << endl;
        //      for (int ij = 0; ij < accumul_satu_values.size(); ++ij){
        //        cout << " "<< accumul_satu_values[ij] ;
        //      }
        // cout << endl;
-       if(accumul_satu_values.size() > 3000)
+       if(accumul_satu_values.size() > 300)
        {
          cout << " over limit in vector length" << endl;
          break;
        }
-       if(accumul_satu_values.size() == 3000)
+
+       if(accumul_satu_values.size() == 300)
        {
          double this_variance;
          this_variance = calculate_variance(accumul_satu_values);
+         cout << "Variance in average range size: " << this_variance << endl;
+
          counting_to_print_variance = counting_to_print_variance + 1;
          if(counting_to_print_variance == 100 )
          {
@@ -267,14 +273,20 @@ using namespace std;
          }
 
          if(this_variance == 0){
-           cout << "equilibrium found: " << endl;
+           cout << "equilibrium found at: " << t << endl;
            equilibrium_achieved = true;
-           if(do_change_map_rates == false ){
+           if(do_change_map_rates ){
 
+             accumul_satu_values.clear();
+            // cout << "size of accumul_satu_values:  " << accumul_satu_values.size() << endl;
+
+           }
+           else
+           {
              break;
            }
 
-           if(do_change_map_rates  && pending_change_in_rates == false)
+           if(do_change_map_rates  && pending_change_in_rates == false   && time_percent_stop_after_first_equilibrium_and_disturbance == 0 ) // so it does not break when I set fisxed time
            {
              cout << "second equilibrium found" << endl;
              break;
@@ -293,14 +305,22 @@ using namespace std;
        change_temperature_map(x_max,y_max,map_temperature_vector2,map1);
        gamma = second_gamma;
        mu =  second_mu;
+
+       List model_output = List::create();
+       model_output = get_me_output(y_max,x_max,all_species,t);
+       time_slices_model_output.push_back(model_output);
+
        if(time_percent_stop_after_first_equilibrium_and_disturbance != 0)
        {
 
+         cout << "current time: " << t << endl;
          first_equi_at = t;
          richness_at_equilibrium = id_alive_species.size();
          populations_at_equilibrium = total_num_populations;
          individuals_at_equilibrium = total_indviduals;
          simulated_time = t + (t * (time_percent_stop_after_first_equilibrium_and_disturbance/100)); // to stop the simulation some time (some % of time) after the change in map/rates.
+
+       cout << "__________simulated_time to run until " << simulated_time << endl;
        }
 
        pending_change_in_rates = false;
@@ -343,7 +363,7 @@ using namespace std;
      //if ((round(t) - round(t_previous_cycle)) > 0)
      // cout << "t: " << t << " "<< t_previous_cycle << endl;
      // cout << (t + (t * 0.0005))  << endl;
-     if (   (t_previous_cycle + (t_previous_cycle * 0.00001)) < t )
+     if (   (t_previous_cycle + (t_previous_cycle * 0.001)) < t )
      {
        cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<< " ind_saturation %: " << full_saturation_indi << endl;      // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
      }
@@ -391,6 +411,24 @@ using namespace std;
 
 
      event_to_do = all_events[events_probabilities_to_pick(generator)];
+
+     for(int iji = 0; iji < manual_speciation_events_timing.size(); ++iji)
+     {
+
+       int t_rounded = round(t);
+       //cout << "rounded time: " << t_rounded << endl;
+
+       if(manual_speciation_events_timing[iji] == t_rounded)
+
+       {
+         event_to_do = "speciation";
+
+         manual_speciation_events_timing.erase(manual_speciation_events_timing.begin() + iji);
+
+         //cout << "time slice length here2: " << time_slices.size() << endl;
+
+       }
+     }
 
      vector <std::string> list_events_to_do;
 
@@ -649,8 +687,6 @@ using namespace std;
        cout << "total annihilation of the clade" << endl;
        break;
      }
-
-
      bool problem_zero_popsize;
      problem_zero_popsize = false;
      for(int iji = 0; iji < all_species.size(); ++iji)
@@ -681,6 +717,34 @@ using namespace std;
        stop("some issue with population below zero");
        break;
      } // end of checks
+
+
+
+
+
+     //cout << "time slice length here: " << time_slices.size() << endl;
+     for(int iji = 0; iji < time_slices.size(); ++iji)
+     {
+
+       int t_rounded = round(t);
+       //cout << "rounded time: " << t_rounded << endl;
+
+       if(time_slices[iji] == t_rounded)
+
+       {
+         // cout << "went in here " << endl;
+         List model_output = List::create();
+         model_output = get_me_output(y_max,x_max,all_species,t);
+         time_slices_model_output.push_back(model_output);
+         time_slices.erase(time_slices.begin() + iji);
+
+         //cout << "time slice length here2: " << time_slices.size() << endl;
+
+       }
+     }
+
+
+
    } // End of While loop
 
    int final_richness;
@@ -707,7 +771,7 @@ using namespace std;
      cout << "change in rates and/or temperature did take place" << endl;
      if(time_percent_stop_after_first_equilibrium_and_disturbance  != 0){
        cout << "first_equi_at: " << first_equi_at << endl;
-       cout << "and it let the model run some more time and stop at: " << simulated_time << " which is "<< time_percent_stop_after_first_equilibrium_and_disturbance <<" % more of the time the simulation had already run for" << endl;
+       cout << "and it let the model run some more time and stop at: " << t << " which is "<< time_percent_stop_after_first_equilibrium_and_disturbance <<" % more of the time the simulation had already run for" << endl;
        cout << " richness_at_equilibrium: " << richness_at_equilibrium << " populations_at_equilibrium: " << populations_at_equilibrium << " individuals_at_equilibrium: " << individuals_at_equilibrium <<endl;
 
      }
@@ -737,12 +801,17 @@ using namespace std;
 
    // for RcPP
 
+
+
+
    List model_output = List::create();
    model_output = get_me_output(y_max,x_max,all_species,t);
+
+   time_slices_model_output.push_back(model_output);
 
    // end for Rcpp
    //
    //       int model_output;
    //    model_output = 3;
-   return model_output;
+   return time_slices_model_output;
  }
