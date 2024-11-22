@@ -67,18 +67,45 @@ private:
 
 class population_structure {
 public:
-  int pop_size;
-  int allelic_a;
-  int allelic_b;
-  int allelic_c;
-  int allelic_d;
-  int allelic_e;
 
-  int allelic_z;
-  int allelic_y;
-  int allelic_x;
-  int allelic_w;
-  int allelic_v;
+  int pop_size;
+
+  // selection
+  int allelic_a1;
+  int allelic_b1;
+  int allelic_c1;
+  int allelic_d1;
+  int allelic_e1;
+  int allelic_f1;
+  int allelic_g1;
+  int allelic_h1;
+  int allelic_i1;
+  int allelic_j1;
+  int allelic_k1;
+  int allelic_l1;
+  int allelic_m1;
+  int allelic_n1;
+  int allelic_o1;
+
+  // neutral
+  int allelic_a2;
+  int allelic_b2;
+  int allelic_c2;
+  int allelic_d2;
+  int allelic_e2;
+  int allelic_f2;
+  int allelic_g2;
+  int allelic_h2;
+  int allelic_i2;
+  int allelic_j2;
+  int allelic_k2;
+  int allelic_l2;
+  int allelic_m2;
+  int allelic_n2;
+  int allelic_o2;
+
+
+
   void happening_population_popchange(landscape **map1, double , vector<int> , yx  );
   void happening_mutation();
 
@@ -136,7 +163,7 @@ public:
   vector <yx> available_neigh_to_colonize_K(int ,int ,int , landscape **map1);
   vector <yx> available_neigh_to_colonize_trait(int ,int,int, double,landscape **map1);
   void happening_expansion(int , int , bool , double , landscape **map1, bool, vector<int>, double );
-  void happening_contraction( double ,landscape **map1,bool );
+  void happening_contraction( double ,landscape **map1, std::string );
   void classify_elevation(bool,landscape **map1);
   void classify_elevation_origin(bool);
   void initial_position(yx);
@@ -158,13 +185,14 @@ void happening_speciation( int, int, vector<species>& , vector<int> , int , doub
 
 void set_landscape(IntegerVector,IntegerVector ,IntegerVector,int , int,landscape **map1);
 void change_temperature_map(int,int,IntegerVector ,landscape **map1);
+void change_k_map(int,int,IntegerVector ,landscape **map1);
 vector <double> extract_temperature_func ( species);
-vector <species> get_species_intocpp(vector<species> , IntegerVector ,IntegerVector, IntegerVector , IntegerVector , IntegerVector , IntegerVector , IntegerVector , NumericVector , NumericVector , NumericVector , IntegerVector , int , landscape **map1, vector<int> , double , double , double , bool, bool);
-probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> , landscape **map1, bool , bool ,bool, double, double, double , double , double , double , vector<int> , double  );
+vector <species> get_species_intocpp(vector<species> , IntegerVector ,IntegerVector, IntegerVector , IntegerVector , IntegerVector , IntegerVector , IntegerVector , NumericVector , NumericVector , NumericVector , IntegerVector , int , landscape **map1, vector<int> , double , double , double , std::string, bool);
+probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> , landscape **map1,  std::string  , bool ,bool, double, double, double , double , double , double , vector<int> , double  );
 void populate_landscape(int, int, vector <species> all_species,landscape **map1);
 void to_show_richness_map(int,int, std::string,vector<species>,landscape **map1);
 List extract_species_data(int, int, vector <species> process_all_species);
-List get_me_output(int,int,vector <species>,double );
+List get_me_output(int,int,vector <species>, double );
 vector <int> extract_yx_func(species, std::string );
 bool final_check(int, int, vector<species>,landscape **map1);
 bool any_element_match(int , vector <int> );

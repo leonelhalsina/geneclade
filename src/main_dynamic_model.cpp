@@ -17,7 +17,7 @@ using namespace std;
 //default_random_engine &generator;
 //' @export
  // [[Rcpp::export]]
- List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, IntegerVector map_temperature_vector2,bool extirpation_depen_temperature,
+ List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector,IntegerVector map_k_vector2, IntegerVector map_temperature_vector, IntegerVector map_temperature_vector2,  std::string extirpation_depen,
                     bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y,
                     IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths,
                     NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,
@@ -100,7 +100,7 @@ using namespace std;
    }
 
 
-   all_species = get_species_intocpp(all_species,  all_alleles, all_alleles_neutral, all_popsize,  all_x,  all_y,  all_IDs,  all_parents,  all_births,  all_deaths,  all_traits,  all_ranges,  number_spp, map1, alleles_adaptation_coef,  v,  gamma,  mu, extirpation_depen_temperature,  colonization_depen_temperature);
+   all_species = get_species_intocpp(all_species,  all_alleles, all_alleles_neutral, all_popsize,  all_x,  all_y,  all_IDs,  all_parents,  all_births,  all_deaths,  all_traits,  all_ranges,  number_spp, map1, alleles_adaptation_coef,  v,  gamma,  mu, extirpation_depen,  colonization_depen_temperature);
 
    int total_num_populations = 0;
    for (int ij = 0; ij < all_ranges.size(); ++ij)
@@ -183,7 +183,7 @@ using namespace std;
      vector<double> total_probability_species;
      probabilities_based_traits calculation_probabilities;
 
-     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1,  extirpation_depen_temperature, colonization_depen_temperature, species_trait_state_gamma, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
+     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1,  extirpation_depen, colonization_depen_temperature, species_trait_state_gamma, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
      total_probability_species = calculation_probabilities.total_probability_species;
      discrete_distribution<int> species_probabilities_to_pick(total_probability_species.begin(), total_probability_species.end());
      species_to_do = id_alive_species[species_probabilities_to_pick(generator)];
@@ -303,6 +303,7 @@ using namespace std;
      if(equilibrium_achieved && do_change_map_rates && pending_change_in_rates)
      {
        change_temperature_map(x_max,y_max,map_temperature_vector2,map1);
+       change_k_map(x_max,y_max,map_k_vector2,map1);
        gamma = second_gamma;
        mu =  second_mu;
 
@@ -553,7 +554,7 @@ using namespace std;
      if(cycles < list_events_to_do.size()){
        //event_to_do = list_events_to_do[cycles - 1];   // to DELETE
      }
-     // cout << "                       event_to_do: " << event_to_do << endl;
+      //cout << "                       event_to_do: " << event_to_do << endl;
 
 
      // all_species[species_to_do].find_patches_distribution(); // to DELETE
@@ -656,7 +657,7 @@ using namespace std;
      if (event_to_do == "contraction")
      {
        //  cout << "                  I will contract range " << endl;
-       all_species[species_to_do].happening_contraction(t, map1, extirpation_depen_temperature);
+       all_species[species_to_do].happening_contraction(t, map1, extirpation_depen);
        total_contraction_events = total_contraction_events + 1;
        //all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
      }

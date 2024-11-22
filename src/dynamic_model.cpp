@@ -222,47 +222,47 @@ void species::update_latitudinal_borders(double t, bool was_it_expansion, bool w
   int fromhere_northmost;
   fromhere_northmost = *min_element(all_ys.begin(),all_ys.end());
 
-if(was_it_newborn){
-  southernmost = fromhere_southmost;
-  northernmost = fromhere_northmost;
-} else {
-  if(was_it_expansion){
-    if(fromhere_southmost > southernmost){
-      change_southernmost.push_back(1);
-      time_change_southernmost.push_back(t);
-      southernmost = fromhere_southmost;
-      total_change_southernmost = total_change_southernmost + 1;
-    }
-    if(fromhere_northmost < northernmost){
-      change_northernmost.push_back(1);
-      time_change_northernmost.push_back(t);
-      northernmost = fromhere_northmost;
-      total_change_northernmost = total_change_northernmost + 1;
-
-    }
-
+  if(was_it_newborn){
+    southernmost = fromhere_southmost;
+    northernmost = fromhere_northmost;
   } else {
-    // cout << "contract" << endl;
-    // cout << fromhere_southmost << "  " << southernmost << endl;
-    // cout << fromhere_northmost << "  " <<northernmost << endl;
-    if(fromhere_southmost < southernmost){
-      change_southernmost.push_back(-1);
-      time_change_southernmost.push_back(t);
-      southernmost = fromhere_southmost;
-      total_change_southernmost = total_change_southernmost + 1;
-      //cout << "contract south" << endl;
-    }
+    if(was_it_expansion){
+      if(fromhere_southmost > southernmost){
+        change_southernmost.push_back(1);
+        time_change_southernmost.push_back(t);
+        southernmost = fromhere_southmost;
+        total_change_southernmost = total_change_southernmost + 1;
+      }
+      if(fromhere_northmost < northernmost){
+        change_northernmost.push_back(1);
+        time_change_northernmost.push_back(t);
+        northernmost = fromhere_northmost;
+        total_change_northernmost = total_change_northernmost + 1;
+
+      }
+
+    } else {
+      // cout << "contract" << endl;
+      // cout << fromhere_southmost << "  " << southernmost << endl;
+      // cout << fromhere_northmost << "  " <<northernmost << endl;
+      if(fromhere_southmost < southernmost){
+        change_southernmost.push_back(-1);
+        time_change_southernmost.push_back(t);
+        southernmost = fromhere_southmost;
+        total_change_southernmost = total_change_southernmost + 1;
+        //cout << "contract south" << endl;
+      }
 
 
-    if(fromhere_northmost > northernmost){
-      change_northernmost.push_back(-1);
-      time_change_northernmost.push_back(t);
-      northernmost = fromhere_northmost;
-      total_change_northernmost = total_change_northernmost + 1;
-      // cout << "contract north" << endl;
+      if(fromhere_northmost > northernmost){
+        change_northernmost.push_back(-1);
+        time_change_northernmost.push_back(t);
+        northernmost = fromhere_northmost;
+        total_change_northernmost = total_change_northernmost + 1;
+        // cout << "contract north" << endl;
+      }
     }
   }
-}
 
 
 }
@@ -290,6 +290,18 @@ void change_temperature_map(int x_max, int y_max, IntegerVector map_temperature_
     for (int j = 0; j < x_max; j++)
     {
       map1[i][j].temperature = map_temperature_vector2[(i * y_max) + j];
+    }
+    // cout << endl;
+  }
+
+}
+
+void change_k_map(int x_max, int y_max, IntegerVector map_k_vector2,landscape **map1){
+  for (int i = 0; i < y_max; i++)
+  {
+    for (int j = 0; j < x_max; j++)
+    {
+      map1[i][j].k_patch = map_k_vector2[(i * y_max) + j];
     }
     // cout << endl;
   }
@@ -351,8 +363,13 @@ bool final_check(int y_max, int x_max,vector<species> all_species,landscape **ma
         }
         int sum_allelic;
         int sum_allelic_neutral;
-        sum_allelic = do_this_population.allelic_a + do_this_population.allelic_b + do_this_population.allelic_c + do_this_population.allelic_d + do_this_population.allelic_e;
-        sum_allelic_neutral = do_this_population.allelic_v + do_this_population.allelic_w + do_this_population.allelic_x + do_this_population.allelic_y + do_this_population.allelic_z;
+        sum_allelic = do_this_population.allelic_a1 + do_this_population.allelic_b1 + do_this_population.allelic_c1 + do_this_population.allelic_d1 + do_this_population.allelic_e1 +
+          do_this_population.allelic_f1 + do_this_population.allelic_g1 + do_this_population.allelic_h1 + do_this_population.allelic_i1 + do_this_population.allelic_j1 +
+          do_this_population.allelic_k1 + do_this_population.allelic_l1 + do_this_population.allelic_m1 + do_this_population.allelic_n1 + do_this_population.allelic_o1;
+
+        sum_allelic_neutral = do_this_population.allelic_a2 + do_this_population.allelic_b2 + do_this_population.allelic_c2 + do_this_population.allelic_d2 + do_this_population.allelic_e2 +
+          do_this_population.allelic_f2 + do_this_population.allelic_g2 + do_this_population.allelic_h2 + do_this_population.allelic_i2 + do_this_population.allelic_j2 +
+          do_this_population.allelic_k2 + do_this_population.allelic_l2 + do_this_population.allelic_m2 + do_this_population.allelic_n2 + do_this_population.allelic_o2;
 
         if(message_final_check_to_do && sum_allelic > 0)
         {
@@ -416,20 +433,50 @@ void population_structure::happening_mutation()
   //  cout << endl;
   // cout << "______________after mutation: " << endl;
   vector <int> position_alleles;
-  if(allelic_a >= 1){
+  if(allelic_a1 >= 1){
     position_alleles.push_back(0);
   }
-  if(allelic_b >= 1){
+  if(allelic_b1 >= 1){
     position_alleles.push_back(1);
   }
-  if(allelic_c >= 1){
+  if(allelic_c1 >= 1){
     position_alleles.push_back(2);
   }
-  if(allelic_d >= 1){
+  if(allelic_d1 >= 1){
     position_alleles.push_back(3);
   }
-  if(allelic_e >= 1){
+  if(allelic_e1 >= 1){
     position_alleles.push_back(4);
+  }
+  if(allelic_f1 >= 1){
+    position_alleles.push_back(5);
+  }
+  if(allelic_g1 >= 1){
+    position_alleles.push_back(6);
+  }
+  if(allelic_h1 >= 1){
+    position_alleles.push_back(7);
+  }
+  if(allelic_i1 >= 1){
+    position_alleles.push_back(8);
+  }
+  if(allelic_j1 >= 1){
+    position_alleles.push_back(9);
+  }
+  if(allelic_k1 >= 1){
+    position_alleles.push_back(10);
+  }
+  if(allelic_l1 >= 1){
+    position_alleles.push_back(11);
+  }
+  if(allelic_m1 >= 1){
+    position_alleles.push_back(12);
+  }
+  if(allelic_n1 >= 1){
+    position_alleles.push_back(13);
+  }
+  if(allelic_o1 >= 1){
+    position_alleles.push_back(14);
   }
 
   //  cout << "here position_alleles.size()" << position_alleles.size() << endl;
@@ -441,23 +488,63 @@ void population_structure::happening_mutation()
 
   if(which_allele_from == 0)
   {
-    allelic_a = allelic_a - 1;
+    allelic_a1 = allelic_a1 - 1;
   }
   if(which_allele_from == 1)
   {
-    allelic_b = allelic_b - 1;
+    allelic_b1 = allelic_b1 - 1;
   }
   if(which_allele_from == 2)
   {
-    allelic_c = allelic_c - 1;
+    allelic_c1 = allelic_c1 - 1;
   }
   if(which_allele_from == 3)
   {
-    allelic_d = allelic_d - 1;
+    allelic_d1 = allelic_d1 - 1;
   }
   if(which_allele_from == 4)
   {
-    allelic_e = allelic_e - 1;
+    allelic_e1 = allelic_e1 - 1;
+  }
+  if(which_allele_from == 5)
+  {
+    allelic_f1 = allelic_f1 - 1;
+  }
+  if(which_allele_from == 6)
+  {
+    allelic_g1 = allelic_g1 - 1;
+  }
+  if(which_allele_from == 7)
+  {
+    allelic_h1 = allelic_h1 - 1;
+  }
+  if(which_allele_from == 8)
+  {
+    allelic_i1 = allelic_i1 - 1;
+  }
+  if(which_allele_from == 9)
+  {
+    allelic_j1 = allelic_j1 - 1;
+  }
+  if(which_allele_from == 10)
+  {
+    allelic_k1 = allelic_k1 - 1;
+  }
+  if(which_allele_from == 11)
+  {
+    allelic_l1 = allelic_l1 - 1;
+  }
+  if(which_allele_from == 12)
+  {
+    allelic_m1 = allelic_m1 - 1;
+  }
+  if(which_allele_from == 13)
+  {
+    allelic_n1 = allelic_n1 - 1;
+  }
+  if(which_allele_from == 14)
+  {
+    allelic_o1 = allelic_o1 - 1;
   }
 
   vector <int> allelic_positions_all;
@@ -466,34 +553,85 @@ void population_structure::happening_mutation()
   allelic_positions_all.push_back(2);
   allelic_positions_all.push_back(3);
   allelic_positions_all.push_back(4);
+  allelic_positions_all.push_back(5);
+  allelic_positions_all.push_back(6);
+  allelic_positions_all.push_back(7);
+  allelic_positions_all.push_back(8);
+  allelic_positions_all.push_back(9);
+  allelic_positions_all.push_back(10);
+  allelic_positions_all.push_back(11);
+  allelic_positions_all.push_back(12);
+  allelic_positions_all.push_back(13);
+  allelic_positions_all.push_back(14);
+
 
   allelic_positions_all.erase(allelic_positions_all.begin() + which_allele_from);
 
   //  cout << "there position_alleles.size()" << position_alleles.size() << endl;
   int which_allele_to;
   int position_allele_to;
-  position_allele_to = give_me_random_uniform(0, 3);
+  position_allele_to = give_me_random_uniform(0, 14);
 
   which_allele_to = allelic_positions_all[position_allele_to];
   if(which_allele_to == 0)
   {
-    allelic_a = allelic_a + 1;
+    allelic_a1 = allelic_a1 + 1;
   }
   if(which_allele_to == 1)
   {
-    allelic_b = allelic_b + 1;
+    allelic_b1 = allelic_b1 + 1;
   }
   if(which_allele_to == 2)
   {
-    allelic_c = allelic_c + 1;
+    allelic_c1 = allelic_c1 + 1;
   }
   if(which_allele_to == 3)
   {
-    allelic_d = allelic_d + 1;
+    allelic_d1 = allelic_d1 + 1;
   }
   if(which_allele_to == 4)
   {
-    allelic_e = allelic_e + 1;
+    allelic_e1 = allelic_e1 + 1;
+  }
+  if(which_allele_to == 5)
+  {
+    allelic_f1 = allelic_f1 + 1;
+  }
+  if(which_allele_to == 6)
+  {
+    allelic_g1 = allelic_g1 + 1;
+  }
+  if(which_allele_to == 7)
+  {
+    allelic_h1 = allelic_h1 + 1;
+  }
+  if(which_allele_to == 8)
+  {
+    allelic_i1 = allelic_i1 + 1;
+  }
+  if(which_allele_to == 9)
+  {
+    allelic_j1 = allelic_j1 + 1;
+  }
+  if(which_allele_to == 10)
+  {
+    allelic_k1 = allelic_k1 + 1;
+  }
+  if(which_allele_to == 11)
+  {
+    allelic_l1 = allelic_l1 + 1;
+  }
+  if(which_allele_to == 12)
+  {
+    allelic_m1 = allelic_m1 + 1;
+  }
+  if(which_allele_to == 13)
+  {
+    allelic_n1 = allelic_n1 + 1;
+  }
+  if(which_allele_to == 14)
+  {
+    allelic_o1 = allelic_o1 + 1;
   }
   //
   //   cout << "allelic_a mutation " << allelic_a << endl;
@@ -508,20 +646,50 @@ void population_structure::happening_mutation()
   //cout << endl;
   // cout << "______________after mutation: " << endl;
   vector <int> position_alleles_neutral;
-  if(allelic_v >= 1){
+  if(allelic_a2 >= 1){
     position_alleles_neutral.push_back(0);
   }
-  if(allelic_w >= 1){
+  if(allelic_b2 >= 1){
     position_alleles_neutral.push_back(1);
   }
-  if(allelic_x >= 1){
+  if(allelic_c2 >= 1){
     position_alleles_neutral.push_back(2);
   }
-  if(allelic_y >= 1){
+  if(allelic_d2 >= 1){
     position_alleles_neutral.push_back(3);
   }
-  if(allelic_z >= 1){
+  if(allelic_e2 >= 1){
     position_alleles_neutral.push_back(4);
+  }
+  if(allelic_f2 >= 1){
+    position_alleles_neutral.push_back(5);
+  }
+  if(allelic_g2 >= 1){
+    position_alleles_neutral.push_back(6);
+  }
+  if(allelic_h2 >= 1){
+    position_alleles_neutral.push_back(7);
+  }
+  if(allelic_i2 >= 1){
+    position_alleles_neutral.push_back(8);
+  }
+  if(allelic_j2 >= 1){
+    position_alleles_neutral.push_back(9);
+  }
+  if(allelic_k2 >= 1){
+    position_alleles_neutral.push_back(10);
+  }
+  if(allelic_l2 >= 1){
+    position_alleles_neutral.push_back(11);
+  }
+  if(allelic_m2 >= 1){
+    position_alleles_neutral.push_back(12);
+  }
+  if(allelic_n2 >= 1){
+    position_alleles_neutral.push_back(13);
+  }
+  if(allelic_o2 >= 1){
+    position_alleles_neutral.push_back(14);
   }
 
   // cout << "here position_alleles.size()" << position_alleles_neutral.size() << endl;
@@ -533,24 +701,65 @@ void population_structure::happening_mutation()
 
   if(which_allele_from_neutral == 0)
   {
-    allelic_v = allelic_v - 1;
+    allelic_a2 = allelic_a2 - 1;
   }
   if(which_allele_from_neutral == 1)
   {
-    allelic_w = allelic_w - 1;
+    allelic_b2 = allelic_b2 - 1;
   }
   if(which_allele_from_neutral == 2)
   {
-    allelic_x = allelic_x - 1;
+    allelic_c2 = allelic_c2 - 1;
   }
   if(which_allele_from_neutral == 3)
   {
-    allelic_y = allelic_y - 1;
+    allelic_d2 = allelic_d2 - 1;
   }
   if(which_allele_from_neutral == 4)
   {
-    allelic_z = allelic_z - 1;
+    allelic_e2 = allelic_e2 - 1;
   }
+  if(which_allele_from_neutral == 5)
+  {
+    allelic_f2 = allelic_f2 - 1;
+  }
+  if(which_allele_from_neutral == 6)
+  {
+    allelic_g2 = allelic_g2 - 1;
+  }
+  if(which_allele_from_neutral == 7)
+  {
+    allelic_h2 = allelic_h2 - 1;
+  }
+  if(which_allele_from_neutral == 8)
+  {
+    allelic_i2 = allelic_i2 - 1;
+  }
+  if(which_allele_from_neutral == 9)
+  {
+    allelic_j2 = allelic_j2 - 1;
+  }
+  if(which_allele_from_neutral == 10)
+  {
+    allelic_k2 = allelic_k2 - 1;
+  }
+  if(which_allele_from_neutral == 11)
+  {
+    allelic_l2 = allelic_l2 - 1;
+  }
+  if(which_allele_from_neutral == 12)
+  {
+    allelic_m2 = allelic_m2 - 1;
+  }
+  if(which_allele_from_neutral == 13)
+  {
+    allelic_n2 = allelic_n2 - 1;
+  }
+  if(which_allele_from_neutral == 14)
+  {
+    allelic_o2 = allelic_o2 - 1;
+  }
+
 
   vector <int> allelic_positions_all_neutral;
   allelic_positions_all_neutral.push_back(0);
@@ -558,35 +767,86 @@ void population_structure::happening_mutation()
   allelic_positions_all_neutral.push_back(2);
   allelic_positions_all_neutral.push_back(3);
   allelic_positions_all_neutral.push_back(4);
+  allelic_positions_all_neutral.push_back(5);
+  allelic_positions_all_neutral.push_back(6);
+  allelic_positions_all_neutral.push_back(7);
+  allelic_positions_all_neutral.push_back(8);
+  allelic_positions_all_neutral.push_back(9);
+  allelic_positions_all_neutral.push_back(10);
+  allelic_positions_all_neutral.push_back(11);
+  allelic_positions_all_neutral.push_back(12);
+  allelic_positions_all_neutral.push_back(13);
+  allelic_positions_all_neutral.push_back(14);
 
   allelic_positions_all_neutral.erase(allelic_positions_all_neutral.begin() + which_allele_from_neutral);
 
   // cout << "there allelic_positions_all_neutral.size()" << allelic_positions_all_neutral.size() << endl;
   int which_allele_to_neutral;
   int position_allele_to_neutral;
-  position_allele_to_neutral = give_me_random_uniform(0, 3);
+  position_allele_to_neutral = give_me_random_uniform(0, 14);
 
   which_allele_to_neutral = allelic_positions_all_neutral[position_allele_to_neutral];
   if(which_allele_to_neutral == 0)
   {
-    allelic_v = allelic_v + 1;
+    allelic_a2 = allelic_a2 + 1;
   }
   if(which_allele_to_neutral == 1)
   {
-    allelic_w = allelic_w + 1;
+    allelic_b2 = allelic_b2 + 1;
   }
   if(which_allele_to_neutral == 2)
   {
-    allelic_x = allelic_x + 1;
+    allelic_c2 = allelic_c2 + 1;
   }
   if(which_allele_to_neutral == 3)
   {
-    allelic_y = allelic_y + 1;
+    allelic_d2 = allelic_d2 + 1;
   }
   if(which_allele_to_neutral == 4)
   {
-    allelic_z = allelic_z + 1;
+    allelic_e2 = allelic_e2 + 1;
   }
+  if(which_allele_to_neutral == 5)
+  {
+    allelic_f2 = allelic_f2 + 1;
+  }
+  if(which_allele_to_neutral == 6)
+  {
+    allelic_g2 = allelic_g2 + 1;
+  }
+  if(which_allele_to_neutral == 7)
+  {
+    allelic_h2 = allelic_h2 + 1;
+  }
+  if(which_allele_to_neutral == 8)
+  {
+    allelic_i2 = allelic_i2 + 1;
+  }
+  if(which_allele_to_neutral == 9)
+  {
+    allelic_j2 = allelic_j2 + 1;
+  }
+  if(which_allele_to_neutral == 10)
+  {
+    allelic_k2 = allelic_k2 + 1;
+  }
+  if(which_allele_to_neutral == 11)
+  {
+    allelic_l2 = allelic_l2 + 1;
+  }
+  if(which_allele_to_neutral == 12)
+  {
+    allelic_m2 = allelic_m2 + 1;
+  }
+  if(which_allele_to_neutral == 13)
+  {
+    allelic_n2 = allelic_n2 + 1;
+  }
+  if(which_allele_to_neutral == 14)
+  {
+    allelic_o2 = allelic_o2 + 1;
+  }
+
 
   // cout << "allelic_v mutation " << allelic_v << endl;
   // cout << "allelic_w mutation " << allelic_w << endl;
@@ -851,6 +1111,16 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
     weights_for_wallenius.push_back(1);
     weights_for_wallenius.push_back(1);
     weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
+    weights_for_wallenius.push_back(1);
 
     int random_id_selector;
     random_id_selector = id_neigh_cells[give_me_random_uniform(0, (id_neigh_cells.size() - 1))];
@@ -985,20 +1255,40 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
 
     vector <int> contribution_allelic_frequency_focal;
     vector <int> current_allelic_frequency_focal;
-    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_a);
-    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_b);
-    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_c);
-    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_d);
-    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_e);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_a1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_b1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_c1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_d1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_e1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_f1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_g1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_h1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_i1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_j1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_k1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_l1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_m1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_n1);
+    current_allelic_frequency_focal.push_back(populations_this_species[focal_cell].allelic_o1);
     contribution_allelic_frequency_focal = give_me_random_wallenius(weights_for_wallenius.size(),current_allelic_frequency_focal, weights_for_wallenius,number_alleles_to_giveaway_focal );
 
     vector <int> contribution_allelic_frequency_other;
     vector <int> current_allelic_frequency_other;
-    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_a);
-    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_b);
-    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_c);
-    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_d);
-    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_e);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_a1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_b1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_c1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_d1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_e1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_f1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_g1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_h1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_i1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_j1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_k1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_l1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_m1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_n1);
+    current_allelic_frequency_other.push_back(populations_this_species[random_id_selector].allelic_o1);
     contribution_allelic_frequency_other = give_me_random_wallenius(weights_for_wallenius.size(),current_allelic_frequency_other, weights_for_wallenius,number_alleles_to_giveaway_neighbour );
 
     vector <int> pooled_alleles;
@@ -1007,6 +1297,16 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
     pooled_alleles.push_back(contribution_allelic_frequency_focal[2] + contribution_allelic_frequency_other[2]);
     pooled_alleles.push_back(contribution_allelic_frequency_focal[3] + contribution_allelic_frequency_other[3]);
     pooled_alleles.push_back(contribution_allelic_frequency_focal[4] + contribution_allelic_frequency_other[4]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[5] + contribution_allelic_frequency_other[5]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[6] + contribution_allelic_frequency_other[6]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[7] + contribution_allelic_frequency_other[7]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[8] + contribution_allelic_frequency_other[8]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[9] + contribution_allelic_frequency_other[9]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[10] + contribution_allelic_frequency_other[10]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[11] + contribution_allelic_frequency_other[11]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[12] + contribution_allelic_frequency_other[12]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[13] + contribution_allelic_frequency_other[13]);
+    pooled_alleles.push_back(contribution_allelic_frequency_focal[14] + contribution_allelic_frequency_other[14]);
 
     vector <int>  sampled_for_focal;
 
@@ -1017,23 +1317,53 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
     sampled_for_other.push_back(pooled_alleles[2] - sampled_for_focal[2]);
     sampled_for_other.push_back(pooled_alleles[3] - sampled_for_focal[3]);
     sampled_for_other.push_back(pooled_alleles[4] - sampled_for_focal[4]);
+    sampled_for_other.push_back(pooled_alleles[5] - sampled_for_focal[5]);
+    sampled_for_other.push_back(pooled_alleles[6] - sampled_for_focal[6]);
+    sampled_for_other.push_back(pooled_alleles[7] - sampled_for_focal[7]);
+    sampled_for_other.push_back(pooled_alleles[8] - sampled_for_focal[8]);
+    sampled_for_other.push_back(pooled_alleles[9] - sampled_for_focal[9]);
+    sampled_for_other.push_back(pooled_alleles[10] - sampled_for_focal[10]);
+    sampled_for_other.push_back(pooled_alleles[11] - sampled_for_focal[11]);
+    sampled_for_other.push_back(pooled_alleles[12] - sampled_for_focal[12]);
+    sampled_for_other.push_back(pooled_alleles[13] - sampled_for_focal[13]);
+    sampled_for_other.push_back(pooled_alleles[14] - sampled_for_focal[14]);
 
     // cout << "pooled_alleles[0] " <<pooled_alleles[0] << endl;
     // cout << "sampled_for_focal[0] " <<sampled_for_focal[0] << endl;
     // cout << "sampled_for_other[0] " <<sampled_for_other[0] << endl;
 
 
-    populations_this_species[focal_cell].allelic_a = populations_this_species[focal_cell].allelic_a - (contribution_allelic_frequency_focal[0] - sampled_for_focal[0]);
-    populations_this_species[focal_cell].allelic_b = populations_this_species[focal_cell].allelic_b - (contribution_allelic_frequency_focal[1] - sampled_for_focal[1]);
-    populations_this_species[focal_cell].allelic_c = populations_this_species[focal_cell].allelic_c - (contribution_allelic_frequency_focal[2] - sampled_for_focal[2]);
-    populations_this_species[focal_cell].allelic_d = populations_this_species[focal_cell].allelic_d - (contribution_allelic_frequency_focal[3] - sampled_for_focal[3]);
-    populations_this_species[focal_cell].allelic_e = populations_this_species[focal_cell].allelic_e - (contribution_allelic_frequency_focal[4] - sampled_for_focal[4]);
+    populations_this_species[focal_cell].allelic_a1 = populations_this_species[focal_cell].allelic_a1 - (contribution_allelic_frequency_focal[0] - sampled_for_focal[0]);
+    populations_this_species[focal_cell].allelic_b1 = populations_this_species[focal_cell].allelic_b1 - (contribution_allelic_frequency_focal[1] - sampled_for_focal[1]);
+    populations_this_species[focal_cell].allelic_c1 = populations_this_species[focal_cell].allelic_c1 - (contribution_allelic_frequency_focal[2] - sampled_for_focal[2]);
+    populations_this_species[focal_cell].allelic_d1 = populations_this_species[focal_cell].allelic_d1 - (contribution_allelic_frequency_focal[3] - sampled_for_focal[3]);
+    populations_this_species[focal_cell].allelic_e1 = populations_this_species[focal_cell].allelic_e1 - (contribution_allelic_frequency_focal[4] - sampled_for_focal[4]);
+    populations_this_species[focal_cell].allelic_f1 = populations_this_species[focal_cell].allelic_f1 - (contribution_allelic_frequency_focal[5] - sampled_for_focal[5]);
+    populations_this_species[focal_cell].allelic_g1 = populations_this_species[focal_cell].allelic_g1 - (contribution_allelic_frequency_focal[6] - sampled_for_focal[6]);
+    populations_this_species[focal_cell].allelic_h1 = populations_this_species[focal_cell].allelic_h1 - (contribution_allelic_frequency_focal[7] - sampled_for_focal[7]);
+    populations_this_species[focal_cell].allelic_i1 = populations_this_species[focal_cell].allelic_i1 - (contribution_allelic_frequency_focal[8] - sampled_for_focal[8]);
+    populations_this_species[focal_cell].allelic_j1 = populations_this_species[focal_cell].allelic_j1 - (contribution_allelic_frequency_focal[9] - sampled_for_focal[9]);
+    populations_this_species[focal_cell].allelic_k1 = populations_this_species[focal_cell].allelic_k1 - (contribution_allelic_frequency_focal[10] - sampled_for_focal[10]);
+    populations_this_species[focal_cell].allelic_l1 = populations_this_species[focal_cell].allelic_l1 - (contribution_allelic_frequency_focal[11] - sampled_for_focal[11]);
+    populations_this_species[focal_cell].allelic_m1 = populations_this_species[focal_cell].allelic_m1 - (contribution_allelic_frequency_focal[12] - sampled_for_focal[12]);
+    populations_this_species[focal_cell].allelic_n1 = populations_this_species[focal_cell].allelic_n1 - (contribution_allelic_frequency_focal[13] - sampled_for_focal[13]);
+    populations_this_species[focal_cell].allelic_o1 = populations_this_species[focal_cell].allelic_o1 - (contribution_allelic_frequency_focal[14] - sampled_for_focal[14]);
 
-    populations_this_species[random_id_selector].allelic_a = populations_this_species[random_id_selector].allelic_a - (contribution_allelic_frequency_other[0] - sampled_for_other[0]);
-    populations_this_species[random_id_selector].allelic_b = populations_this_species[random_id_selector].allelic_b - (contribution_allelic_frequency_other[1] - sampled_for_other[1]);
-    populations_this_species[random_id_selector].allelic_c = populations_this_species[random_id_selector].allelic_c - (contribution_allelic_frequency_other[2] - sampled_for_other[2]);
-    populations_this_species[random_id_selector].allelic_d = populations_this_species[random_id_selector].allelic_d - (contribution_allelic_frequency_other[3] - sampled_for_other[3]);
-    populations_this_species[random_id_selector].allelic_e = populations_this_species[random_id_selector].allelic_e - (contribution_allelic_frequency_other[4] - sampled_for_other[4]);
+    populations_this_species[random_id_selector].allelic_a1 = populations_this_species[random_id_selector].allelic_a1 - (contribution_allelic_frequency_other[0] - sampled_for_other[0]);
+    populations_this_species[random_id_selector].allelic_b1 = populations_this_species[random_id_selector].allelic_b1 - (contribution_allelic_frequency_other[1] - sampled_for_other[1]);
+    populations_this_species[random_id_selector].allelic_c1 = populations_this_species[random_id_selector].allelic_c1 - (contribution_allelic_frequency_other[2] - sampled_for_other[2]);
+    populations_this_species[random_id_selector].allelic_d1 = populations_this_species[random_id_selector].allelic_d1 - (contribution_allelic_frequency_other[3] - sampled_for_other[3]);
+    populations_this_species[random_id_selector].allelic_e1 = populations_this_species[random_id_selector].allelic_e1 - (contribution_allelic_frequency_other[4] - sampled_for_other[4]);
+    populations_this_species[random_id_selector].allelic_f1 = populations_this_species[random_id_selector].allelic_f1 - (contribution_allelic_frequency_other[5] - sampled_for_other[5]);
+    populations_this_species[random_id_selector].allelic_g1 = populations_this_species[random_id_selector].allelic_g1 - (contribution_allelic_frequency_other[6] - sampled_for_other[6]);
+    populations_this_species[random_id_selector].allelic_h1 = populations_this_species[random_id_selector].allelic_h1 - (contribution_allelic_frequency_other[7] - sampled_for_other[7]);
+    populations_this_species[random_id_selector].allelic_i1 = populations_this_species[random_id_selector].allelic_i1 - (contribution_allelic_frequency_other[8] - sampled_for_other[8]);
+    populations_this_species[random_id_selector].allelic_j1 = populations_this_species[random_id_selector].allelic_j1 - (contribution_allelic_frequency_other[9] - sampled_for_other[9]);
+    populations_this_species[random_id_selector].allelic_k1 = populations_this_species[random_id_selector].allelic_k1 - (contribution_allelic_frequency_other[10] - sampled_for_other[10]);
+    populations_this_species[random_id_selector].allelic_l1 = populations_this_species[random_id_selector].allelic_l1 - (contribution_allelic_frequency_other[11] - sampled_for_other[11]);
+    populations_this_species[random_id_selector].allelic_m1 = populations_this_species[random_id_selector].allelic_m1 - (contribution_allelic_frequency_other[12] - sampled_for_other[12]);
+    populations_this_species[random_id_selector].allelic_n1 = populations_this_species[random_id_selector].allelic_n1 - (contribution_allelic_frequency_other[13] - sampled_for_other[13]);
+    populations_this_species[random_id_selector].allelic_o1 = populations_this_species[random_id_selector].allelic_o1 - (contribution_allelic_frequency_other[14] - sampled_for_other[14]);
 
     // cout << "populations_this_species[focal_cell].pop_size: " << populations_this_species[focal_cell].pop_size  << endl;
     // cout << "populations_this_species[random_id_selector].pop_size: " << populations_this_species[random_id_selector].pop_size  << endl;
@@ -1054,20 +1384,42 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
 
     vector <int> contribution_allelic_frequency_focal_neutral;
     vector <int> current_allelic_frequency_focal_neutral;
-    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_v);
-    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_w);
-    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_x);
-    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_y);
-    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_z);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_a2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_b2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_c2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_d2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_e2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_f2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_g2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_h2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_i2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_j2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_k2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_l2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_m2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_n2);
+    current_allelic_frequency_focal_neutral.push_back(populations_this_species[focal_cell].allelic_o2);
+
     contribution_allelic_frequency_focal_neutral = give_me_random_wallenius(weights_for_wallenius.size(),current_allelic_frequency_focal_neutral, weights_for_wallenius,number_alleles_to_giveaway_focal );
 
     vector <int> contribution_allelic_frequency_other_neutral;
     vector <int> current_allelic_frequency_other_neutral;
-    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_v);
-    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_w);
-    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_x);
-    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_y);
-    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_z);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_a2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_b2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_c2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_d2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_e2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_f2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_g2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_h2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_i2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_j2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_k2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_l2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_m2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_n2);
+    current_allelic_frequency_other_neutral.push_back(populations_this_species[random_id_selector].allelic_o2);
+
     contribution_allelic_frequency_other_neutral = give_me_random_wallenius(weights_for_wallenius.size(),current_allelic_frequency_other_neutral, weights_for_wallenius,number_alleles_to_giveaway_neighbour );
 
     vector <int> pooled_alleles_neutral;
@@ -1076,6 +1428,16 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
     pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[2] + contribution_allelic_frequency_other_neutral[2]);
     pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[3] + contribution_allelic_frequency_other_neutral[3]);
     pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[4] + contribution_allelic_frequency_other_neutral[4]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[5] + contribution_allelic_frequency_other_neutral[5]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[6] + contribution_allelic_frequency_other_neutral[6]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[7] + contribution_allelic_frequency_other_neutral[7]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[8] + contribution_allelic_frequency_other_neutral[8]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[9] + contribution_allelic_frequency_other_neutral[9]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[10] + contribution_allelic_frequency_other_neutral[10]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[11] + contribution_allelic_frequency_other_neutral[11]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[12] + contribution_allelic_frequency_other_neutral[12]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[13] + contribution_allelic_frequency_other_neutral[13]);
+    pooled_alleles_neutral.push_back(contribution_allelic_frequency_focal_neutral[14] + contribution_allelic_frequency_other_neutral[14]);
 
     vector <int>  sampled_for_focal_neutral;
 
@@ -1086,23 +1448,54 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
     sampled_for_other_neutral.push_back(pooled_alleles_neutral[2] - sampled_for_focal_neutral[2]);
     sampled_for_other_neutral.push_back(pooled_alleles_neutral[3] - sampled_for_focal_neutral[3]);
     sampled_for_other_neutral.push_back(pooled_alleles_neutral[4] - sampled_for_focal_neutral[4]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[5] - sampled_for_focal_neutral[5]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[6] - sampled_for_focal_neutral[6]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[7] - sampled_for_focal_neutral[7]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[8] - sampled_for_focal_neutral[8]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[9] - sampled_for_focal_neutral[9]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[10] - sampled_for_focal_neutral[10]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[11] - sampled_for_focal_neutral[11]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[12] - sampled_for_focal_neutral[12]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[13] - sampled_for_focal_neutral[13]);
+    sampled_for_other_neutral.push_back(pooled_alleles_neutral[14] - sampled_for_focal_neutral[14]);
 
     // cout << "pooled_alleles[0] " <<pooled_alleles_neutral[0] << endl;
     // cout << "sampled_for_focal[0] " <<sampled_for_focal_neutral[0] << endl;
     // cout << "sampled_for_other_neutral[0] " <<sampled_for_focal_neutral[0] << endl;
 
 
-    populations_this_species[focal_cell].allelic_v = populations_this_species[focal_cell].allelic_v - (contribution_allelic_frequency_focal_neutral[0] - sampled_for_focal_neutral[0]);
-    populations_this_species[focal_cell].allelic_w = populations_this_species[focal_cell].allelic_w - (contribution_allelic_frequency_focal_neutral[1] - sampled_for_focal_neutral[1]);
-    populations_this_species[focal_cell].allelic_x = populations_this_species[focal_cell].allelic_x - (contribution_allelic_frequency_focal_neutral[2] - sampled_for_focal_neutral[2]);
-    populations_this_species[focal_cell].allelic_y = populations_this_species[focal_cell].allelic_y - (contribution_allelic_frequency_focal_neutral[3] - sampled_for_focal_neutral[3]);
-    populations_this_species[focal_cell].allelic_z = populations_this_species[focal_cell].allelic_z - (contribution_allelic_frequency_focal_neutral[4] - sampled_for_focal_neutral[4]);
+    populations_this_species[focal_cell].allelic_a2 = populations_this_species[focal_cell].allelic_a2 - (contribution_allelic_frequency_focal_neutral[0] - sampled_for_focal_neutral[0]);
+    populations_this_species[focal_cell].allelic_b2 = populations_this_species[focal_cell].allelic_b2 - (contribution_allelic_frequency_focal_neutral[1] - sampled_for_focal_neutral[1]);
+    populations_this_species[focal_cell].allelic_c2 = populations_this_species[focal_cell].allelic_c2 - (contribution_allelic_frequency_focal_neutral[2] - sampled_for_focal_neutral[2]);
+    populations_this_species[focal_cell].allelic_d2 = populations_this_species[focal_cell].allelic_d2 - (contribution_allelic_frequency_focal_neutral[3] - sampled_for_focal_neutral[3]);
+    populations_this_species[focal_cell].allelic_e2 = populations_this_species[focal_cell].allelic_e2 - (contribution_allelic_frequency_focal_neutral[4] - sampled_for_focal_neutral[4]);
+    populations_this_species[focal_cell].allelic_f2 = populations_this_species[focal_cell].allelic_f2 - (contribution_allelic_frequency_focal_neutral[5] - sampled_for_focal_neutral[5]);
+    populations_this_species[focal_cell].allelic_g2 = populations_this_species[focal_cell].allelic_g2 - (contribution_allelic_frequency_focal_neutral[6] - sampled_for_focal_neutral[6]);
+    populations_this_species[focal_cell].allelic_h2 = populations_this_species[focal_cell].allelic_h2 - (contribution_allelic_frequency_focal_neutral[7] - sampled_for_focal_neutral[7]);
+    populations_this_species[focal_cell].allelic_i2 = populations_this_species[focal_cell].allelic_i2 - (contribution_allelic_frequency_focal_neutral[8] - sampled_for_focal_neutral[8]);
+    populations_this_species[focal_cell].allelic_j2 = populations_this_species[focal_cell].allelic_j2 - (contribution_allelic_frequency_focal_neutral[9] - sampled_for_focal_neutral[9]);
+    populations_this_species[focal_cell].allelic_k2 = populations_this_species[focal_cell].allelic_k2 - (contribution_allelic_frequency_focal_neutral[10] - sampled_for_focal_neutral[10]);
+    populations_this_species[focal_cell].allelic_l2 = populations_this_species[focal_cell].allelic_l2 - (contribution_allelic_frequency_focal_neutral[11] - sampled_for_focal_neutral[11]);
+    populations_this_species[focal_cell].allelic_m2 = populations_this_species[focal_cell].allelic_m2 - (contribution_allelic_frequency_focal_neutral[12] - sampled_for_focal_neutral[12]);
+    populations_this_species[focal_cell].allelic_n2 = populations_this_species[focal_cell].allelic_n2 - (contribution_allelic_frequency_focal_neutral[13] - sampled_for_focal_neutral[13]);
+    populations_this_species[focal_cell].allelic_o2 = populations_this_species[focal_cell].allelic_o2 - (contribution_allelic_frequency_focal_neutral[14] - sampled_for_focal_neutral[14]);
 
-    populations_this_species[random_id_selector].allelic_v = populations_this_species[random_id_selector].allelic_v - (contribution_allelic_frequency_other_neutral[0] - sampled_for_other_neutral[0]);
-    populations_this_species[random_id_selector].allelic_w = populations_this_species[random_id_selector].allelic_w - (contribution_allelic_frequency_other_neutral[1] - sampled_for_other_neutral[1]);
-    populations_this_species[random_id_selector].allelic_x = populations_this_species[random_id_selector].allelic_x - (contribution_allelic_frequency_other_neutral[2] - sampled_for_other_neutral[2]);
-    populations_this_species[random_id_selector].allelic_y = populations_this_species[random_id_selector].allelic_y - (contribution_allelic_frequency_other_neutral[3] - sampled_for_other_neutral[3]);
-    populations_this_species[random_id_selector].allelic_z = populations_this_species[random_id_selector].allelic_z - (contribution_allelic_frequency_other_neutral[4] - sampled_for_other_neutral[4]);
+    populations_this_species[random_id_selector].allelic_a2 = populations_this_species[random_id_selector].allelic_a2 - (contribution_allelic_frequency_other_neutral[0] - sampled_for_other_neutral[0]);
+    populations_this_species[random_id_selector].allelic_b2 = populations_this_species[random_id_selector].allelic_b2 - (contribution_allelic_frequency_other_neutral[1] - sampled_for_other_neutral[1]);
+    populations_this_species[random_id_selector].allelic_c2 = populations_this_species[random_id_selector].allelic_c2 - (contribution_allelic_frequency_other_neutral[2] - sampled_for_other_neutral[2]);
+    populations_this_species[random_id_selector].allelic_d2 = populations_this_species[random_id_selector].allelic_d2 - (contribution_allelic_frequency_other_neutral[3] - sampled_for_other_neutral[3]);
+    populations_this_species[random_id_selector].allelic_e2 = populations_this_species[random_id_selector].allelic_e2 - (contribution_allelic_frequency_other_neutral[4] - sampled_for_other_neutral[4]);
+    populations_this_species[random_id_selector].allelic_f2 = populations_this_species[random_id_selector].allelic_f2 - (contribution_allelic_frequency_other_neutral[5] - sampled_for_other_neutral[5]);
+    populations_this_species[random_id_selector].allelic_g2 = populations_this_species[random_id_selector].allelic_g2 - (contribution_allelic_frequency_other_neutral[6] - sampled_for_other_neutral[6]);
+    populations_this_species[random_id_selector].allelic_h2 = populations_this_species[random_id_selector].allelic_h2 - (contribution_allelic_frequency_other_neutral[7] - sampled_for_other_neutral[7]);
+    populations_this_species[random_id_selector].allelic_i2 = populations_this_species[random_id_selector].allelic_i2 - (contribution_allelic_frequency_other_neutral[8] - sampled_for_other_neutral[8]);
+    populations_this_species[random_id_selector].allelic_j2 = populations_this_species[random_id_selector].allelic_j2 - (contribution_allelic_frequency_other_neutral[9] - sampled_for_other_neutral[9]);
+    populations_this_species[random_id_selector].allelic_k2 = populations_this_species[random_id_selector].allelic_k2 - (contribution_allelic_frequency_other_neutral[10] - sampled_for_other_neutral[10]);
+    populations_this_species[random_id_selector].allelic_l2 = populations_this_species[random_id_selector].allelic_l2 - (contribution_allelic_frequency_other_neutral[11] - sampled_for_other_neutral[11]);
+    populations_this_species[random_id_selector].allelic_m2 = populations_this_species[random_id_selector].allelic_m2 - (contribution_allelic_frequency_other_neutral[12] - sampled_for_other_neutral[12]);
+    populations_this_species[random_id_selector].allelic_n2 = populations_this_species[random_id_selector].allelic_n2 - (contribution_allelic_frequency_other_neutral[13] - sampled_for_other_neutral[13]);
+    populations_this_species[random_id_selector].allelic_o2 = populations_this_species[random_id_selector].allelic_o2 - (contribution_allelic_frequency_other_neutral[14] - sampled_for_other_neutral[14]);
+
 
 
 
@@ -1168,17 +1561,41 @@ void show_all_species_data(vector <species> all_species)
       cout<< "                  pop size this population: " << do_this_population.pop_size<< endl;
       cout<< "                  fitness like: " << do_this_species.computed_rate_based_on_temperature[ij]<< endl;
       cout<< "            x y coordinate: " << do_this_species.presence[ij].x<<" , " << do_this_species.presence[ij].y << endl;
-      cout<< "      allele a: " << do_this_population.allelic_a
-          << " allele b: " << do_this_population.allelic_b
-          << " allele c: " << do_this_population.allelic_c
-          << " allele d: " << do_this_population.allelic_d
-          << " allele e: " << do_this_population.allelic_e<< endl;
+      cout<< "      allele a: " << do_this_population.allelic_a1
+          << " allele b: " << do_this_population.allelic_b1
+          << " allele c: " << do_this_population.allelic_c1
+          << " allele d: " << do_this_population.allelic_d1
+          << " allele e: " << do_this_population.allelic_e1
+          << " allele f: " << do_this_population.allelic_f1
+          << " allele g: " << do_this_population.allelic_g1
+          << " allele h: " << do_this_population.allelic_h1
+          << " allele i: " << do_this_population.allelic_i1
+          << " allele j: " << do_this_population.allelic_j1
+          << " allele k: " << do_this_population.allelic_k1
+          << " allele l: " << do_this_population.allelic_l1
+          << " allele m: " << do_this_population.allelic_m1
+          << " allele n: " << do_this_population.allelic_n1
+          << " allele o: " << do_this_population.allelic_o1
+          << endl;
 
-      cout<< "      allele v: " << do_this_population.allelic_v
-          << " allele w: " << do_this_population.allelic_w
-          << " allele x: " << do_this_population.allelic_x
-          << " allele y: " << do_this_population.allelic_y
-          << " allele z: " << do_this_population.allelic_z<< endl;
+      cout<< "      allele a2: " << do_this_population.allelic_a2
+          << " allele b2: " << do_this_population.allelic_b2
+          << " allele c2: " << do_this_population.allelic_c2
+          << " allele d2: " << do_this_population.allelic_d2
+          << " allele e2: " << do_this_population.allelic_e2
+          << " allele f2: " << do_this_population.allelic_f2
+          << " allele g2: " << do_this_population.allelic_g2
+          << " allele h2: " << do_this_population.allelic_h2
+          << " allele i2: " << do_this_population.allelic_i2
+          << " allele j2: " << do_this_population.allelic_j2
+          << " allele k2: " << do_this_population.allelic_k2
+          << " allele l2: " << do_this_population.allelic_l2
+          << " allele m2: " << do_this_population.allelic_m2
+          << " allele n2: " << do_this_population.allelic_n2
+          << " allele o2: " << do_this_population.allelic_o2
+          << endl;
+
+
     }
 
   }
@@ -1222,7 +1639,7 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
     }
 
   }
-  change_in_population = abs(change_in_population); // to DELETE?
+  //change_in_population = abs(change_in_population); // to DELETE?
 
 
   // if the population grows, it cannot exceed K
@@ -1253,18 +1670,45 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
     {
       //cout << "population shrinks" << endl;
       vector<int> current_allelic_frequency;
-      current_allelic_frequency.push_back(allelic_a);
-      current_allelic_frequency.push_back(allelic_b);
-      current_allelic_frequency.push_back(allelic_c);
-      current_allelic_frequency.push_back(allelic_d);
-      current_allelic_frequency.push_back(allelic_e);
+      current_allelic_frequency.push_back(allelic_a1);
+      current_allelic_frequency.push_back(allelic_b1);
+      current_allelic_frequency.push_back(allelic_c1);
+      current_allelic_frequency.push_back(allelic_d1);
+      current_allelic_frequency.push_back(allelic_e1);
+      current_allelic_frequency.push_back(allelic_f1);
+      current_allelic_frequency.push_back(allelic_g1);
+      current_allelic_frequency.push_back(allelic_h1);
+      current_allelic_frequency.push_back(allelic_i1);
+      current_allelic_frequency.push_back(allelic_j1);
+      current_allelic_frequency.push_back(allelic_k1);
+      current_allelic_frequency.push_back(allelic_l1);
+      current_allelic_frequency.push_back(allelic_m1);
+      current_allelic_frequency.push_back(allelic_n1);
+      current_allelic_frequency.push_back(allelic_o1);
+
+      // for(int ii = 0; ii < current_allelic_frequency.size(); ++ii)
+      // {
+      //   cout << "in here: " << current_allelic_frequency[ii] << endl;
+      // }
+
 
       vector<int> current_allelic_frequency_neutral;
-      current_allelic_frequency_neutral.push_back(allelic_v);
-      current_allelic_frequency_neutral.push_back(allelic_w);
-      current_allelic_frequency_neutral.push_back(allelic_x);
-      current_allelic_frequency_neutral.push_back(allelic_y);
-      current_allelic_frequency_neutral.push_back(allelic_z);
+      current_allelic_frequency_neutral.push_back(allelic_a2);
+      current_allelic_frequency_neutral.push_back(allelic_b2);
+      current_allelic_frequency_neutral.push_back(allelic_c2);
+      current_allelic_frequency_neutral.push_back(allelic_d2);
+      current_allelic_frequency_neutral.push_back(allelic_e2);
+      current_allelic_frequency_neutral.push_back(allelic_f2);
+      current_allelic_frequency_neutral.push_back(allelic_g2);
+      current_allelic_frequency_neutral.push_back(allelic_h2);
+      current_allelic_frequency_neutral.push_back(allelic_i2);
+      current_allelic_frequency_neutral.push_back(allelic_j2);
+      current_allelic_frequency_neutral.push_back(allelic_k2);
+      current_allelic_frequency_neutral.push_back(allelic_l2);
+      current_allelic_frequency_neutral.push_back(allelic_m2);
+      current_allelic_frequency_neutral.push_back(allelic_n2);
+      current_allelic_frequency_neutral.push_back(allelic_o2);
+
 
       int number_items_sample;                         //
       number_items_sample = abs(change_in_population); //
@@ -1290,17 +1734,39 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
       // {
       //   cout << "show this sampling from wallenius " << change_allelic_frequency[ii] << endl;
       // }
-      allelic_a = allelic_a - change_allelic_frequency[0];
-      allelic_b = allelic_b - change_allelic_frequency[1];
-      allelic_c = allelic_c - change_allelic_frequency[2];
-      allelic_d = allelic_d - change_allelic_frequency[3];
-      allelic_e = allelic_e - change_allelic_frequency[4];
+      allelic_a1 = allelic_a1 - change_allelic_frequency[0];
+      allelic_b1 = allelic_b1 - change_allelic_frequency[1];
+      allelic_c1 = allelic_c1 - change_allelic_frequency[2];
+      allelic_d1 = allelic_d1 - change_allelic_frequency[3];
+      allelic_e1 = allelic_e1 - change_allelic_frequency[4];
+      allelic_f1 = allelic_f1 - change_allelic_frequency[5];
+      allelic_g1 = allelic_g1 - change_allelic_frequency[6];
+      allelic_h1 = allelic_h1 - change_allelic_frequency[7];
+      allelic_i1 = allelic_i1 - change_allelic_frequency[8];
+      allelic_j1 = allelic_j1 - change_allelic_frequency[9];
+      allelic_k1 = allelic_k1 - change_allelic_frequency[10];
+      allelic_l1 = allelic_l1 - change_allelic_frequency[11];
+      allelic_m1 = allelic_m1 - change_allelic_frequency[12];
+      allelic_n1 = allelic_n1 - change_allelic_frequency[13];
+      allelic_o1 = allelic_o1 - change_allelic_frequency[14];
 
-      allelic_v = allelic_v - change_allelic_frequency_neutral[0];
-      allelic_w = allelic_w - change_allelic_frequency_neutral[1];
-      allelic_x = allelic_x - change_allelic_frequency_neutral[2];
-      allelic_y = allelic_y - change_allelic_frequency_neutral[3];
-      allelic_z = allelic_z - change_allelic_frequency_neutral[4];
+
+      allelic_a2 = allelic_a2 - change_allelic_frequency_neutral[0];
+      allelic_b2 = allelic_b2 - change_allelic_frequency_neutral[1];
+      allelic_c2 = allelic_c2 - change_allelic_frequency_neutral[2];
+      allelic_d2 = allelic_d2 - change_allelic_frequency_neutral[3];
+      allelic_e2 = allelic_e2 - change_allelic_frequency_neutral[4];
+      allelic_f2 = allelic_f2 - change_allelic_frequency_neutral[5];
+      allelic_g2 = allelic_g2 - change_allelic_frequency_neutral[6];
+      allelic_h2 = allelic_h2 - change_allelic_frequency_neutral[7];
+      allelic_i2 = allelic_i2 - change_allelic_frequency_neutral[8];
+      allelic_j2 = allelic_j2 - change_allelic_frequency_neutral[9];
+      allelic_k2 = allelic_k2 - change_allelic_frequency_neutral[10];
+      allelic_l2 = allelic_l2 - change_allelic_frequency_neutral[11];
+      allelic_m2 = allelic_m2 - change_allelic_frequency_neutral[12];
+      allelic_n2 = allelic_n2 - change_allelic_frequency_neutral[13];
+      allelic_o2 = allelic_o2 - change_allelic_frequency_neutral[14];
+
     }
     else // population grows
     {
@@ -1323,9 +1789,10 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
 
         // cout << "this weights: " << round((1.0/weights_for_wallenius[ii]) * 100) << endl;
       }
-
+      //cout << "++++ see f1:" << allelic_f1 << endl;
+      //cout << "++++ see g1:" << allelic_g1 << endl;
       vector<int> current_allelic_frequency;
-      if(allelic_a > 0){
+      if(allelic_a1 > 0){
         current_allelic_frequency.push_back(1900); // any large number will do
       }
       else
@@ -1333,7 +1800,7 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
         current_allelic_frequency.push_back(0);
       }
 
-      if(allelic_b > 0){
+      if(allelic_b1 > 0){
         current_allelic_frequency.push_back(1800); // any large number will do
       }
       else
@@ -1341,21 +1808,91 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
         current_allelic_frequency.push_back(0);
       }
 
-      if(allelic_c > 0){
+      if(allelic_c1 > 0){
         current_allelic_frequency.push_back(1800); // any large number will do
       }
       else
       {
         current_allelic_frequency.push_back(0);
       }
-      if(allelic_d > 0){
+      if(allelic_d1 > 0){
         current_allelic_frequency.push_back(1800); // any large number will do
       }
       else
       {
         current_allelic_frequency.push_back(0);
       }
-      if(allelic_e > 0){
+      if(allelic_e1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_f1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_g1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_h1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_i1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_j1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_k1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_l1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_m1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_n1 > 0){
+        current_allelic_frequency.push_back(1800); // any large number will do
+      }
+      else
+      {
+        current_allelic_frequency.push_back(0);
+      }
+      if(allelic_o1 > 0){
         current_allelic_frequency.push_back(1800); // any large number will do
       }
       else
@@ -1364,41 +1901,113 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
       }
 
       vector<int> current_allelic_frequency_neutral;
-      if(allelic_v > 0){
+      if(allelic_a2 > 0){
         current_allelic_frequency_neutral.push_back(1800);
       }
       else
       {
         current_allelic_frequency_neutral.push_back(0);
       }
-      if(allelic_w > 0){
+      if(allelic_b2 > 0){
         current_allelic_frequency_neutral.push_back(1800);
       }
       else
       {
         current_allelic_frequency_neutral.push_back(0);
       }
-      if(allelic_x > 0){
+      if(allelic_c2 > 0){
         current_allelic_frequency_neutral.push_back(1800);
       }
       else
       {
         current_allelic_frequency_neutral.push_back(0);
       }
-      if(allelic_y > 0){
+      if(allelic_d2 > 0){
         current_allelic_frequency_neutral.push_back(1800);
       }
       else
       {
         current_allelic_frequency_neutral.push_back(0);
       }
-      if(allelic_z > 0){
+      if(allelic_e2 > 0){
         current_allelic_frequency_neutral.push_back(1800);
       }
       else
       {
         current_allelic_frequency_neutral.push_back(0);
       }
+      if(allelic_f2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+      if(allelic_g2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+      if(allelic_h2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+      if(allelic_i2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+      if(allelic_j2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+      if(allelic_k2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+      if(allelic_l2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+      if(allelic_m2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+      if(allelic_n2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+      if(allelic_o2 > 0){
+        current_allelic_frequency_neutral.push_back(1800);
+      }
+      else
+      {
+        current_allelic_frequency_neutral.push_back(0);
+      }
+
+
       int number_items_sample;                         //
       number_items_sample = abs(change_in_population);
       int number_alelles;
@@ -1413,24 +2022,55 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
       //    current_allelic_frequency_neutral[3] <<" "<< current_allelic_frequency_neutral[4]<< " "<< endl;
       change_allelic_frequency_neutral = give_me_random_wallenius(number_alelles,current_allelic_frequency_neutral, weights_for_wallenius_neutral, number_items_sample);
 
-      allelic_a = allelic_a + change_allelic_frequency[0];
-      allelic_b = allelic_b + change_allelic_frequency[1];
-      allelic_c = allelic_c + change_allelic_frequency[2];
-      allelic_d = allelic_d + change_allelic_frequency[3];
-      allelic_e = allelic_e + change_allelic_frequency[4];
+      allelic_a1 = allelic_a1 + change_allelic_frequency[0];
+      allelic_b1 = allelic_b1 + change_allelic_frequency[1];
+      allelic_c1 = allelic_c1 + change_allelic_frequency[2];
+      allelic_d1 = allelic_d1 + change_allelic_frequency[3];
+      allelic_e1 = allelic_e1 + change_allelic_frequency[4];
+      allelic_f1 = allelic_f1 + change_allelic_frequency[5];
+      allelic_g1 = allelic_g1 + change_allelic_frequency[6];
+      allelic_h1 = allelic_h1 + change_allelic_frequency[7];
+      allelic_i1 = allelic_i1 + change_allelic_frequency[8];
+      allelic_j1 = allelic_j1 + change_allelic_frequency[9];
+      allelic_k1 = allelic_k1 + change_allelic_frequency[10];
+      allelic_l1 = allelic_l1 + change_allelic_frequency[11];
+      allelic_m1 = allelic_m1 + change_allelic_frequency[12];
+      allelic_n1 = allelic_n1 + change_allelic_frequency[13];
+      allelic_o1 = allelic_o1 + change_allelic_frequency[14];
 
-      allelic_v = allelic_v + change_allelic_frequency_neutral[0];
-      allelic_w = allelic_w + change_allelic_frequency_neutral[1];
-      allelic_x = allelic_x + change_allelic_frequency_neutral[2];
-      allelic_y = allelic_y + change_allelic_frequency_neutral[3];
-      allelic_z = allelic_z + change_allelic_frequency_neutral[4];
+      allelic_a2 = allelic_a2 + change_allelic_frequency_neutral[0];
+      allelic_b2 = allelic_b2 + change_allelic_frequency_neutral[1];
+      allelic_c2 = allelic_c2 + change_allelic_frequency_neutral[2];
+      allelic_d2 = allelic_d2 + change_allelic_frequency_neutral[3];
+      allelic_e2 = allelic_e2 + change_allelic_frequency_neutral[4];
+      allelic_f2 = allelic_f2 + change_allelic_frequency_neutral[5];
+      allelic_g2 = allelic_g2 + change_allelic_frequency_neutral[6];
+      allelic_h2 = allelic_h2 + change_allelic_frequency_neutral[7];
+      allelic_i2 = allelic_i2 + change_allelic_frequency_neutral[8];
+      allelic_j2 = allelic_j2 + change_allelic_frequency_neutral[9];
+      allelic_k2 = allelic_k2 + change_allelic_frequency_neutral[10];
+      allelic_l2 = allelic_l2 + change_allelic_frequency_neutral[11];
+      allelic_m2 = allelic_m2 + change_allelic_frequency_neutral[12];
+      allelic_n2 = allelic_n2 + change_allelic_frequency_neutral[13];
+      allelic_o2 = allelic_o2 + change_allelic_frequency_neutral[14];
+
     }
 
-    // cout << "allelic_a after:  "<< allelic_a << endl;
-    // cout << "allelic_b after:  "<< allelic_b << endl;
-    // cout << "allelic_c after:  "<< allelic_c << endl;
-    // cout << "allelic_d after:  "<< allelic_d << endl;
-    // cout << "allelic_e after:  "<< allelic_e << endl;
+    // cout << "allelic_a1 after:  "<< allelic_a1 << endl;
+    // cout << "allelic_b1 after:  "<< allelic_b1 << endl;
+    // cout << "allelic_c1 after:  "<< allelic_c1 << endl;
+    // cout << "allelic_d1 after:  "<< allelic_d1 << endl;
+    // cout << "allelic_e1 after:  "<< allelic_e1 << endl;
+    // cout << "allelic_f1 after:  "<< allelic_f1 << endl;
+    // cout << "allelic_g1 after:  "<< allelic_g1 << endl;
+    // cout << "allelic_h1 after:  "<< allelic_h1 << endl;
+    // cout << "allelic_i1 after:  "<< allelic_i1 << endl;
+    // cout << "allelic_j1 after:  "<< allelic_j1 << endl;
+    // cout << "allelic_k1 after:  "<< allelic_k1 << endl;
+    // cout << "allelic_l1 after:  "<< allelic_l1 << endl;
+    // cout << "allelic_m1 after:  "<< allelic_m1 << endl;
+    // cout << "allelic_n1 after:  "<< allelic_n1 << endl;
+    // cout << "allelic_o1 after:  "<< allelic_o1 << endl;
     //
     // cout << "new_pop_size :  " << new_pop_size << endl;
 
@@ -1448,6 +2088,21 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
 
   }
   //new_pop_size = pop_size + abs(new_pop_size - pop_size); // to DELETE
+  // cout << "allelic_a1 after:  "<< allelic_a1 << endl;
+  // cout << "allelic_b1 after:  "<< allelic_b1 << endl;
+  // cout << "allelic_c1 after:  "<< allelic_c1 << endl;
+  // cout << "allelic_d1 after:  "<< allelic_d1 << endl;
+  // cout << "allelic_e1 after:  "<< allelic_e1 << endl;
+  // cout << "allelic_f1 after:  "<< allelic_f1 << endl;
+  // cout << "allelic_g1 after:  "<< allelic_g1 << endl;
+  // cout << "allelic_h1 after:  "<< allelic_h1 << endl;
+  // cout << "allelic_i1 after:  "<< allelic_i1 << endl;
+  // cout << "allelic_j1 after:  "<< allelic_j1 << endl;
+  // cout << "allelic_k1 after:  "<< allelic_k1 << endl;
+  // cout << "allelic_l1 after:  "<< allelic_l1 << endl;
+  // cout << "allelic_m1 after:  "<< allelic_m1 << endl;
+  // cout << "allelic_n1 after:  "<< allelic_n1 << endl;
+  // cout << "allelic_o1 after:  "<< allelic_o1 << endl;
 }
 
 void species::classify_elevation(bool add, landscape **map1)
@@ -1542,11 +2197,21 @@ double link_fitnesslike_mu_gamma(yx this_location, population_structure this_pop
     fitnesslike_per_allele.push_back(abs(alleles_adaptation_coef[i] - cell_temperature));
   }
   unfitnesslike_thispopulation = 0;
-  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_a * fitnesslike_per_allele[0]);
-  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_b * fitnesslike_per_allele[1]);
-  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_c * fitnesslike_per_allele[2]);
-  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_d * fitnesslike_per_allele[3]);
-  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_e * fitnesslike_per_allele[4]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_a1 * fitnesslike_per_allele[0]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_b1 * fitnesslike_per_allele[1]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_c1 * fitnesslike_per_allele[2]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_d1 * fitnesslike_per_allele[3]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_e1 * fitnesslike_per_allele[4]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_f1 * fitnesslike_per_allele[5]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_g1 * fitnesslike_per_allele[6]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_h1 * fitnesslike_per_allele[7]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_i1 * fitnesslike_per_allele[8]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_j1 * fitnesslike_per_allele[9]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_k1 * fitnesslike_per_allele[10]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_l1 * fitnesslike_per_allele[11]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_m1 * fitnesslike_per_allele[12]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_n1 * fitnesslike_per_allele[13]);
+  unfitnesslike_thispopulation = unfitnesslike_thispopulation + (this_pop.allelic_o1 * fitnesslike_per_allele[14]);
 
 
   int max_unfit;
@@ -1683,7 +2348,7 @@ vector<yx> species::find_neighbor(int y_max, int x_max,int cell)
   return adjacent_cells;
 }
 
-probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> all_species, landscape **map1, bool extirpation_depen_temperature, bool colonization_depen_temperature,bool species_trait_state_gamma, double mutation_rate, double geneflow_rate, double popchange_rate, double lambda, double gamma, double mu, vector<int> id_alive_species, double v)
+probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> all_species, landscape **map1, std::string extirpation_depen, bool colonization_depen_temperature,bool species_trait_state_gamma, double mutation_rate, double geneflow_rate, double popchange_rate, double lambda, double gamma, double mu, vector<int> id_alive_species, double v)
 {
   // int species_to_do;
   // species_to_do = id_alive_species[give_me_random_uniform(0, (id_alive_species.size()-1))];
@@ -1715,7 +2380,7 @@ probabilities_based_traits calculate_probabilities_using_traitstate(vector<speci
       double total_fitnesslike;
       total_fitnesslike = std::accumulate(work_this_species.computed_rate_based_on_temperature.begin(), work_this_species.computed_rate_based_on_temperature.end(),
                                           decltype(work_this_species.computed_rate_based_on_temperature)::value_type(0));
-      if (extirpation_depen_temperature)
+      if (extirpation_depen == "temperature")
       {
         this_species_mu = ((work_this_species.range - total_fitnesslike)/work_this_species.range) * mu * work_this_species.range;
 
@@ -1748,7 +2413,7 @@ probabilities_based_traits calculate_probabilities_using_traitstate(vector<speci
         if(work_this_species.trait_state < 1.1){
           use_this_percentage = 1.0;
         }
-          this_species_gamma = ((this_species_gamma * use_this_percentage)/100.0);
+        this_species_gamma = ((this_species_gamma * use_this_percentage)/100.0);
       }
 
       this_species_geneflow = work_this_species.range * geneflow_rate;
@@ -1982,7 +2647,7 @@ vector<yx> species::available_neigh_to_colonize_K(int x_max, int y_max, int foca
   if(neighbors_focal_good_habitat2.size() > 1 && available_to_colonize.size() == 0)
   {
     expansion_failure_becauseK = expansion_failure_becauseK + 1;
-//stop("expansion_failure_becauseK");
+    //stop("expansion_failure_becauseK");
   }
   //cout << "num cells to colonize:" << available_to_colonize.size() << endl;
   return available_to_colonize;
@@ -2138,16 +2803,16 @@ double give_me_random_normal(double my_mean, double my_sd)
   return my_random;
 }
 
-void species::happening_contraction(double t, landscape **map1, bool extirpation_depen_temperature)
+void species::happening_contraction(double t, landscape **map1,  std::string  extirpation_depen)
 {
   random_device rd;
   default_random_engine generator3(rd());
   int random_cell_to_remove_population;
 
-  if (extirpation_depen_temperature)
+  if (extirpation_depen == "temperature")
   {
     vector<int> all_cells_id;
-    vector <int> pop_sizes_vector;
+    vector <double> pop_sizes_vector;
     for (int i = 0; i < presence.size(); ++i)
     {
       all_cells_id.push_back(i);
@@ -2155,6 +2820,7 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
 
       //cout << "probab to be selected for contraction " << (1 - computed_rate_based_on_temperature[i]) << endl;
       pop_sizes_vector.push_back((1 - computed_rate_based_on_temperature[i]));
+      //cout << "temperature prob: " << (1 - computed_rate_based_on_temperature[i]) << endl;
       if((1 - computed_rate_based_on_temperature[i]) < 0){
         stop("issue in computed_rate_based_on_temperature");
       }
@@ -2162,10 +2828,36 @@ void species::happening_contraction(double t, landscape **map1, bool extirpation
     discrete_distribution<int> cell_probabilities_to_pick(pop_sizes_vector.begin(), pop_sizes_vector.end());
     random_cell_to_remove_population = all_cells_id[cell_probabilities_to_pick(generator3)];
   }
-  else
+
+
+  if (extirpation_depen == "popsize")
+  {
+    vector<int> all_cells_id;
+    vector <double> pop_sizes_vector;
+    for (int i = 0; i < presence.size(); ++i)
+    {
+      all_cells_id.push_back(i);
+
+
+      //cout << "probab to be selected for contraction " << i << " : " << (1.00/populations_this_species[i].pop_size) << endl;
+      pop_sizes_vector.push_back( (1.00/populations_this_species[i].pop_size));
+      //pop_sizes_vector.push_back(populations_this_species[i].pop_size);
+
+    }
+    // cout << "length: " << pop_sizes_vector.size() << endl;
+    discrete_distribution<int> cell_probabilities_to_pick(pop_sizes_vector.begin(), pop_sizes_vector.end());
+    random_cell_to_remove_population = all_cells_id[cell_probabilities_to_pick(generator3)];
+    //random_cell_to_remove_population = *min_element(pop_sizes_vector.begin(),pop_sizes_vector.end());
+  }
+
+
+
+
+  if (extirpation_depen == "random")
   {
     random_cell_to_remove_population = give_me_random_uniform(0, presence.size() - 1);
   }
+  //cout << "to remove: " << random_cell_to_remove_population << endl;
 
   x_coordinate_last_event = presence[random_cell_to_remove_population].x;
   y_coordinate_last_event = presence[random_cell_to_remove_population].y;
@@ -2267,6 +2959,23 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
     }
     population_structure current_population_sender;
     current_population_sender = populations_this_species[id_cells2[random_cell_to_go - 1]];
+
+
+    // cout << "current_allelic_frequency A1 "<<current_population_sender.allelic_a1 << endl;
+    // cout << "current_allelic_frequency B1 "<<current_population_sender.allelic_b1<< endl;
+    // cout << "current_allelic_frequency C1 "<<current_population_sender.allelic_c1 << endl;
+    // cout << "current_allelic_frequency D1 "<<current_population_sender.allelic_d1 << endl;
+    // cout << "current_allelic_frequency E1 "<<current_population_sender.allelic_e1 << endl;
+    // cout << "current_allelic_frequency F1 "<<current_population_sender.allelic_f1 << endl;
+    // cout << "current_allelic_frequency G1 "<<current_population_sender.allelic_g1<< endl;
+    // cout << "current_allelic_frequency H1 "<<current_population_sender.allelic_h1 << endl;
+    // cout << "current_allelic_frequency I1 "<<current_population_sender.allelic_i1 << endl;
+    // cout << "current_allelic_frequency J1 "<<current_population_sender.allelic_j1<< endl;
+    // cout << "current_allelic_frequency K1 "<<current_population_sender.allelic_k1 << endl;
+    // cout << "current_allelic_frequency L1 "<<current_population_sender.allelic_l1 << endl;
+    // cout << "current_allelic_frequency M1 "<<current_population_sender.allelic_m1 << endl;
+    // cout << "current_allelic_frequency N1 "<<current_population_sender.allelic_n1 << endl;
+    // cout << "current_allelic_frequency O1 "<<current_population_sender.allelic_o1 << endl;
     //cout << " show current_population_sender.pop_size " << current_population_sender.pop_size << endl;
     if(current_population_sender.pop_size >= 2)
     {
@@ -2294,7 +3003,7 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       //     // cout << "after " << southernmost << endl;
       //    }
 
-            // the part where the new population could have evolved a different temperature from parental population
+      // the part where the new population could have evolved a different temperature from parental population
       double evol_rate;
       double current_temperature_sender;
       double temperature_new_population;
@@ -2356,24 +3065,57 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       }
 
       vector<int> current_allelic_frequency;
-      current_allelic_frequency.push_back(current_population_sender.allelic_a);
-      current_allelic_frequency.push_back(current_population_sender.allelic_b);
-      current_allelic_frequency.push_back(current_population_sender.allelic_c);
-      current_allelic_frequency.push_back(current_population_sender.allelic_d);
-      current_allelic_frequency.push_back(current_population_sender.allelic_e);
+      current_allelic_frequency.push_back(current_population_sender.allelic_a1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_b1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_c1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_d1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_e1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_f1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_g1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_h1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_i1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_j1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_k1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_l1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_m1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_n1);
+      current_allelic_frequency.push_back(current_population_sender.allelic_o1);
 
       vector<int> current_allelic_frequency_neutral;
-      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_v);
-      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_w);
-      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_x);
-      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_y);
-      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_z);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_a2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_b2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_c2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_d2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_e2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_f2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_g2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_h2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_i2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_j2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_k2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_l2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_m2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_n2);
+      current_allelic_frequency_neutral.push_back(current_population_sender.allelic_o2);
+
+
       //
-      //       cout << "current_allelic_frequency A "<<current_allelic_frequency[0] << endl;
-      //       cout << "current_allelic_frequency B "<<current_allelic_frequency[1] << endl;
-      //       cout << "current_allelic_frequency C "<<current_allelic_frequency[2] << endl;
-      //       cout << "current_allelic_frequency D "<<current_allelic_frequency[3] << endl;
-      //       cout << "current_allelic_frequency E "<<current_allelic_frequency[4] << endl;
+            // cout << "current_allelic_frequency A1 "<<current_allelic_frequency[0] << endl;
+            // cout << "current_allelic_frequency B1 "<<current_allelic_frequency[1] << endl;
+            // cout << "current_allelic_frequency C1 "<<current_allelic_frequency[2] << endl;
+            // cout << "current_allelic_frequency D1 "<<current_allelic_frequency[3] << endl;
+            // cout << "current_allelic_frequency E1 "<<current_allelic_frequency[4] << endl;
+            // cout << "current_allelic_frequency F1 "<<current_allelic_frequency[5] << endl;
+            // cout << "current_allelic_frequency G1 "<<current_allelic_frequency[6] << endl;
+            // cout << "current_allelic_frequency H1 "<<current_allelic_frequency[7] << endl;
+            // cout << "current_allelic_frequency I1 "<<current_allelic_frequency[8] << endl;
+            // cout << "current_allelic_frequency J1 "<<current_allelic_frequency[9] << endl;
+            // cout << "current_allelic_frequency K1 "<<current_allelic_frequency[10] << endl;
+            // cout << "current_allelic_frequency L1 "<<current_allelic_frequency[11] << endl;
+            // cout << "current_allelic_frequency M1 "<<current_allelic_frequency[12] << endl;
+            // cout << "current_allelic_frequency N1 "<<current_allelic_frequency[13] << endl;
+            // cout << "current_allelic_frequency O1 "<<current_allelic_frequency[14] << endl;
+
 
 
       // cout << "weights_for_wallenius A "<<weights_for_wallenius[0] << endl;
@@ -2400,17 +3142,38 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       // cout << "vector_alleliccurrent NEUTRAL"<<current_allelic_frequency_neutral[0] << current_allelic_frequency_neutral[1] <<current_allelic_frequency_neutral[2] << current_allelic_frequency_neutral[3] <<current_allelic_frequency_neutral[4] << endl;
       allelic_frequency_new_neutral = give_me_random_wallenius(number_alelles,current_allelic_frequency_neutral, neutral_weights_for_wallenius, new_pop_size);
 
-      new_population.allelic_a = allelic_frequency_new[0];
-      new_population.allelic_b = allelic_frequency_new[1];
-      new_population.allelic_c = allelic_frequency_new[2];
-      new_population.allelic_d = allelic_frequency_new[3];
-      new_population.allelic_e = allelic_frequency_new[4];
+      new_population.allelic_a1 = allelic_frequency_new[0];
+      new_population.allelic_b1 = allelic_frequency_new[1];
+      new_population.allelic_c1 = allelic_frequency_new[2];
+      new_population.allelic_d1 = allelic_frequency_new[3];
+      new_population.allelic_e1 = allelic_frequency_new[4];
+      new_population.allelic_f1 = allelic_frequency_new[5];
+      new_population.allelic_g1 = allelic_frequency_new[6];
+      new_population.allelic_h1 = allelic_frequency_new[7];
+      new_population.allelic_i1 = allelic_frequency_new[8];
+      new_population.allelic_j1 = allelic_frequency_new[9];
+      new_population.allelic_k1 = allelic_frequency_new[10];
+      new_population.allelic_l1 = allelic_frequency_new[11];
+      new_population.allelic_m1 = allelic_frequency_new[12];
+      new_population.allelic_n1 = allelic_frequency_new[13];
+      new_population.allelic_o1 = allelic_frequency_new[14];
 
-      new_population.allelic_v = allelic_frequency_new_neutral[0];
-      new_population.allelic_w = allelic_frequency_new_neutral[1];
-      new_population.allelic_x = allelic_frequency_new_neutral[2];
-      new_population.allelic_y = allelic_frequency_new_neutral[3];
-      new_population.allelic_z = allelic_frequency_new_neutral[4];
+      new_population.allelic_a2 = allelic_frequency_new_neutral[0];
+      new_population.allelic_b2 = allelic_frequency_new_neutral[1];
+      new_population.allelic_c2 = allelic_frequency_new_neutral[2];
+      new_population.allelic_d2 = allelic_frequency_new_neutral[3];
+      new_population.allelic_e2 = allelic_frequency_new_neutral[4];
+      new_population.allelic_f2 = allelic_frequency_new_neutral[5];
+      new_population.allelic_g2 = allelic_frequency_new_neutral[6];
+      new_population.allelic_h2 = allelic_frequency_new_neutral[7];
+      new_population.allelic_i2 = allelic_frequency_new_neutral[8];
+      new_population.allelic_j2 = allelic_frequency_new_neutral[9];
+      new_population.allelic_k2 = allelic_frequency_new_neutral[10];
+      new_population.allelic_l2 = allelic_frequency_new_neutral[11];
+      new_population.allelic_m2 = allelic_frequency_new_neutral[12];
+      new_population.allelic_n2 = allelic_frequency_new_neutral[13];
+      new_population.allelic_o2 = allelic_frequency_new_neutral[14];
+
 
       new_population.pop_size = new_pop_size;
       // cout << "new pop size here: " << new_population.pop_size << endl;
@@ -2420,17 +3183,38 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       // cout << "new_population d" << new_population.allelic_d << endl;
       // cout << "new_population e" << new_population.allelic_e << endl;
 
-      current_population_sender.allelic_a = current_population_sender.allelic_a - allelic_frequency_new[0];
-      current_population_sender.allelic_b = current_population_sender.allelic_b - allelic_frequency_new[1];
-      current_population_sender.allelic_c = current_population_sender.allelic_c - allelic_frequency_new[2];
-      current_population_sender.allelic_d = current_population_sender.allelic_d - allelic_frequency_new[3];
-      current_population_sender.allelic_e = current_population_sender.allelic_e - allelic_frequency_new[4];
+      current_population_sender.allelic_a1 = current_population_sender.allelic_a1 - allelic_frequency_new[0];
+      current_population_sender.allelic_b1 = current_population_sender.allelic_b1 - allelic_frequency_new[1];
+      current_population_sender.allelic_c1 = current_population_sender.allelic_c1 - allelic_frequency_new[2];
+      current_population_sender.allelic_d1 = current_population_sender.allelic_d1 - allelic_frequency_new[3];
+      current_population_sender.allelic_e1 = current_population_sender.allelic_e1 - allelic_frequency_new[4];
+      current_population_sender.allelic_f1 = current_population_sender.allelic_f1 - allelic_frequency_new[5];
+      current_population_sender.allelic_g1 = current_population_sender.allelic_g1 - allelic_frequency_new[6];
+      current_population_sender.allelic_h1 = current_population_sender.allelic_h1 - allelic_frequency_new[7];
+      current_population_sender.allelic_i1 = current_population_sender.allelic_i1 - allelic_frequency_new[8];
+      current_population_sender.allelic_j1 = current_population_sender.allelic_j1 - allelic_frequency_new[9];
+      current_population_sender.allelic_k1 = current_population_sender.allelic_k1 - allelic_frequency_new[10];
+      current_population_sender.allelic_l1 = current_population_sender.allelic_l1 - allelic_frequency_new[11];
+      current_population_sender.allelic_m1 = current_population_sender.allelic_m1 - allelic_frequency_new[12];
+      current_population_sender.allelic_n1 = current_population_sender.allelic_n1 - allelic_frequency_new[13];
+      current_population_sender.allelic_o1 = current_population_sender.allelic_o1 - allelic_frequency_new[14];
 
-      current_population_sender.allelic_v = current_population_sender.allelic_v - allelic_frequency_new_neutral[0];
-      current_population_sender.allelic_w = current_population_sender.allelic_w - allelic_frequency_new_neutral[1];
-      current_population_sender.allelic_x = current_population_sender.allelic_x - allelic_frequency_new_neutral[2];
-      current_population_sender.allelic_y = current_population_sender.allelic_y - allelic_frequency_new_neutral[3];
-      current_population_sender.allelic_z = current_population_sender.allelic_z - allelic_frequency_new_neutral[4];
+      current_population_sender.allelic_a2 = current_population_sender.allelic_a2 - allelic_frequency_new_neutral[0];
+      current_population_sender.allelic_b2 = current_population_sender.allelic_b2 - allelic_frequency_new_neutral[1];
+      current_population_sender.allelic_c2 = current_population_sender.allelic_c2 - allelic_frequency_new_neutral[2];
+      current_population_sender.allelic_d2 = current_population_sender.allelic_d2 - allelic_frequency_new_neutral[3];
+      current_population_sender.allelic_e2 = current_population_sender.allelic_e2 - allelic_frequency_new_neutral[4];
+      current_population_sender.allelic_f2 = current_population_sender.allelic_f2 - allelic_frequency_new_neutral[5];
+      current_population_sender.allelic_g2 = current_population_sender.allelic_g2 - allelic_frequency_new_neutral[6];
+      current_population_sender.allelic_h2 = current_population_sender.allelic_h2 - allelic_frequency_new_neutral[7];
+      current_population_sender.allelic_i2 = current_population_sender.allelic_i2 - allelic_frequency_new_neutral[8];
+      current_population_sender.allelic_j2 = current_population_sender.allelic_j2 - allelic_frequency_new_neutral[9];
+      current_population_sender.allelic_k2 = current_population_sender.allelic_k2 - allelic_frequency_new_neutral[10];
+      current_population_sender.allelic_l2 = current_population_sender.allelic_l2 - allelic_frequency_new_neutral[11];
+      current_population_sender.allelic_m2 = current_population_sender.allelic_m2 - allelic_frequency_new_neutral[12];
+      current_population_sender.allelic_n2 = current_population_sender.allelic_n2 - allelic_frequency_new_neutral[13];
+      current_population_sender.allelic_o2 = current_population_sender.allelic_o2 - allelic_frequency_new_neutral[14];
+
       //
       //       cout << "  parent_population_sender.allelic_a" <<   current_population_sender.allelic_a << endl;
       //       cout << "  parent_population_sender.allelic_b" <<   current_population_sender.allelic_b << endl;
@@ -2476,15 +3260,23 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
 
       // some checks
       int new_sum_from_allele;
-      new_sum_from_allele = new_population.allelic_a + new_population.allelic_b + new_population.allelic_c + new_population.allelic_d + new_population.allelic_e;
+      new_sum_from_allele = new_population.allelic_a1 + new_population.allelic_b1 + new_population.allelic_c1 + new_population.allelic_d1 + new_population.allelic_e1 +
+        new_population.allelic_f1 + new_population.allelic_g1 + new_population.allelic_h1 + new_population.allelic_i1 + new_population.allelic_j1 +
+        new_population.allelic_k1 + new_population.allelic_l1 + new_population.allelic_m1 + new_population.allelic_n1 + new_population.allelic_o1;
       int new_sum_from_allele_neutral;
-      new_sum_from_allele_neutral = new_population.allelic_v + new_population.allelic_w + new_population.allelic_x + new_population.allelic_y + new_population.allelic_z;
+      new_sum_from_allele_neutral = new_population.allelic_a2 + new_population.allelic_b2 + new_population.allelic_c2 + new_population.allelic_d2 + new_population.allelic_e2 +
+        new_population.allelic_f2 + new_population.allelic_g2 + new_population.allelic_h2 + new_population.allelic_i2 + new_population.allelic_j2 +
+        new_population.allelic_k2 + new_population.allelic_l2 + new_population.allelic_m2 + new_population.allelic_n2 + new_population.allelic_o2;
 
 
       int sender_sum_from_allele;
-      sender_sum_from_allele = current_population_sender.allelic_a + current_population_sender.allelic_b + current_population_sender.allelic_c + current_population_sender.allelic_d + current_population_sender.allelic_e;
+      sender_sum_from_allele = current_population_sender.allelic_a1 + current_population_sender.allelic_b1 + current_population_sender.allelic_c1 + current_population_sender.allelic_d1 + current_population_sender.allelic_e1 +
+        current_population_sender.allelic_f1 + current_population_sender.allelic_g1 + current_population_sender.allelic_h1 + current_population_sender.allelic_i1 + current_population_sender.allelic_j1 +
+        current_population_sender.allelic_k1 + current_population_sender.allelic_l1 + current_population_sender.allelic_m1 + current_population_sender.allelic_n1 + current_population_sender.allelic_o1;
       int sender_sum_from_allele_neutral;
-      sender_sum_from_allele_neutral = current_population_sender.allelic_v + current_population_sender.allelic_w + current_population_sender.allelic_x + current_population_sender.allelic_y + current_population_sender.allelic_z;
+      sender_sum_from_allele_neutral = current_population_sender.allelic_a2 + current_population_sender.allelic_b2 + current_population_sender.allelic_c2 + current_population_sender.allelic_d2 + current_population_sender.allelic_e2 +
+        current_population_sender.allelic_f2 + current_population_sender.allelic_g2 + current_population_sender.allelic_h2 + current_population_sender.allelic_i2 + current_population_sender.allelic_j2 +
+        current_population_sender.allelic_k2 + current_population_sender.allelic_l2 + current_population_sender.allelic_m2 + current_population_sender.allelic_n2 + current_population_sender.allelic_o2;
 
 
       if(new_sum_from_allele != new_sum_from_allele_neutral && sender_sum_from_allele!=sender_sum_from_allele_neutral)
@@ -2524,7 +3316,7 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
   //vector <contiguous_patches> species::find_patches_distribution()
   if(vicariant_speciation)
   {
-   // cout << "doing vicariance" << endl;
+    // cout << "doing vicariance" << endl;
     species focal;
     species new_species;
     focal = all_species[species_to_do];
@@ -2535,7 +3327,7 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
     list_patches = focal.find_patches_distribution(y_max,x_max);
 
     contiguous_patches patch_becoming_differentsp;
-   // cout << "list_patches.size(): " << list_patches.size() << endl;
+    // cout << "list_patches.size(): " << list_patches.size() << endl;
     if(list_patches.size() > 1){ // proper vicariance is possible
       patch_id = give_me_random_uniform(0, list_patches.size() - 1);
       patch_becoming_differentsp = list_patches[patch_id];
@@ -2569,10 +3361,10 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
       // cout << "range_cells_to_speciating_range[1] "<< range_cells_to_speciating_range[1] << endl;
       int counting1;
       counting1 = 0;
-//
-//       for(int i = 0; i < pre_patch_becoming_differentsp.id_cells.size(); ++i){
-//         cout << "pre_patch_becoming_differentsp.id_cells[i]: "  << pre_patch_becoming_differentsp.id_cells[i] << endl;
-//       }
+      //
+      //       for(int i = 0; i < pre_patch_becoming_differentsp.id_cells.size(); ++i){
+      //         cout << "pre_patch_becoming_differentsp.id_cells[i]: "  << pre_patch_becoming_differentsp.id_cells[i] << endl;
+      //       }
 
 
       for (int i = range_cells_to_speciating_range[0]; i < range_cells_to_speciating_range[1]; ++i)
@@ -2593,9 +3385,9 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
       }
       patch_becoming_differentsp.patch_size = patch_becoming_differentsp.id_cells.size();
     }
-//
-//     cout << "patch_becoming_differentsp.patch_size: " << patch_becoming_differentsp.patch_size << endl;
-//     cout << "patch_becoming_differentsp.id_cells.size():  " << patch_becoming_differentsp.id_cells.size() << endl;
+    //
+    //     cout << "patch_becoming_differentsp.patch_size: " << patch_becoming_differentsp.patch_size << endl;
+    //     cout << "patch_becoming_differentsp.id_cells.size():  " << patch_becoming_differentsp.id_cells.size() << endl;
 
     for (int i = 0; i < patch_becoming_differentsp.patch_size; ++i)
     {
@@ -2603,17 +3395,38 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
 
       // cout << "new_species.presence[i].x : " <<new_species.presence[i].x << " y: " <<new_species.presence[i].y << endl;
       population_structure first_population_newspecies;
-      first_population_newspecies.allelic_a = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_a;
-      first_population_newspecies.allelic_b = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_b;
-      first_population_newspecies.allelic_c = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_c;
-      first_population_newspecies.allelic_d = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_d;
-      first_population_newspecies.allelic_e = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_e;
+      first_population_newspecies.allelic_a1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_a1;
+      first_population_newspecies.allelic_b1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_b1;
+      first_population_newspecies.allelic_c1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_c1;
+      first_population_newspecies.allelic_d1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_d1;
+      first_population_newspecies.allelic_e1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_e1;
+      first_population_newspecies.allelic_f1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_f1;
+      first_population_newspecies.allelic_g1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_g1;
+      first_population_newspecies.allelic_h1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_h1;
+      first_population_newspecies.allelic_i1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_i1;
+      first_population_newspecies.allelic_j1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_j1;
+      first_population_newspecies.allelic_k1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_k1;
+      first_population_newspecies.allelic_l1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_l1;
+      first_population_newspecies.allelic_m1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_m1;
+      first_population_newspecies.allelic_n1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_n1;
+      first_population_newspecies.allelic_o1 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_o1;
 
-      first_population_newspecies.allelic_v = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_v;
-      first_population_newspecies.allelic_w = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_w;
-      first_population_newspecies.allelic_x = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_x;
-      first_population_newspecies.allelic_y = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_y;
-      first_population_newspecies.allelic_z = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_z;
+      first_population_newspecies.allelic_a2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_a2;
+      first_population_newspecies.allelic_b2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_b2;
+      first_population_newspecies.allelic_c2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_c2;
+      first_population_newspecies.allelic_d2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_d2;
+      first_population_newspecies.allelic_e2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_e2;
+      first_population_newspecies.allelic_f2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_f2;
+      first_population_newspecies.allelic_g2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_g2;
+      first_population_newspecies.allelic_h2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_h2;
+      first_population_newspecies.allelic_i2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_i2;
+      first_population_newspecies.allelic_j2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_j2;
+      first_population_newspecies.allelic_k2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_k2;
+      first_population_newspecies.allelic_l2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_l2;
+      first_population_newspecies.allelic_m2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_m2;
+      first_population_newspecies.allelic_n2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_n2;
+      first_population_newspecies.allelic_o2 = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].allelic_o2;
+
 
       first_population_newspecies.pop_size = focal.populations_this_species[patch_becoming_differentsp.id_cells[i]].pop_size;
       new_species.total_pop_size = new_species.total_pop_size + first_population_newspecies.pop_size;
@@ -2629,7 +3442,7 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
     cout << "new_species.range" << new_species.range << endl;
     cout << "focal.range" << focal.range << endl;
 
-new_species.percentage_parental_range = float(new_species.range)/float(focal.range);
+    new_species.percentage_parental_range = float(new_species.range)/float(focal.range);
     new_species.update_latitudinal_borders(t,true,true);
     new_species.birthplace_northmost = new_species.northernmost;
     new_species.birthplace_southmost = new_species.southernmost;
@@ -2784,7 +3597,7 @@ new_species.percentage_parental_range = float(new_species.range)/float(focal.ran
       new_species.update_latitudinal_borders(t,true,true);
       new_species.birthplace_northmost = new_species.northernmost;
       new_species.birthplace_southmost = new_species.southernmost;
-new_species.percentage_parental_range = 1.1;
+      new_species.percentage_parental_range = 1.1;
       new_species.southernmost = focal.presence[random_cell_to_mutate].y;
       new_species.northernmost = focal.presence[random_cell_to_mutate].y;
       new_species.parent = focal.id;
@@ -2799,17 +3612,39 @@ new_species.percentage_parental_range = 1.1;
       // new_species.classify_elevation(true,map1);
       new_species.classify_elevation_origin(true);
       population_structure first_population_newspecies;
-      first_population_newspecies.allelic_a = focal.populations_this_species[random_cell_to_mutate].allelic_a;
-      first_population_newspecies.allelic_b = focal.populations_this_species[random_cell_to_mutate].allelic_b;
-      first_population_newspecies.allelic_c = focal.populations_this_species[random_cell_to_mutate].allelic_c;
-      first_population_newspecies.allelic_d = focal.populations_this_species[random_cell_to_mutate].allelic_d;
-      first_population_newspecies.allelic_e = focal.populations_this_species[random_cell_to_mutate].allelic_e;
+      first_population_newspecies.allelic_a1 = focal.populations_this_species[random_cell_to_mutate].allelic_a1;
+      first_population_newspecies.allelic_b1 = focal.populations_this_species[random_cell_to_mutate].allelic_b1;
+      first_population_newspecies.allelic_c1 = focal.populations_this_species[random_cell_to_mutate].allelic_c1;
+      first_population_newspecies.allelic_d1 = focal.populations_this_species[random_cell_to_mutate].allelic_d1;
+      first_population_newspecies.allelic_e1 = focal.populations_this_species[random_cell_to_mutate].allelic_e1;
+      first_population_newspecies.allelic_f1 = focal.populations_this_species[random_cell_to_mutate].allelic_f1;
+      first_population_newspecies.allelic_g1 = focal.populations_this_species[random_cell_to_mutate].allelic_g1;
+      first_population_newspecies.allelic_h1 = focal.populations_this_species[random_cell_to_mutate].allelic_h1;
+      first_population_newspecies.allelic_i1 = focal.populations_this_species[random_cell_to_mutate].allelic_i1;
+      first_population_newspecies.allelic_j1 = focal.populations_this_species[random_cell_to_mutate].allelic_j1;
+      first_population_newspecies.allelic_k1 = focal.populations_this_species[random_cell_to_mutate].allelic_k1;
+      first_population_newspecies.allelic_l1 = focal.populations_this_species[random_cell_to_mutate].allelic_l1;
+      first_population_newspecies.allelic_m1 = focal.populations_this_species[random_cell_to_mutate].allelic_m1;
+      first_population_newspecies.allelic_n1 = focal.populations_this_species[random_cell_to_mutate].allelic_n1;
+      first_population_newspecies.allelic_o1 = focal.populations_this_species[random_cell_to_mutate].allelic_o1;
 
-      first_population_newspecies.allelic_v = focal.populations_this_species[random_cell_to_mutate].allelic_v;
-      first_population_newspecies.allelic_w = focal.populations_this_species[random_cell_to_mutate].allelic_w;
-      first_population_newspecies.allelic_x = focal.populations_this_species[random_cell_to_mutate].allelic_x;
-      first_population_newspecies.allelic_y = focal.populations_this_species[random_cell_to_mutate].allelic_y;
-      first_population_newspecies.allelic_z = focal.populations_this_species[random_cell_to_mutate].allelic_z;
+      first_population_newspecies.allelic_a2 = focal.populations_this_species[random_cell_to_mutate].allelic_a2;
+      first_population_newspecies.allelic_b2 = focal.populations_this_species[random_cell_to_mutate].allelic_b2;
+      first_population_newspecies.allelic_c2 = focal.populations_this_species[random_cell_to_mutate].allelic_c2;
+      first_population_newspecies.allelic_d2 = focal.populations_this_species[random_cell_to_mutate].allelic_d2;
+      first_population_newspecies.allelic_e2 = focal.populations_this_species[random_cell_to_mutate].allelic_e2;
+      first_population_newspecies.allelic_f2 = focal.populations_this_species[random_cell_to_mutate].allelic_f2;
+      first_population_newspecies.allelic_g2 = focal.populations_this_species[random_cell_to_mutate].allelic_g2;
+      first_population_newspecies.allelic_h2 = focal.populations_this_species[random_cell_to_mutate].allelic_h2;
+      first_population_newspecies.allelic_i2 = focal.populations_this_species[random_cell_to_mutate].allelic_i2;
+      first_population_newspecies.allelic_j2 = focal.populations_this_species[random_cell_to_mutate].allelic_j2;
+      first_population_newspecies.allelic_k2 = focal.populations_this_species[random_cell_to_mutate].allelic_k2;
+      first_population_newspecies.allelic_l2 = focal.populations_this_species[random_cell_to_mutate].allelic_l2;
+      first_population_newspecies.allelic_m2 = focal.populations_this_species[random_cell_to_mutate].allelic_m2;
+      first_population_newspecies.allelic_n2 = focal.populations_this_species[random_cell_to_mutate].allelic_n2;
+      first_population_newspecies.allelic_o2 = focal.populations_this_species[random_cell_to_mutate].allelic_o2;
+
+
 
       first_population_newspecies.pop_size = focal.populations_this_species[random_cell_to_mutate].pop_size;
       new_species.populations_this_species.push_back(first_population_newspecies);
@@ -3003,18 +3838,37 @@ vector<double> extract_temperature_func(species process_one_species)
 List get_me_output (int y_max, int x_max, vector<species> all_species, double t)
 {
   List list_all_species_distribution = List::create();
-  List list_all_species_allele_A = List::create();
-  List list_all_species_allele_B = List::create();
-  List list_all_species_allele_C = List::create();
-  List list_all_species_allele_D = List::create();
-  List list_all_species_allele_E = List::create();
+  List list_all_species_allele_A1 = List::create();
+  List list_all_species_allele_B1 = List::create();
+  List list_all_species_allele_C1 = List::create();
+  List list_all_species_allele_D1 = List::create();
+  List list_all_species_allele_E1 = List::create();
+  List list_all_species_allele_F1 = List::create();
+  List list_all_species_allele_G1 = List::create();
+  List list_all_species_allele_H1 = List::create();
+  List list_all_species_allele_I1 = List::create();
+  List list_all_species_allele_J1 = List::create();
+  List list_all_species_allele_K1 = List::create();
+  List list_all_species_allele_L1 = List::create();
+  List list_all_species_allele_M1 = List::create();
+  List list_all_species_allele_N1 = List::create();
+  List list_all_species_allele_O1 = List::create();
 
-  List list_all_species_allele_V = List::create();
-  List list_all_species_allele_W = List::create();
-  List list_all_species_allele_X = List::create();
-  List list_all_species_allele_Y = List::create();
-  List list_all_species_allele_Z = List::create();
-
+  List list_all_species_allele_A2 = List::create();
+  List list_all_species_allele_B2 = List::create();
+  List list_all_species_allele_C2 = List::create();
+  List list_all_species_allele_D2 = List::create();
+  List list_all_species_allele_E2 = List::create();
+  List list_all_species_allele_F2 = List::create();
+  List list_all_species_allele_G2 = List::create();
+  List list_all_species_allele_H2 = List::create();
+  List list_all_species_allele_I2 = List::create();
+  List list_all_species_allele_J2 = List::create();
+  List list_all_species_allele_K2 = List::create();
+  List list_all_species_allele_L2 = List::create();
+  List list_all_species_allele_M2 = List::create();
+  List list_all_species_allele_N2 = List::create();
+  List list_all_species_allele_O2 = List::create();
 
   List all_change_northernmost = List::create();
   List all_change_southernmost = List::create();
@@ -3028,17 +3882,37 @@ List get_me_output (int y_max, int x_max, vector<species> all_species, double t)
   {
     List xy_one_species = List::create();
     List popsize_one_species = List::create();
-    List list_allele_A_one_species = List::create();
-    List list_allele_B_one_species = List::create();
-    List list_allele_C_one_species = List::create();
-    List list_allele_D_one_species = List::create();
-    List list_allele_E_one_species = List::create();
+    List list_allele_A1_one_species = List::create();
+    List list_allele_B1_one_species = List::create();
+    List list_allele_C1_one_species = List::create();
+    List list_allele_D1_one_species = List::create();
+    List list_allele_E1_one_species = List::create();
+    List list_allele_F1_one_species = List::create();
+    List list_allele_G1_one_species = List::create();
+    List list_allele_H1_one_species = List::create();
+    List list_allele_I1_one_species = List::create();
+    List list_allele_J1_one_species = List::create();
+    List list_allele_K1_one_species = List::create();
+    List list_allele_L1_one_species = List::create();
+    List list_allele_M1_one_species = List::create();
+    List list_allele_N1_one_species = List::create();
+    List list_allele_O1_one_species = List::create();
 
-    List list_allele_V_one_species = List::create();
-    List list_allele_W_one_species = List::create();
-    List list_allele_X_one_species = List::create();
-    List list_allele_Y_one_species = List::create();
-    List list_allele_Z_one_species = List::create();
+    List list_allele_A2_one_species = List::create();
+    List list_allele_B2_one_species = List::create();
+    List list_allele_C2_one_species = List::create();
+    List list_allele_D2_one_species = List::create();
+    List list_allele_E2_one_species = List::create();
+    List list_allele_F2_one_species = List::create();
+    List list_allele_G2_one_species = List::create();
+    List list_allele_H2_one_species = List::create();
+    List list_allele_I2_one_species = List::create();
+    List list_allele_J2_one_species = List::create();
+    List list_allele_K2_one_species = List::create();
+    List list_allele_L2_one_species = List::create();
+    List list_allele_M2_one_species = List::create();
+    List list_allele_N2_one_species = List::create();
+    List list_allele_O2_one_species = List::create();
     List list_popsize_perPop =  List::create();
     // cout << " seeing the output: " << iij << endl;
     species take_one_ouput;
@@ -3046,32 +3920,74 @@ List get_me_output (int y_max, int x_max, vector<species> all_species, double t)
 
     if (take_one_ouput.alive)
     {
-      vector <int> allele_A_one_species;
-      vector <int> allele_B_one_species;
-      vector <int> allele_C_one_species;
-      vector <int> allele_D_one_species;
-      vector <int> allele_E_one_species;
+      vector <int> allele_A1_one_species;
+      vector <int> allele_B1_one_species;
+      vector <int> allele_C1_one_species;
+      vector <int> allele_D1_one_species;
+      vector <int> allele_E1_one_species;
+      vector <int> allele_F1_one_species;
+      vector <int> allele_G1_one_species;
+      vector <int> allele_H1_one_species;
+      vector <int> allele_I1_one_species;
+      vector <int> allele_J1_one_species;
+      vector <int> allele_K1_one_species;
+      vector <int> allele_L1_one_species;
+      vector <int> allele_M1_one_species;
+      vector <int> allele_N1_one_species;
+      vector <int> allele_O1_one_species;
 
-      vector <int> allele_V_one_species;
-      vector <int> allele_W_one_species;
-      vector <int> allele_X_one_species;
-      vector <int> allele_Y_one_species;
-      vector <int> allele_Z_one_species;
+      vector <int> allele_A2_one_species;
+      vector <int> allele_B2_one_species;
+      vector <int> allele_C2_one_species;
+      vector <int> allele_D2_one_species;
+      vector <int> allele_E2_one_species;
+      vector <int> allele_F2_one_species;
+      vector <int> allele_G2_one_species;
+      vector <int> allele_H2_one_species;
+      vector <int> allele_I2_one_species;
+      vector <int> allele_J2_one_species;
+      vector <int> allele_K2_one_species;
+      vector <int> allele_L2_one_species;
+      vector <int> allele_M2_one_species;
+      vector <int> allele_N2_one_species;
+      vector <int> allele_O2_one_species;
+
       vector <int> popsize_perPop;
       for(int ii = 0; ii < take_one_ouput.populations_this_species.size(); ++ii)
       {
 
-        allele_A_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_a);
-        allele_B_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_b);
-        allele_C_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_c);
-        allele_D_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_d);
-        allele_E_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_e);
+        allele_A1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_a1);
+        allele_B1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_b1);
+        allele_C1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_c1);
+        allele_D1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_d1);
+        allele_E1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_e1);
+        allele_F1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_f1);
+        allele_G1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_g1);
+        allele_H1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_h1);
+        allele_I1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_i1);
+        allele_J1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_j1);
+        allele_K1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_k1);
+        allele_L1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_l1);
+        allele_M1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_m1);
+        allele_N1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_n1);
+        allele_O1_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_o1);
 
-        allele_V_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_v);
-        allele_W_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_w);
-        allele_X_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_x);
-        allele_Y_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_y);
-        allele_Z_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_z);
+        allele_A2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_a2);
+        allele_B2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_b2);
+        allele_C2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_c2);
+        allele_D2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_d2);
+        allele_E2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_e2);
+        allele_F2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_f2);
+        allele_G2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_g2);
+        allele_H2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_h2);
+        allele_I2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_i2);
+        allele_J2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_j2);
+        allele_K2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_k2);
+        allele_L2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_l2);
+        allele_M2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_m2);
+        allele_N2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_n2);
+        allele_O2_one_species.push_back(take_one_ouput.populations_this_species[ii].allelic_o2);
+
         popsize_perPop.push_back(take_one_ouput.populations_this_species[ii].pop_size);
       }
 
@@ -3081,17 +3997,37 @@ List get_me_output (int y_max, int x_max, vector<species> all_species, double t)
       vector<double> vector_popsize;
       vector_popsize = extract_temperature_func(take_one_ouput);
 
-      list_allele_A_one_species.push_back(allele_A_one_species);
-      list_allele_B_one_species.push_back(allele_B_one_species);
-      list_allele_C_one_species.push_back(allele_C_one_species);
-      list_allele_D_one_species.push_back(allele_D_one_species);
-      list_allele_E_one_species.push_back(allele_E_one_species);
+      list_allele_A1_one_species.push_back(allele_A1_one_species);
+      list_allele_B1_one_species.push_back(allele_B1_one_species);
+      list_allele_C1_one_species.push_back(allele_C1_one_species);
+      list_allele_D1_one_species.push_back(allele_D1_one_species);
+      list_allele_E1_one_species.push_back(allele_E1_one_species);
+      list_allele_F1_one_species.push_back(allele_F1_one_species);
+      list_allele_G1_one_species.push_back(allele_G1_one_species);
+      list_allele_H1_one_species.push_back(allele_H1_one_species);
+      list_allele_I1_one_species.push_back(allele_I1_one_species);
+      list_allele_J1_one_species.push_back(allele_J1_one_species);
+      list_allele_K1_one_species.push_back(allele_K1_one_species);
+      list_allele_L1_one_species.push_back(allele_L1_one_species);
+      list_allele_M1_one_species.push_back(allele_M1_one_species);
+      list_allele_N1_one_species.push_back(allele_N1_one_species);
+      list_allele_O1_one_species.push_back(allele_O1_one_species);
 
-      list_allele_V_one_species.push_back(allele_V_one_species);
-      list_allele_W_one_species.push_back(allele_W_one_species);
-      list_allele_X_one_species.push_back(allele_X_one_species);
-      list_allele_Y_one_species.push_back(allele_Y_one_species);
-      list_allele_Z_one_species.push_back(allele_Z_one_species);
+      list_allele_A2_one_species.push_back(allele_A2_one_species);
+      list_allele_B2_one_species.push_back(allele_B2_one_species);
+      list_allele_C2_one_species.push_back(allele_C2_one_species);
+      list_allele_D2_one_species.push_back(allele_D2_one_species);
+      list_allele_E2_one_species.push_back(allele_E2_one_species);
+      list_allele_F2_one_species.push_back(allele_F2_one_species);
+      list_allele_G2_one_species.push_back(allele_G2_one_species);
+      list_allele_H2_one_species.push_back(allele_H2_one_species);
+      list_allele_I2_one_species.push_back(allele_I2_one_species);
+      list_allele_J2_one_species.push_back(allele_J2_one_species);
+      list_allele_K2_one_species.push_back(allele_K2_one_species);
+      list_allele_L2_one_species.push_back(allele_L2_one_species);
+      list_allele_M2_one_species.push_back(allele_M2_one_species);
+      list_allele_N2_one_species.push_back(allele_N2_one_species);
+      list_allele_O2_one_species.push_back(allele_O2_one_species);
 
       list_popsize_perPop.push_back(popsize_perPop);
 
@@ -3112,17 +4048,38 @@ List get_me_output (int y_max, int x_max, vector<species> all_species, double t)
       // popsize_perPop = dead_species;
       // cout << "this went extinct" << endl;
     }
-    list_all_species_allele_A.push_back(list_allele_A_one_species);
-    list_all_species_allele_B.push_back(list_allele_B_one_species);
-    list_all_species_allele_C.push_back(list_allele_C_one_species);
-    list_all_species_allele_D.push_back(list_allele_D_one_species);
-    list_all_species_allele_E.push_back(list_allele_E_one_species);
+    list_all_species_allele_A1.push_back(list_allele_A1_one_species);
+    list_all_species_allele_B1.push_back(list_allele_B1_one_species);
+    list_all_species_allele_C1.push_back(list_allele_C1_one_species);
+    list_all_species_allele_D1.push_back(list_allele_D1_one_species);
+    list_all_species_allele_E1.push_back(list_allele_E1_one_species);
+    list_all_species_allele_F1.push_back(list_allele_F1_one_species);
+    list_all_species_allele_G1.push_back(list_allele_G1_one_species);
+    list_all_species_allele_H1.push_back(list_allele_H1_one_species);
+    list_all_species_allele_I1.push_back(list_allele_I1_one_species);
+    list_all_species_allele_J1.push_back(list_allele_J1_one_species);
+    list_all_species_allele_K1.push_back(list_allele_K1_one_species);
+    list_all_species_allele_L1.push_back(list_allele_L1_one_species);
+    list_all_species_allele_M1.push_back(list_allele_M1_one_species);
+    list_all_species_allele_N1.push_back(list_allele_N1_one_species);
+    list_all_species_allele_O1.push_back(list_allele_O1_one_species);
 
-    list_all_species_allele_V.push_back(list_allele_V_one_species);
-    list_all_species_allele_W.push_back(list_allele_W_one_species);
-    list_all_species_allele_X.push_back(list_allele_X_one_species);
-    list_all_species_allele_Y.push_back(list_allele_Y_one_species);
-    list_all_species_allele_Z.push_back(list_allele_Z_one_species);
+    list_all_species_allele_A2.push_back(list_allele_A1_one_species);
+    list_all_species_allele_B2.push_back(list_allele_B2_one_species);
+    list_all_species_allele_C2.push_back(list_allele_C2_one_species);
+    list_all_species_allele_D2.push_back(list_allele_D2_one_species);
+    list_all_species_allele_E2.push_back(list_allele_E2_one_species);
+    list_all_species_allele_F2.push_back(list_allele_F2_one_species);
+    list_all_species_allele_G2.push_back(list_allele_G2_one_species);
+    list_all_species_allele_H2.push_back(list_allele_H2_one_species);
+    list_all_species_allele_I2.push_back(list_allele_I2_one_species);
+    list_all_species_allele_J2.push_back(list_allele_J2_one_species);
+    list_all_species_allele_K2.push_back(list_allele_K2_one_species);
+    list_all_species_allele_L2.push_back(list_allele_L2_one_species);
+    list_all_species_allele_M2.push_back(list_allele_M2_one_species);
+    list_all_species_allele_N2.push_back(list_allele_N2_one_species);
+    list_all_species_allele_O2.push_back(list_allele_O2_one_species);
+
     list_all_species_popsize_perPop.push_back(list_popsize_perPop);
 
     list_all_species_distribution.push_back(xy_one_species);
@@ -3137,24 +4094,51 @@ List get_me_output (int y_max, int x_max, vector<species> all_species, double t)
   list_extract_species_data = extract_species_data(y_max,x_max,all_species);
   //}
 
-  List model_output = List::create(Named("Distribution") = list_all_species_distribution,
+  List model_output_partial1 = List::create(Named("Distribution") = list_all_species_distribution,
                                    _["popsize_perPop"] = list_all_species_popsize_perPop,
                                    _["all_change_northernmost"] = all_change_northernmost,
                                    _["all_change_southernmost"] = all_change_southernmost,
                                    _["all_time_change_northernmost"] = all_time_change_northernmost,
                                    _["all_time_change_southernmost"] = all_time_change_southernmost,
-                                   _["Allele_A"] = list_all_species_allele_A,
-                                   _["Allele_B"] = list_all_species_allele_B,
-                                   _["Allele_C"] = list_all_species_allele_C,
-                                   _["Allele_D"] = list_all_species_allele_D,
-                                   _["Allele_E"] = list_all_species_allele_E,
-                                   _["Allele_V"] = list_all_species_allele_V,
-                                   _["Allele_W"] = list_all_species_allele_W,
-                                   _["Allele_X"] = list_all_species_allele_X,
-                                   _["Allele_Y"] = list_all_species_allele_Y,
-                                   _["Allele_Z"] = list_all_species_allele_Z,
+                                   _["Allele_A1"] = list_all_species_allele_A1,
+                                   _["Allele_B1"] = list_all_species_allele_B1,
+                                   _["Allele_C1"] = list_all_species_allele_C1,
+                                   _["Allele_D1"] = list_all_species_allele_D1,
+                                   _["Allele_E1"] = list_all_species_allele_E1,
+                                   _["Allele_F1"] = list_all_species_allele_F1,
+                                   _["Allele_G1"] = list_all_species_allele_G1,
+                                   _["Allele_H1"] = list_all_species_allele_H1,
+                                   _["Allele_I1"] = list_all_species_allele_I1,
+                                   _["Allele_J1"] = list_all_species_allele_J1,
+                                   _["Allele_K1"] = list_all_species_allele_K1,
+                                   _["Allele_L1"] = list_all_species_allele_L1,
+                                   _["Allele_M1"] = list_all_species_allele_M1,
+                                   _["Allele_N1"] = list_all_species_allele_N1);
+
+  List model_output_partial2 = List::create(Named("Allele_O1") = list_all_species_allele_O1,
+                                    _["Allele_A2"] = list_all_species_allele_A2,
+                                    _["Allele_B2"] = list_all_species_allele_B2,
+                                   _["Allele_C2"] = list_all_species_allele_C2,
+                                   _["Allele_D2"] = list_all_species_allele_D2,
+                                   _["Allele_E2"] = list_all_species_allele_E2,
+                                   _["Allele_F2"] = list_all_species_allele_F2,
+                                   _["Allele_G2"] = list_all_species_allele_G2,
+                                   _["Allele_H2"] = list_all_species_allele_H2,
+                                   _["Allele_I2"] = list_all_species_allele_I2,
+                                   _["Allele_J2"] = list_all_species_allele_J2,
+                                   _["Allele_K2"] = list_all_species_allele_K2,
+                                   _["Allele_L2"] = list_all_species_allele_L2,
+                                   _["Allele_M2"] = list_all_species_allele_M2,
+                                   _["Allele_N2"] = list_all_species_allele_N2,
+                                   _["Allele_O2"] = list_all_species_allele_O2,
                                    _["Species_Info"] = list_extract_species_data,
                                    _["total_time"] = list_time);
+
+  List model_output = List::create();
+  // List model_output = List::create(model_output_partial1,
+  //                                  model_output_partial2);
+  model_output.push_back(model_output_partial1);
+  model_output.push_back(model_output_partial2);
   return model_output;
 }
 
@@ -3236,7 +4220,7 @@ List extract_species_data(int y_max,int x_max, vector<species> process_all_speci
 }
 // end for Rcpp
 
-vector<species> get_species_intocpp(vector<species> all_species, IntegerVector all_alleles,IntegerVector all_alleles_neutral, IntegerVector all_popsize, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, int number_spp, landscape **map1, vector<int> alleles_adaptation_coef, double v, double gamma, double mu, bool extirpation_depen_temperature, bool colonization_depen_temperature)
+vector<species> get_species_intocpp(vector<species> all_species, IntegerVector all_alleles,IntegerVector all_alleles_neutral, IntegerVector all_popsize, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, int number_spp, landscape **map1, vector<int> alleles_adaptation_coef, double v, double gamma, double mu, std::string extirpation_depen, bool colonization_depen_temperature)
 {
 
   // vector <species> all_species;
@@ -3254,8 +4238,8 @@ vector<species> get_species_intocpp(vector<species> all_species, IntegerVector a
     put_one_species.y_coordinate_last_event = all_y[i];
     put_one_species.temperature_optimum.push_back(all_traits[i]);
     put_one_species.total_pop_size = all_popsize[i];
-     put_one_species.birthplace_southmost = all_y[i];
-     put_one_species.birthplace_northmost = all_y[i];
+    put_one_species.birthplace_southmost = all_y[i];
+    put_one_species.birthplace_northmost = all_y[i];
     put_one_species.northernmost = all_x[i];
     put_one_species.southernmost = all_x[i];
     put_one_species.saturation_grid_birth = 0;
@@ -3277,17 +4261,41 @@ vector<species> get_species_intocpp(vector<species> all_species, IntegerVector a
         put_one_species.presence.push_back(this_is_one_yx);
 
         population_structure this_pop;
-        this_pop.allelic_a = all_alleles[0];
-        this_pop.allelic_b = all_alleles[1];
-        this_pop.allelic_c = all_alleles[2];
-        this_pop.allelic_d = all_alleles[3];
-        this_pop.allelic_e = all_alleles[4];
+        this_pop.allelic_a1 = all_alleles[0];
+        this_pop.allelic_b1 = all_alleles[1];
+        this_pop.allelic_c1 = all_alleles[2];
+        this_pop.allelic_d1 = all_alleles[3];
+        this_pop.allelic_e1 = all_alleles[4];
+        this_pop.allelic_f1 = all_alleles[5];
+        this_pop.allelic_g1 = all_alleles[6];
+        this_pop.allelic_h1 = all_alleles[7];
+        this_pop.allelic_i1 = all_alleles[8];
+        this_pop.allelic_j1 = all_alleles[9];
+        this_pop.allelic_k1 = all_alleles[10];
+        this_pop.allelic_l1 = all_alleles[11];
+        this_pop.allelic_m1 = all_alleles[12];
+        this_pop.allelic_n1 = all_alleles[13];
+        this_pop.allelic_o1 = all_alleles[14];
 
-        this_pop.allelic_v = all_alleles_neutral[0];
-        this_pop.allelic_w = all_alleles_neutral[1];
-        this_pop.allelic_x = all_alleles_neutral[2];
-        this_pop.allelic_y = all_alleles_neutral[3];
-        this_pop.allelic_z = all_alleles_neutral[4];
+
+
+        this_pop.allelic_a2 = all_alleles_neutral[0];
+        this_pop.allelic_b2 = all_alleles_neutral[1];
+        this_pop.allelic_c2 = all_alleles_neutral[2];
+        this_pop.allelic_d2 = all_alleles_neutral[3];
+        this_pop.allelic_e2 = all_alleles_neutral[4];
+        this_pop.allelic_f2 = all_alleles_neutral[5];
+        this_pop.allelic_g2 = all_alleles_neutral[6];
+        this_pop.allelic_h2 = all_alleles_neutral[7];
+        this_pop.allelic_i2 = all_alleles_neutral[8];
+        this_pop.allelic_j2 = all_alleles_neutral[9];
+        this_pop.allelic_k2 = all_alleles_neutral[10];
+        this_pop.allelic_l2 = all_alleles_neutral[11];
+        this_pop.allelic_m2 = all_alleles_neutral[12];
+        this_pop.allelic_n2 = all_alleles_neutral[13];
+        this_pop.allelic_o2 = all_alleles_neutral[14];
+
+
         this_pop.pop_size = all_popsize[i];
         fitnesslike_thispopulation = link_fitnesslike_mu_gamma(this_is_one_yx, this_pop, alleles_adaptation_coef, map1);
         put_one_species.populations_this_species.push_back(this_pop);
