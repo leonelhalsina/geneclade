@@ -165,6 +165,9 @@ using namespace std;
      vector<int> id_alive_species;
      for (int i = 0; i < all_species.size(); ++i)
      {
+
+
+
        if (all_species[i].alive)
        {
          id_alive_species.push_back(all_species[i].id);
@@ -756,6 +759,13 @@ using namespace std;
    final_indviduals = 0;
    for(int iji = 0; iji < all_species.size(); ++iji)
    {
+     // checks for alleles and loci
+     for(int ij = 0; ij < all_species[iji].populations_this_species.size();++ij)
+     {
+       all_species[iji].populations_this_species[ij].check_alleles();
+     }
+
+
      if(all_species[iji].alive)
      {
        total_geneflow_events = total_geneflow_events + all_species[iji].succesful_geneflow_events;

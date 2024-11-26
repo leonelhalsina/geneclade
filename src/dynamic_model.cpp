@@ -20,6 +20,29 @@ using namespace std;
 // const int y_max = 42;
 // vector <species> all_species;
 
+
+void population_structure::check_alleles(){
+  int sum_from_selection;
+  int sum_from_neutral;
+  sum_from_selection = allelic_a1 + allelic_b1 + allelic_c1 + allelic_d1 + allelic_e1 + allelic_f1 + allelic_g1 +
+    allelic_h1 + allelic_i1 + allelic_j1 + allelic_k1 + allelic_l1 + allelic_m1 + allelic_n1 + allelic_o1;
+
+  sum_from_neutral = allelic_a2 + allelic_b2 + allelic_c2 + allelic_d2 + allelic_e2 + allelic_f2 + allelic_g2 +
+    allelic_h2 + allelic_i2 + allelic_j2 + allelic_k2 + allelic_l2 + allelic_m2 + allelic_n2 + allelic_o2;
+// cout << "checking allelic frequencies " << endl;
+//
+// cout << "pop_size " << pop_size << endl;
+// cout << "sum_from_selection " << sum_from_selection << endl;
+// cout << "sum_from_neutral " << sum_from_neutral << endl;
+  if (sum_from_selection != sum_from_neutral || sum_from_selection != pop_size)
+  {
+    cout << "pop_size " << pop_size << endl;
+    cout << "sum_from_selection " << sum_from_selection << endl;
+    cout << "sum_from_neutral " << sum_from_neutral << endl;
+    stop("problem with allelic frequencies");
+  }
+}
+
 bool any_element_match(int this_element, vector <int> this_vector){
 
   bool found;
@@ -4064,7 +4087,7 @@ List get_me_output (int y_max, int x_max, vector<species> all_species, double t)
     list_all_species_allele_N1.push_back(list_allele_N1_one_species);
     list_all_species_allele_O1.push_back(list_allele_O1_one_species);
 
-    list_all_species_allele_A2.push_back(list_allele_A1_one_species);
+    list_all_species_allele_A2.push_back(list_allele_A2_one_species);
     list_all_species_allele_B2.push_back(list_allele_B2_one_species);
     list_all_species_allele_C2.push_back(list_allele_C2_one_species);
     list_all_species_allele_D2.push_back(list_allele_D2_one_species);

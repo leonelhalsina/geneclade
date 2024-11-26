@@ -105,7 +105,7 @@ public:
   int allelic_o2;
 
 
-
+  void check_alleles();
   void happening_population_popchange(landscape **map1, double , vector<int> , yx  );
   void happening_mutation();
 
