@@ -123,11 +123,11 @@ using namespace std;
 
    int full_saturation_indi;
    int total_indviduals;
-
-   double first_equi_at;
+   int cycle_condition_met;
+   int individuals_condition_met;
+   int pops_condition_met;
+   double time_condition_met;
    int richness_at_equilibrium;
-   int populations_at_equilibrium;
-   int individuals_at_equilibrium;
    double t;
    t = starting_time;
    bool pending_change_in_rates;
@@ -137,7 +137,8 @@ using namespace std;
 
    bool condition_to_stop_met;
    condition_to_stop_met = false;
-
+   bool pending_show_stop_message;
+   pending_show_stop_message = true;
    vector <int> accumul_satu_values;
    int previous_satu = 0;
    int count_same_satura = 0;
@@ -213,20 +214,22 @@ using namespace std;
      full_saturation_indi = round((((total_num_populations/id_alive_species.size())/(double)absolute_cells_to_live) * 100.0 ));
 
      // bit that looks for equilibrium and stops simulation when certain conditions are met
-     if(condition_to_stop == "richness" && id_alive_species.size() == max_spp)
+     if(condition_to_stop == "richness" && id_alive_species.size() == max_spp && pending_show_stop_message)
      {
        condition_to_stop_met = true;
        cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
        // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
        cout << "_________richness is complete" << endl;
+       pending_show_stop_message = false;
      }
 
-     if(condition_to_stop == "time" &&  t >= simulated_time)
+     if(condition_to_stop == "time" &&  t >= simulated_time && pending_show_stop_message)
      {
        cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
        // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
        cout << "_________time is up" << endl;
        condition_to_stop_met = true;
+       pending_show_stop_message = false;
      }
 
 
@@ -271,10 +274,11 @@ using namespace std;
        model_output = get_me_output(y_max,x_max,all_species,t);
        time_slices_model_output.push_back(model_output);
 
-       first_equi_at = t;
+       time_condition_met = t;
+       cycle_condition_met = cycles;
+       individuals_condition_met = total_indviduals;
+       pops_condition_met = total_num_populations;
        richness_at_equilibrium = id_alive_species.size();
-       populations_at_equilibrium = total_num_populations;
-       individuals_at_equilibrium = total_indviduals;
 
        if(time_percent_stop_after_first_equilibrium_and_disturbance != 0)
        {
@@ -774,9 +778,13 @@ using namespace std;
    {
      cout << "change in rates and/or temperature did take place" << endl;
      //if(time_percent_stop_after_first_equilibrium_and_disturbance  != 0){
-     cout << "first_equi_at: " << first_equi_at << endl;
+     cout << "time_condition_met: " << time_condition_met << endl;
+
+     cout << "cycle_condition_met: " << cycle_condition_met << endl;
+     cout << "individuals_condition_met: " << individuals_condition_met << endl;
+     cout << "pops_condition_met: " << pops_condition_met << endl;
      cout << "and it let the model run some more time and stop at: " << t << " which is "<< time_percent_stop_after_first_equilibrium_and_disturbance <<" % more of the time the simulation had already run for" << endl;
-     cout << " richness_at_equilibrium: " << richness_at_equilibrium << " populations_at_equilibrium: " << populations_at_equilibrium << " individuals_at_equilibrium: " << individuals_at_equilibrium <<endl;
+     cout << " richness_at_equilibrium: " << richness_at_equilibrium  << endl;
 
      //}
 
