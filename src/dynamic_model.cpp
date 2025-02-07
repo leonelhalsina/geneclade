@@ -29,11 +29,11 @@ void population_structure::check_alleles(){
 
   sum_from_neutral = allelic_a2 + allelic_b2 + allelic_c2 + allelic_d2 + allelic_e2 + allelic_f2 + allelic_g2 +
     allelic_h2 + allelic_i2 + allelic_j2 + allelic_k2 + allelic_l2 + allelic_m2 + allelic_n2 + allelic_o2;
-// cout << "checking allelic frequencies " << endl;
-//
-// cout << "pop_size " << pop_size << endl;
-// cout << "sum_from_selection " << sum_from_selection << endl;
-// cout << "sum_from_neutral " << sum_from_neutral << endl;
+  // cout << "checking allelic frequencies " << endl;
+  //
+  // cout << "pop_size " << pop_size << endl;
+  // cout << "sum_from_selection " << sum_from_selection << endl;
+  // cout << "sum_from_neutral " << sum_from_neutral << endl;
   if (sum_from_selection != sum_from_neutral || sum_from_selection != pop_size)
   {
     cout << "pop_size " << pop_size << endl;
@@ -1624,7 +1624,7 @@ void show_all_species_data(vector <species> all_species)
   }
 
 }
-void species::happening_population_popchange_this_species(double sd_normal_distribution_pop_change, landscape **map1, vector<int> alleles_adaptation_coef)
+void species::happening_population_popchange_this_species(bool growth_only, double sd_normal_distribution_pop_change, landscape **map1, vector<int> alleles_adaptation_coef)
 {
 
   int random_population_to_popchange;
@@ -1633,12 +1633,12 @@ void species::happening_population_popchange_this_species(double sd_normal_distr
   int original_size_this_pop;
   this_cell = presence[random_population_to_popchange - 1];
   original_size_this_pop = populations_this_species[random_population_to_popchange - 1].pop_size;
-  populations_this_species[random_population_to_popchange - 1].happening_population_popchange(map1, sd_normal_distribution_pop_change, alleles_adaptation_coef, this_cell); // -1 as it is index
+  populations_this_species[random_population_to_popchange - 1].happening_population_popchange(growth_only,map1, sd_normal_distribution_pop_change, alleles_adaptation_coef, this_cell); // -1 as it is index
   total_pop_size = total_pop_size + (populations_this_species[random_population_to_popchange - 1].pop_size - original_size_this_pop);
   computed_rate_based_on_temperature[random_population_to_popchange - 1] = link_fitnesslike_mu_gamma(this_cell, populations_this_species[random_population_to_popchange - 1], alleles_adaptation_coef, map1);
 }
 
-void population_structure::happening_population_popchange(landscape **map1,double sd_normal_distribution_pop_change, vector<int> alleles_adaptation_coef, yx this_cell)
+void population_structure::happening_population_popchange(bool growth_only, landscape **map1,double sd_normal_distribution_pop_change, vector<int> alleles_adaptation_coef, yx this_cell)
 {
   int cell_temperature;
   cell_temperature = map1[this_cell.y - 1][this_cell.x - 1].temperature;
@@ -1662,7 +1662,11 @@ void population_structure::happening_population_popchange(landscape **map1,doubl
     }
 
   }
-  change_in_population = abs(change_in_population); // to DELETE? line to allow only pop grow
+  if(growth_only)
+  {
+    change_in_population = abs(change_in_population);
+  }
+
 
 
   // if the population grows, it cannot exceed K
@@ -2371,7 +2375,7 @@ vector<yx> species::find_neighbor(int y_max, int x_max,int cell)
   return adjacent_cells;
 }
 
-probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> all_species, landscape **map1, std::string extirpation_depen, bool colonization_depen_temperature,bool species_trait_state_gamma, double mutation_rate, double geneflow_rate, double popchange_rate, double lambda, double gamma, double mu, vector<int> id_alive_species, double v)
+probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> all_species, landscape **map1, std::string extirpation_depen, bool colonization_depen_temperature,std::string species_trait_state, double mutation_rate, double geneflow_rate, double popchange_rate, double lambda, double gamma, double mu, vector<int> id_alive_species, double v)
 {
   // int species_to_do;
   // species_to_do = id_alive_species[give_me_random_uniform(0, (id_alive_species.size()-1))];
@@ -2426,7 +2430,7 @@ probabilities_based_traits calculate_probabilities_using_traitstate(vector<speci
         this_species_gamma = work_this_species.range * gamma;
       }
 
-      if(species_trait_state_gamma){
+      if(species_trait_state == "gamma" || species_trait_state == "both"){
 
         double use_this_percentage;
         use_this_percentage = work_this_species.trait_state;
@@ -2440,6 +2444,24 @@ probabilities_based_traits calculate_probabilities_using_traitstate(vector<speci
       }
 
       this_species_geneflow = work_this_species.range * geneflow_rate;
+
+
+      if(species_trait_state == "geneflow" || species_trait_state == "both"){
+
+        double use_this_percentage;
+        use_this_percentage = work_this_species.trait_state;
+        if(work_this_species.trait_state > 200.0){
+          use_this_percentage = 199.0;
+        }
+        if(work_this_species.trait_state < 1.1){
+          use_this_percentage = 1.0;
+        }
+        this_species_geneflow = ((this_species_geneflow * use_this_percentage)/100.0);
+      }
+
+
+
+
       this_species_lambda = work_this_species.range * lambda;
       this_species_popchange = work_this_species.range * popchange_rate;
 
@@ -3123,21 +3145,21 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
 
 
       //
-            // cout << "current_allelic_frequency A1 "<<current_allelic_frequency[0] << endl;
-            // cout << "current_allelic_frequency B1 "<<current_allelic_frequency[1] << endl;
-            // cout << "current_allelic_frequency C1 "<<current_allelic_frequency[2] << endl;
-            // cout << "current_allelic_frequency D1 "<<current_allelic_frequency[3] << endl;
-            // cout << "current_allelic_frequency E1 "<<current_allelic_frequency[4] << endl;
-            // cout << "current_allelic_frequency F1 "<<current_allelic_frequency[5] << endl;
-            // cout << "current_allelic_frequency G1 "<<current_allelic_frequency[6] << endl;
-            // cout << "current_allelic_frequency H1 "<<current_allelic_frequency[7] << endl;
-            // cout << "current_allelic_frequency I1 "<<current_allelic_frequency[8] << endl;
-            // cout << "current_allelic_frequency J1 "<<current_allelic_frequency[9] << endl;
-            // cout << "current_allelic_frequency K1 "<<current_allelic_frequency[10] << endl;
-            // cout << "current_allelic_frequency L1 "<<current_allelic_frequency[11] << endl;
-            // cout << "current_allelic_frequency M1 "<<current_allelic_frequency[12] << endl;
-            // cout << "current_allelic_frequency N1 "<<current_allelic_frequency[13] << endl;
-            // cout << "current_allelic_frequency O1 "<<current_allelic_frequency[14] << endl;
+      // cout << "current_allelic_frequency A1 "<<current_allelic_frequency[0] << endl;
+      // cout << "current_allelic_frequency B1 "<<current_allelic_frequency[1] << endl;
+      // cout << "current_allelic_frequency C1 "<<current_allelic_frequency[2] << endl;
+      // cout << "current_allelic_frequency D1 "<<current_allelic_frequency[3] << endl;
+      // cout << "current_allelic_frequency E1 "<<current_allelic_frequency[4] << endl;
+      // cout << "current_allelic_frequency F1 "<<current_allelic_frequency[5] << endl;
+      // cout << "current_allelic_frequency G1 "<<current_allelic_frequency[6] << endl;
+      // cout << "current_allelic_frequency H1 "<<current_allelic_frequency[7] << endl;
+      // cout << "current_allelic_frequency I1 "<<current_allelic_frequency[8] << endl;
+      // cout << "current_allelic_frequency J1 "<<current_allelic_frequency[9] << endl;
+      // cout << "current_allelic_frequency K1 "<<current_allelic_frequency[10] << endl;
+      // cout << "current_allelic_frequency L1 "<<current_allelic_frequency[11] << endl;
+      // cout << "current_allelic_frequency M1 "<<current_allelic_frequency[12] << endl;
+      // cout << "current_allelic_frequency N1 "<<current_allelic_frequency[13] << endl;
+      // cout << "current_allelic_frequency O1 "<<current_allelic_frequency[14] << endl;
 
 
 
@@ -4118,44 +4140,44 @@ List get_me_output (int y_max, int x_max, vector<species> all_species, double t)
   //}
 
   List model_output_partial1 = List::create(Named("Distribution") = list_all_species_distribution,
-                                   _["popsize_perPop"] = list_all_species_popsize_perPop,
-                                   _["all_change_northernmost"] = all_change_northernmost,
-                                   _["all_change_southernmost"] = all_change_southernmost,
-                                   _["all_time_change_northernmost"] = all_time_change_northernmost,
-                                   _["all_time_change_southernmost"] = all_time_change_southernmost,
-                                   _["Allele_A1"] = list_all_species_allele_A1,
-                                   _["Allele_B1"] = list_all_species_allele_B1,
-                                   _["Allele_C1"] = list_all_species_allele_C1,
-                                   _["Allele_D1"] = list_all_species_allele_D1,
-                                   _["Allele_E1"] = list_all_species_allele_E1,
-                                   _["Allele_F1"] = list_all_species_allele_F1,
-                                   _["Allele_G1"] = list_all_species_allele_G1,
-                                   _["Allele_H1"] = list_all_species_allele_H1,
-                                   _["Allele_I1"] = list_all_species_allele_I1,
-                                   _["Allele_J1"] = list_all_species_allele_J1,
-                                   _["Allele_K1"] = list_all_species_allele_K1,
-                                   _["Allele_L1"] = list_all_species_allele_L1,
-                                   _["Allele_M1"] = list_all_species_allele_M1,
-                                   _["Allele_N1"] = list_all_species_allele_N1);
+                                            _["popsize_perPop"] = list_all_species_popsize_perPop,
+                                            _["all_change_northernmost"] = all_change_northernmost,
+                                            _["all_change_southernmost"] = all_change_southernmost,
+                                            _["all_time_change_northernmost"] = all_time_change_northernmost,
+                                            _["all_time_change_southernmost"] = all_time_change_southernmost,
+                                            _["Allele_A1"] = list_all_species_allele_A1,
+                                            _["Allele_B1"] = list_all_species_allele_B1,
+                                            _["Allele_C1"] = list_all_species_allele_C1,
+                                            _["Allele_D1"] = list_all_species_allele_D1,
+                                            _["Allele_E1"] = list_all_species_allele_E1,
+                                            _["Allele_F1"] = list_all_species_allele_F1,
+                                            _["Allele_G1"] = list_all_species_allele_G1,
+                                            _["Allele_H1"] = list_all_species_allele_H1,
+                                            _["Allele_I1"] = list_all_species_allele_I1,
+                                            _["Allele_J1"] = list_all_species_allele_J1,
+                                            _["Allele_K1"] = list_all_species_allele_K1,
+                                            _["Allele_L1"] = list_all_species_allele_L1,
+                                            _["Allele_M1"] = list_all_species_allele_M1,
+                                            _["Allele_N1"] = list_all_species_allele_N1);
 
   List model_output_partial2 = List::create(Named("Allele_O1") = list_all_species_allele_O1,
-                                    _["Allele_A2"] = list_all_species_allele_A2,
-                                    _["Allele_B2"] = list_all_species_allele_B2,
-                                   _["Allele_C2"] = list_all_species_allele_C2,
-                                   _["Allele_D2"] = list_all_species_allele_D2,
-                                   _["Allele_E2"] = list_all_species_allele_E2,
-                                   _["Allele_F2"] = list_all_species_allele_F2,
-                                   _["Allele_G2"] = list_all_species_allele_G2,
-                                   _["Allele_H2"] = list_all_species_allele_H2,
-                                   _["Allele_I2"] = list_all_species_allele_I2,
-                                   _["Allele_J2"] = list_all_species_allele_J2,
-                                   _["Allele_K2"] = list_all_species_allele_K2,
-                                   _["Allele_L2"] = list_all_species_allele_L2,
-                                   _["Allele_M2"] = list_all_species_allele_M2,
-                                   _["Allele_N2"] = list_all_species_allele_N2,
-                                   _["Allele_O2"] = list_all_species_allele_O2,
-                                   _["Species_Info"] = list_extract_species_data,
-                                   _["total_time"] = list_time);
+                                            _["Allele_A2"] = list_all_species_allele_A2,
+                                            _["Allele_B2"] = list_all_species_allele_B2,
+                                            _["Allele_C2"] = list_all_species_allele_C2,
+                                            _["Allele_D2"] = list_all_species_allele_D2,
+                                            _["Allele_E2"] = list_all_species_allele_E2,
+                                            _["Allele_F2"] = list_all_species_allele_F2,
+                                            _["Allele_G2"] = list_all_species_allele_G2,
+                                            _["Allele_H2"] = list_all_species_allele_H2,
+                                            _["Allele_I2"] = list_all_species_allele_I2,
+                                            _["Allele_J2"] = list_all_species_allele_J2,
+                                            _["Allele_K2"] = list_all_species_allele_K2,
+                                            _["Allele_L2"] = list_all_species_allele_L2,
+                                            _["Allele_M2"] = list_all_species_allele_M2,
+                                            _["Allele_N2"] = list_all_species_allele_N2,
+                                            _["Allele_O2"] = list_all_species_allele_O2,
+                                            _["Species_Info"] = list_extract_species_data,
+                                            _["total_time"] = list_time);
 
   List model_output = List::create();
   // List model_output = List::create(model_output_partial1,

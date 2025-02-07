@@ -23,10 +23,10 @@ using namespace std;
                     NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,
                     IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow,
                     double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,
-                    double q, double lambda, bool species_trait_state_gamma,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
-                    double sd_normal_distribution_pop_change,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
+                    double q, double lambda, std::string species_trait_state,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
+                    double sd_normal_distribution_pop_change,bool growth_only,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
                     double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation,bool speciation_rangesize_unlinked, bool colonization_rangesize_unlinked,
-                    double time_percent_stop_after_first_equilibrium_and_disturbance,IntegerVector time_slices,IntegerVector manual_speciation_events_timing)
+                    double time_percent_stop_after_first_equilibrium_and_disturbance,std::string condition_to_stop,IntegerVector time_slices,IntegerVector manual_speciation_events_timing)
  {
 
    List time_slices_model_output = List::create();
@@ -135,6 +135,9 @@ using namespace std;
    equilibrium_achieved = false;
    pending_change_in_rates = true;
 
+   bool condition_to_stop_met;
+   condition_to_stop_met = false;
+
    vector <int> accumul_satu_values;
    int previous_satu = 0;
    int count_same_satura = 0;
@@ -148,7 +151,7 @@ using namespace std;
    set_landscape(map_elevation_vector, map_k_vector, map_temperature_vector, y_max, x_max, map1);
    populate_landscape(y_max,x_max,all_species, map1);
    to_show_richness_map(y_max,x_max,show_richness_map,all_species,map1);
-   while (t < simulated_time && total_num_populations > 0 && cycles < maximum_cycles)
+   while (total_num_populations > 0 && cycles < maximum_cycles)
    {
 
      cycles = cycles + 1;
@@ -186,7 +189,7 @@ using namespace std;
      vector<double> total_probability_species;
      probabilities_based_traits calculation_probabilities;
 
-     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1,  extirpation_depen, colonization_depen_temperature, species_trait_state_gamma, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
+     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1,  extirpation_depen, colonization_depen_temperature, species_trait_state, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
      total_probability_species = calculation_probabilities.total_probability_species;
      discrete_distribution<int> species_probabilities_to_pick(total_probability_species.begin(), total_probability_species.end());
      species_to_do = id_alive_species[species_probabilities_to_pick(generator)];
@@ -210,9 +213,21 @@ using namespace std;
      full_saturation_indi = round((((total_num_populations/id_alive_species.size())/(double)absolute_cells_to_live) * 100.0 ));
 
      // bit that looks for equilibrium and stops simulation when certain conditions are met
+     if(condition_to_stop == "richness" && id_alive_species.size() == max_spp)
+     {
+       condition_to_stop_met = true;
+       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
+       // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
+       cout << "_________richness is complete" << endl;
+     }
 
-
-
+     if(condition_to_stop == "time" &&  t >= simulated_time)
+     {
+       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
+       // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
+       cout << "_________time is up" << endl;
+       condition_to_stop_met = true;
+     }
 
 
 
@@ -244,95 +259,85 @@ using namespace std;
      // }
 
 
-
-
-
-     if(event_to_do == "speciation" ||event_to_do == "contraction" || event_to_do == "expansion" ){ // these are the events that change range size
-       //
-       //      cout << "this full_saturation_indi " << full_saturation_indi << " at cyle: " << cycles << endl;
-       accumul_satu_values.push_back(full_saturation_indi);
-      //      cout << "lenghth accumul_satu_values: " << accumul_satu_values.size() << endl;
-       //      for (int ij = 0; ij < accumul_satu_values.size(); ++ij){
-       //        cout << " "<< accumul_satu_values[ij] ;
-       //      }
-       // cout << endl;
-       if(accumul_satu_values.size() > 300)
-       {
-         cout << " over limit in vector length" << endl;
-         break;
-       }
-
-       if(accumul_satu_values.size() == 300)
-       {
-         double this_variance;
-         this_variance = calculate_variance(accumul_satu_values);
-         cout << "Variance in average range size: " << this_variance << endl;
-
-         counting_to_print_variance = counting_to_print_variance + 1;
-         if(counting_to_print_variance == 100 )
-         {
-           cout << "Variance in average range size: " << this_variance << endl;
-           counting_to_print_variance = 0;
-         }
-
-         if(this_variance == 0){
-           cout << "equilibrium found at: " << t << endl;
-           equilibrium_achieved = true;
-           if(do_change_map_rates ){
-
-             accumul_satu_values.clear();
-            // cout << "size of accumul_satu_values:  " << accumul_satu_values.size() << endl;
-
-           }
-           else
-           {
-             break;
-           }
-
-           if(do_change_map_rates  && pending_change_in_rates == false   && time_percent_stop_after_first_equilibrium_and_disturbance == 0 ) // so it does not break when I set fisxed time
-           {
-             cout << "second equilibrium found" << endl;
-             break;
-           }
-
-         }
-         else
-         {
-           accumul_satu_values.erase(accumul_satu_values.begin());
-         }
-       }
-     }
-
-     if(equilibrium_achieved && do_change_map_rates && pending_change_in_rates)
+     if(condition_to_stop_met && do_change_map_rates && pending_change_in_rates)
      {
        change_temperature_map(x_max,y_max,map_temperature_vector2,map1);
        change_k_map(x_max,y_max,map_k_vector2,map1);
        gamma = second_gamma;
        mu =  second_mu;
+       lambda = 0;
 
        List model_output = List::create();
        model_output = get_me_output(y_max,x_max,all_species,t);
        time_slices_model_output.push_back(model_output);
 
+       first_equi_at = t;
+       richness_at_equilibrium = id_alive_species.size();
+       populations_at_equilibrium = total_num_populations;
+       individuals_at_equilibrium = total_indviduals;
+
        if(time_percent_stop_after_first_equilibrium_and_disturbance != 0)
        {
 
          cout << "current time: " << t << endl;
-         first_equi_at = t;
-         richness_at_equilibrium = id_alive_species.size();
-         populations_at_equilibrium = total_num_populations;
-         individuals_at_equilibrium = total_indviduals;
          simulated_time = t + (t * (time_percent_stop_after_first_equilibrium_and_disturbance/100)); // to stop the simulation some time (some % of time) after the change in map/rates.
 
-       cout << "__________simulated_time to run until " << simulated_time << endl;
+         cout << "__________simulated_time to run until " << simulated_time << endl;
        }
 
        pending_change_in_rates = false;
-       accumul_satu_values.clear();
+       //accumul_satu_values.clear();
        //cout << "size_ accumul_satu_values.clear() "<<  accumul_satu_values.size() << endl;
        cout << "___changing local extirpation rates and/or map temperature__" << endl;
 
      }
+
+     if(condition_to_stop_met)
+     {
+       if(event_to_do == "speciation" ||event_to_do == "contraction" || event_to_do == "expansion" ){ // these are the events that change range size
+         //
+         //      cout << "this full_saturation_indi " << full_saturation_indi << " at cyle: " << cycles << endl;
+         accumul_satu_values.push_back(full_saturation_indi);
+         //      cout << "lenghth accumul_satu_values: " << accumul_satu_values.size() << endl;
+         //      for (int ij = 0; ij < accumul_satu_values.size(); ++ij){
+         //        cout << " "<< accumul_satu_values[ij] ;
+         //      }
+         // cout << endl;
+         if(accumul_satu_values.size() > 300)
+         {
+           cout << " over limit in vector length" << endl;
+           break;
+         }
+         if(accumul_satu_values.size() == 300)
+         {
+           double this_variance;
+           this_variance = calculate_variance(accumul_satu_values);
+           //cout << "Variance in average range size: " << this_variance << endl;
+
+           counting_to_print_variance = counting_to_print_variance + 1;
+           if(counting_to_print_variance == 100 )
+           {
+             cout << "Variance in average range size: " << this_variance << endl;
+             counting_to_print_variance = 0;
+           }
+
+           if(this_variance == 0){
+
+
+
+             cout << " final equilibrium found, so I stop" << endl;
+             break;
+
+
+           }
+           else
+           {
+             accumul_satu_values.erase(accumul_satu_values.begin());
+           }
+         }
+       }
+     }
+
 
      // if(equilibrium_achieved && do_change_map_rates && pending_change_in_rates == false  && full_saturation_indi == stop_at_saturation)
      // {
@@ -347,23 +352,11 @@ using namespace std;
      // }
 
 
-     if(id_alive_species.size() >= max_spp)
-     {
-       lambda = 0;
-     }
-
-
 
 
      // end of it
      //if (t >= simulated_time || id_alive_species.size() >= max_spp)
-     if (t >= simulated_time )
-     {
-       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
-       // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
-       cout << "_________time is up" << endl;
-       break;
-     }
+
      //if ((round(t) - round(t_previous_cycle)) > 0)
      // cout << "t: " << t << " "<< t_previous_cycle << endl;
      // cout << (t + (t * 0.0005))  << endl;
@@ -557,7 +550,7 @@ using namespace std;
      if(cycles < list_events_to_do.size()){
        //event_to_do = list_events_to_do[cycles - 1];   // to DELETE
      }
-      //cout << "                       event_to_do: " << event_to_do << endl;
+     //cout << "                       event_to_do: " << event_to_do << endl;
 
 
      // all_species[species_to_do].find_patches_distribution(); // to DELETE
@@ -652,7 +645,7 @@ using namespace std;
      {
        // cout << "                  i will pop_change" << endl;
 
-       all_species[species_to_do].happening_population_popchange_this_species(sd_normal_distribution_pop_change, map1, alleles_adaptation_coef);
+       all_species[species_to_do].happening_population_popchange_this_species(growth_only,sd_normal_distribution_pop_change, map1, alleles_adaptation_coef);
        all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
        total_popchange_events = total_popchange_events + 1;
      }
@@ -780,12 +773,12 @@ using namespace std;
    if(pending_change_in_rates == false)
    {
      cout << "change in rates and/or temperature did take place" << endl;
-     if(time_percent_stop_after_first_equilibrium_and_disturbance  != 0){
-       cout << "first_equi_at: " << first_equi_at << endl;
-       cout << "and it let the model run some more time and stop at: " << t << " which is "<< time_percent_stop_after_first_equilibrium_and_disturbance <<" % more of the time the simulation had already run for" << endl;
-       cout << " richness_at_equilibrium: " << richness_at_equilibrium << " populations_at_equilibrium: " << populations_at_equilibrium << " individuals_at_equilibrium: " << individuals_at_equilibrium <<endl;
+     //if(time_percent_stop_after_first_equilibrium_and_disturbance  != 0){
+     cout << "first_equi_at: " << first_equi_at << endl;
+     cout << "and it let the model run some more time and stop at: " << t << " which is "<< time_percent_stop_after_first_equilibrium_and_disturbance <<" % more of the time the simulation had already run for" << endl;
+     cout << " richness_at_equilibrium: " << richness_at_equilibrium << " populations_at_equilibrium: " << populations_at_equilibrium << " individuals_at_equilibrium: " << individuals_at_equilibrium <<endl;
 
-     }
+     //}
 
    }
    cout << "events took place: " << endl;

@@ -106,7 +106,7 @@ public:
 
 
   void check_alleles();
-  void happening_population_popchange(landscape **map1, double , vector<int> , yx  );
+  void happening_population_popchange(bool, landscape **map1, double , vector<int> , yx  );
   void happening_mutation();
 
 private:
@@ -156,7 +156,7 @@ public:
 
   vector <population_structure> populations_this_species;
   void update_latitudinal_borders(double, bool,bool);
-  void happening_population_popchange_this_species(double , landscape **map1, vector<int>  );
+  void happening_population_popchange_this_species(bool, double , landscape **map1, vector<int>  );
   void happening_gene_flow(int,int, double,landscape **map1);
   void happening_mutation_this_species() ;
   void happening_trait_evolution(double, double);
@@ -188,7 +188,7 @@ void change_temperature_map(int,int,IntegerVector ,landscape **map1);
 void change_k_map(int,int,IntegerVector ,landscape **map1);
 vector <double> extract_temperature_func ( species);
 vector <species> get_species_intocpp(vector<species> , IntegerVector ,IntegerVector, IntegerVector , IntegerVector , IntegerVector , IntegerVector , IntegerVector , NumericVector , NumericVector , NumericVector , IntegerVector , int , landscape **map1, vector<int> , double , double , double , std::string, bool);
-probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> , landscape **map1,  std::string  , bool ,bool, double, double, double , double , double , double , vector<int> , double  );
+probabilities_based_traits calculate_probabilities_using_traitstate(vector<species> , landscape **map1,  std::string  , bool ,std::string, double, double, double , double , double , double , vector<int> , double  );
 void populate_landscape(int, int, vector <species> all_species,landscape **map1);
 void to_show_richness_map(int,int, std::string,vector<species>,landscape **map1);
 List extract_species_data(int, int, vector <species> process_all_species);
