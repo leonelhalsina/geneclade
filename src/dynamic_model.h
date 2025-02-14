@@ -86,6 +86,16 @@ public:
   int allelic_m1;
   int allelic_n1;
   int allelic_o1;
+  int allelic_p1;
+  int allelic_q1;
+  int allelic_r1;
+  int allelic_s1;
+  int allelic_t1;
+  int allelic_u1;
+  int allelic_v1;
+  int allelic_w1;
+  int allelic_x1;
+  int allelic_y1;
 
   // neutral
   int allelic_a2;
@@ -103,6 +113,18 @@ public:
   int allelic_m2;
   int allelic_n2;
   int allelic_o2;
+
+  int allelic_p2;
+  int allelic_q2;
+  int allelic_r2;
+  int allelic_s2;
+  int allelic_t2;
+  int allelic_u2;
+  int allelic_v2;
+  int allelic_w2;
+  int allelic_x2;
+  int allelic_y2;
+
 
 
   void check_alleles();
