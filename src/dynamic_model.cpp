@@ -26,7 +26,7 @@ void population_structure::check_alleles(){
   int sum_from_neutral;
   sum_from_selection = allelic_a1 + allelic_b1 + allelic_c1 + allelic_d1 + allelic_e1 + allelic_f1 + allelic_g1 +
     allelic_h1 + allelic_i1 + allelic_j1 + allelic_k1 + allelic_l1 + allelic_m1 + allelic_n1 + allelic_o1  +
-  allelic_p1 + allelic_q1 + allelic_r1 + allelic_s1 + allelic_t1 + allelic_u1 + allelic_v1 + allelic_w1 +
+    allelic_p1 + allelic_q1 + allelic_r1 + allelic_s1 + allelic_t1 + allelic_u1 + allelic_v1 + allelic_w1 +
     allelic_x1 + allelic_y1;
 
   sum_from_neutral = allelic_a2 + allelic_b2 + allelic_c2 + allelic_d2 + allelic_e2 + allelic_f2 + allelic_g2 +
@@ -317,7 +317,7 @@ void change_temperature_map(int x_max, int y_max, IntegerVector map_temperature_
   {
     for (int j = 0; j < x_max; j++)
     {
-      map1[i][j].temperature = map_temperature_vector2[(i * y_max) + j];
+      map1[i][j].temperature = map_temperature_vector2[(i * x_max) + j];
     }
     // cout << endl;
   }
@@ -329,7 +329,7 @@ void change_k_map(int x_max, int y_max, IntegerVector map_k_vector2,landscape **
   {
     for (int j = 0; j < x_max; j++)
     {
-      map1[i][j].k_patch = map_k_vector2[(i * y_max) + j];
+      map1[i][j].k_patch = map_k_vector2[(i * x_max) + j];
     }
     // cout << endl;
   }
@@ -1411,8 +1411,6 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
     weights_for_wallenius.push_back(1);
     weights_for_wallenius.push_back(1);
 
-    int random_id_selector;
-    random_id_selector = id_neigh_cells[give_me_random_uniform(0, (id_neigh_cells.size() - 1))];
     // cout << "focal_cell " << focal_cell << endl;
     // cout <<  "random_id_selector " << random_id_selector << endl;
     // cout << "populations_this_species[focal_cell].pop_size: " << populations_this_species[focal_cell].pop_size  << endl;
@@ -1437,10 +1435,22 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
     int number_alleles_to_giveaway_neighbour;
 
     int k_at_focal;
-    int k_at_neighbour;
+
 
     k_at_focal = map1[presence[focal_cell].y - 1 ][presence[focal_cell ].x - 1].k_patch;
-    k_at_neighbour = map1[presence[random_id_selector].y - 1][presence[random_id_selector].x - 1].k_patch;
+
+
+    int k_at_neighbour;
+    k_at_neighbour = -9;
+    int random_id_selector;
+    while(k_at_neighbour == -9){
+
+      random_id_selector = id_neigh_cells[give_me_random_uniform(0, (id_neigh_cells.size() - 1))];
+      k_at_neighbour = map1[presence[random_id_selector].y - 1][presence[random_id_selector].x - 1].k_patch;
+
+
+    }
+
     int pre_genflow_cell_abundance_focal;
     int pre_genflow_cell_abundance_neighbour;
 
@@ -1456,6 +1466,16 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
 
     if (k_at_focal == -9)
     {
+
+      cout << "species presence " << endl;
+        for(int i = 0; i < presence.size(); ++i)
+        {
+        cout << presence[i].x << "_"<< presence[i].y << "map k: " << map1 [presence[i].y - 1][presence[i].x - 1].k_patch << endl;
+          cout << presence[i].x << "_"<< presence[i].y << "map temp: " << map1 [presence[i].y - 1][presence[i].x - 1].temperature << endl;
+
+        }
+
+
       stop("invalid k value at  k_at_focal ");
     }
     if (k_at_neighbour == -9)
@@ -1681,16 +1701,16 @@ void species::happening_gene_flow(int y_max,int x_max, double percentage_flow,la
     populations_this_species[focal_cell].allelic_n1 = populations_this_species[focal_cell].allelic_n1 - (contribution_allelic_frequency_focal[13] - sampled_for_focal[13]);
     populations_this_species[focal_cell].allelic_o1 = populations_this_species[focal_cell].allelic_o1 - (contribution_allelic_frequency_focal[14] - sampled_for_focal[14]);
 
-populations_this_species[focal_cell].allelic_p1 = populations_this_species[focal_cell].allelic_p1 - (contribution_allelic_frequency_focal[15] - sampled_for_focal[15]);
-populations_this_species[focal_cell].allelic_q1 = populations_this_species[focal_cell].allelic_q1 - (contribution_allelic_frequency_focal[16] - sampled_for_focal[16]);
-populations_this_species[focal_cell].allelic_r1 = populations_this_species[focal_cell].allelic_r1 - (contribution_allelic_frequency_focal[17] - sampled_for_focal[17]);
-populations_this_species[focal_cell].allelic_s1 = populations_this_species[focal_cell].allelic_s1 - (contribution_allelic_frequency_focal[18] - sampled_for_focal[18]);
-populations_this_species[focal_cell].allelic_t1 = populations_this_species[focal_cell].allelic_t1 - (contribution_allelic_frequency_focal[19] - sampled_for_focal[19]);
-populations_this_species[focal_cell].allelic_u1 = populations_this_species[focal_cell].allelic_u1 - (contribution_allelic_frequency_focal[20] - sampled_for_focal[20]);
-populations_this_species[focal_cell].allelic_v1 = populations_this_species[focal_cell].allelic_v1 - (contribution_allelic_frequency_focal[21] - sampled_for_focal[21]);
-populations_this_species[focal_cell].allelic_w1 = populations_this_species[focal_cell].allelic_w1 - (contribution_allelic_frequency_focal[22] - sampled_for_focal[22]);
-populations_this_species[focal_cell].allelic_x1 = populations_this_species[focal_cell].allelic_x1 - (contribution_allelic_frequency_focal[23] - sampled_for_focal[23]);
-populations_this_species[focal_cell].allelic_y1 = populations_this_species[focal_cell].allelic_y1 - (contribution_allelic_frequency_focal[24] - sampled_for_focal[24]);
+    populations_this_species[focal_cell].allelic_p1 = populations_this_species[focal_cell].allelic_p1 - (contribution_allelic_frequency_focal[15] - sampled_for_focal[15]);
+    populations_this_species[focal_cell].allelic_q1 = populations_this_species[focal_cell].allelic_q1 - (contribution_allelic_frequency_focal[16] - sampled_for_focal[16]);
+    populations_this_species[focal_cell].allelic_r1 = populations_this_species[focal_cell].allelic_r1 - (contribution_allelic_frequency_focal[17] - sampled_for_focal[17]);
+    populations_this_species[focal_cell].allelic_s1 = populations_this_species[focal_cell].allelic_s1 - (contribution_allelic_frequency_focal[18] - sampled_for_focal[18]);
+    populations_this_species[focal_cell].allelic_t1 = populations_this_species[focal_cell].allelic_t1 - (contribution_allelic_frequency_focal[19] - sampled_for_focal[19]);
+    populations_this_species[focal_cell].allelic_u1 = populations_this_species[focal_cell].allelic_u1 - (contribution_allelic_frequency_focal[20] - sampled_for_focal[20]);
+    populations_this_species[focal_cell].allelic_v1 = populations_this_species[focal_cell].allelic_v1 - (contribution_allelic_frequency_focal[21] - sampled_for_focal[21]);
+    populations_this_species[focal_cell].allelic_w1 = populations_this_species[focal_cell].allelic_w1 - (contribution_allelic_frequency_focal[22] - sampled_for_focal[22]);
+    populations_this_species[focal_cell].allelic_x1 = populations_this_species[focal_cell].allelic_x1 - (contribution_allelic_frequency_focal[23] - sampled_for_focal[23]);
+    populations_this_species[focal_cell].allelic_y1 = populations_this_species[focal_cell].allelic_y1 - (contribution_allelic_frequency_focal[24] - sampled_for_focal[24]);
 
     populations_this_species[random_id_selector].allelic_a1 = populations_this_species[random_id_selector].allelic_a1 - (contribution_allelic_frequency_other[0] - sampled_for_other[0]);
     populations_this_species[random_id_selector].allelic_b1 = populations_this_species[random_id_selector].allelic_b1 - (contribution_allelic_frequency_other[1] - sampled_for_other[1]);
@@ -2007,7 +2027,7 @@ void show_all_species_data(vector <species> all_species)
       << " allele w: " << do_this_population.allelic_w1
       << " allele x: " << do_this_population.allelic_x1
       << " allele y: " << do_this_population.allelic_y1
-          << endl;
+      << endl;
 
       cout<< "      allele a2: " << do_this_population.allelic_a2
           << " allele b2: " << do_this_population.allelic_b2
@@ -2035,7 +2055,7 @@ void show_all_species_data(vector <species> all_species)
       << " allele w2: " << do_this_population.allelic_w2
       << " allele x2: " << do_this_population.allelic_x2
       << " allele y2: " << do_this_population.allelic_y2
-          << endl;
+      << endl;
 
 
     }
@@ -2391,7 +2411,7 @@ void population_structure::happening_population_popchange(bool growth_only, land
       {
         current_allelic_frequency.push_back(0);
       }
-  //
+      //
 
       if(allelic_p1 > 0){
         current_allelic_frequency.push_back(1800); // any large number will do
@@ -3271,8 +3291,10 @@ vector<yx> species::available_neigh_to_colonize_K(int x_max, int y_max, int foca
   for (int i = 0; i < neighbors_focal.size(); i++)
   {
     int type_habitat;
-    // cout << "coordinate x: " << neighbors_focal[i].x << " and y: " << neighbors_focal[i].y << endl;
+    //cout << "coordinate x: " << neighbors_focal[i].x << " and y: " << neighbors_focal[i].y << endl;
     type_habitat = map1[neighbors_focal[i].y - 1][neighbors_focal[i].x - 1].habitat;
+    //cout << "habitat cell: " << type_habitat << endl;
+
     if (type_habitat != -9)
     {
       neighbors_focal_good_habitat.push_back(neighbors_focal[i]);
@@ -3302,7 +3324,7 @@ vector<yx> species::available_neigh_to_colonize_K(int x_max, int y_max, int foca
   for (int i = 0; i < neighbors_focal_good_habitat.size(); i++)
   {
     int type_habitat;
-    // cout << "coordinate x: " << neighbors_focal[i].x << " and y: " << neighbors_focal[i].y << endl;
+     //cout << "coordinate x: " << neighbors_focal[i].x << " and y: " << neighbors_focal[i].y << endl;
     type_habitat = map_artificial[neighbors_focal_good_habitat[i].y - 1][neighbors_focal_good_habitat[i].x - 1].habitat;
     //cout << "habitat cell: " << type_habitat << endl;
     if (type_habitat != -9)
@@ -3324,8 +3346,8 @@ vector<yx> species::available_neigh_to_colonize_K(int x_max, int y_max, int foca
     k_patch = map1[neighbors_focal_good_habitat2[i].y - 1][neighbors_focal_good_habitat2[i].x - 1].k_patch;
     total_abundance_cell_cell = map1[neighbors_focal_good_habitat2[i].y - 1][neighbors_focal_good_habitat2[i].x - 1].total_abundance_cell;
     // cout << "this is k patch" << k_patch << "and this is total_abundance_cell_cell: " << total_abundance_cell_cell << endl;
-    // cout << "this is k patch" << k_patch << "and this is richness_cell: " << richness_cell << endl;
-    // cout << "this is k patch" << k_patch << "and this is cell_temperature: " << cell_temperature << endl;
+     //cout << "this is k patch" << k_patch << "and this is richness_cell: " << richness_cell << endl;
+     //cout << "this is k patch" << k_patch << "and this is cell_temperature: " << cell_temperature << endl;
     if (total_abundance_cell_cell < k_patch)
     {
       //  cout <<  "this one is available and under K" << endl;
@@ -4041,14 +4063,14 @@ void species::happening_expansion(int x_max, int y_max, bool use_k, double resti
       new_sum_from_allele = new_population.allelic_a1 + new_population.allelic_b1 + new_population.allelic_c1 + new_population.allelic_d1 + new_population.allelic_e1 +
         new_population.allelic_f1 + new_population.allelic_g1 + new_population.allelic_h1 + new_population.allelic_i1 + new_population.allelic_j1 +
         new_population.allelic_k1 + new_population.allelic_l1 + new_population.allelic_m1 + new_population.allelic_n1 + new_population.allelic_o1 +
-      new_population.allelic_p1 + new_population.allelic_q1 + new_population.allelic_r1 + new_population.allelic_s1 + new_population.allelic_t1 +
-      new_population.allelic_u1 + new_population.allelic_v1 + new_population.allelic_w1 + new_population.allelic_x1 + new_population.allelic_y1;
+        new_population.allelic_p1 + new_population.allelic_q1 + new_population.allelic_r1 + new_population.allelic_s1 + new_population.allelic_t1 +
+        new_population.allelic_u1 + new_population.allelic_v1 + new_population.allelic_w1 + new_population.allelic_x1 + new_population.allelic_y1;
       int new_sum_from_allele_neutral;
       new_sum_from_allele_neutral = new_population.allelic_a2 + new_population.allelic_b2 + new_population.allelic_c2 + new_population.allelic_d2 + new_population.allelic_e2 +
         new_population.allelic_f2 + new_population.allelic_g2 + new_population.allelic_h2 + new_population.allelic_i2 + new_population.allelic_j2 +
         new_population.allelic_k2 + new_population.allelic_l2 + new_population.allelic_m2 + new_population.allelic_n2 + new_population.allelic_o2 +
         new_population.allelic_p2 + new_population.allelic_q2 + new_population.allelic_r2 + new_population.allelic_s2 + new_population.allelic_t2 +
-      new_population.allelic_u2 + new_population.allelic_v2 + new_population.allelic_w2 + new_population.allelic_x2 + new_population.allelic_y2;
+        new_population.allelic_u2 + new_population.allelic_v2 + new_population.allelic_w2 + new_population.allelic_x2 + new_population.allelic_y2;
 
 
       int sender_sum_from_allele;
@@ -4579,10 +4601,17 @@ void set_landscape(IntegerVector map_elevation_vector, IntegerVector map_k_vecto
     for (int j = 0; j < x_max; j++)
     {
       //  cout << map_k_vector[(i*y_max) + j] << "\t";
-      map1[i][j].habitat = map_k_vector[(i * y_max) + j];
-      map1[i][j].k_patch = map_k_vector[(i * y_max) + j];
-      map1[i][j].temperature = map_temperature_vector[(i * y_max) + j];
-      map1[i][j].elevation = map_elevation_vector[(i * y_max) + j];
+      map1[i][j].habitat = map_k_vector[(i * x_max) + j];
+      if(i == 1 && j == 51){
+       // cout << "i == 1 && j == 51" << map1[i][j].habitat  << endl;
+      }
+
+      if(i == 51 && j == 1){
+        //cout << "i == 51 && j == 1" << map1[i][j].habitat  << endl;
+      }
+      map1[i][j].k_patch = map_k_vector[(i * x_max) + j];
+      map1[i][j].temperature = map_temperature_vector[(i * x_max) + j];
+      map1[i][j].elevation = map_elevation_vector[(i * x_max) + j];
       map1[i][j].total_abundance_cell = 0;
     }
     // cout << endl;

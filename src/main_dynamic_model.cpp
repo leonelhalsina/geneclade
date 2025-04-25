@@ -149,7 +149,7 @@ using namespace std;
    int cycles = 0;
    // for (int cycles = 0; cycles < maximum_cycles; ++cycles) {
    //
-   set_landscape(map_elevation_vector, map_k_vector, map_temperature_vector, y_max, x_max, map1);
+   //set_landscape(map_elevation_vector, map_k_vector, map_temperature_vector, y_max, x_max, map1);
    populate_landscape(y_max,x_max,all_species, map1);
    to_show_richness_map(y_max,x_max,show_richness_map,all_species,map1);
    while (total_num_populations > 0 && cycles < maximum_cycles)
