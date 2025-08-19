@@ -2,7 +2,7 @@
 #' @title Initialisation for a simulation when defaults are not adequate.
 #' @param all_x Map coordinates (vector) in x for the first populations in the simulation.
 #' @param all_y Map coordinates (vector) in y for the first populations in the simulation.
-#' @param number_spp number of species to start the simulation with
+#' @param number_spp number of species to start the simulation with.
 #' @param all_traits initial trait state, vector, same length than number_spp
 #' @param all_births birthdate of each species, vector, same length than number_spp
 #' @param all_IDs ids of each species in the system, vector, same length than number_spp
