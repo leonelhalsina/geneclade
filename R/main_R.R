@@ -103,7 +103,7 @@ make_advanced_initialization <- function (number_spp,
 
 #' @param percentage_geneflow This arguments regulates how large, in each geneflow event, is the exchange of individuals between two populations. Because it is a percentage, the exchange can be assymetrical. Default is 10.
 #' @param vicariant_speciation Boolean. Whether or not species speciate by vicariance. False will result in point-mutation speciation.
-#' @param x_max Length of x axis in the map
+#' @param x_max Length of x axis in the map.
 #' @param y_max Length of y axis in the map
 #' @param map_k_1 dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K.
 #' @param map_k_2 dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K. This map will replace map_k_2 at THIS TIME!!!!
