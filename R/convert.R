@@ -1,9 +1,9 @@
 make_list_species_fromcpp_toR <- function(simulation_raw){
   list_species_from_cpp <- list()
   for(i in 1:length(simulation_raw$evolution_trait$Death)){
-    
-    
-    
+
+
+
     ID <- simulation_raw$evolution_trait$ID[i]
     Parent <- simulation_raw$evolution_trait$Parent[i]
     Birth <- simulation_raw$evolution_trait$Birth[i]
@@ -20,7 +20,7 @@ make_list_species_fromcpp_toR <- function(simulation_raw){
         distribution <- cbind(simulation_raw$Distribution[[i]][[1]],    simulation_raw$Distribution[[i]][[2]])
       temperature_evolved <- simulation_raw$temperature_evolved[[i]][[1]]
         }
-      
+
     } else {
       distribution <- "extinct"
       temperature_evolved <- "extinct"
@@ -38,9 +38,9 @@ make_list_species_fromcpp_toR <- function(simulation_raw){
                           RangeLowlands = RangeLowlands,
                           distribution=distribution,
                           temperature_evolved = temperature_evolved)
-    
+
     list_species_from_cpp[[i]] <- focal_species
-    
+
   }
   return(list_species_from_cpp)
 }
@@ -54,14 +54,14 @@ adjust_species_with_landchange <- function(list_species_from_cpp,new_map,time_ma
   for(i in 1:length(list_species_from_cpp)){
     focal <-  list_species_from_cpp[[i]]
     if(focal$RangeSize != 0){ # alive species
-      
+
       surviving_cell <- NULL
       for(ii in 1:focal$RangeSize){
         cell_to_check <- c(focal$distribution[ii,2],focal$distribution[ii,1])
         if(new_map[cell_to_check[1],cell_to_check[2]] == 0){ # it is land, safe
-          surviving_cell <- c(surviving_cell,ii)  
-        } 
-        
+          surviving_cell <- c(surviving_cell,ii)
+        }
+
       }
       if(length(surviving_cell) < focal$RangeSize){
         cat("species ",focal$ID, "had a reduction of ",focal$RangeSize-length(surviving_cell), "\n")
@@ -73,19 +73,19 @@ adjust_species_with_landchange <- function(list_species_from_cpp,new_map,time_ma
         focal$RangeSize <- 0
         focal$Death <- time_map_change
         focal$distribution <- "extinct"
-        
+
       } else {
         focal$distribution <- focal$distribution[surviving_cell,]
         focal$RangeSize <- length(surviving_cell)
       }
-      
+
       list_species_after_landchange [[i]] <- focal
-      
+
     } else {
       list_species_after_landchange [[i]] <- focal
     }
-    
-    
+
+
   }
   return(list(list_species_after_landchange = list_species_after_landchange,
               population_reduction_duelandchange = population_reduction_duelandchange,
@@ -93,21 +93,22 @@ adjust_species_with_landchange <- function(list_species_from_cpp,new_map,time_ma
 }
 
 
-
-
+#' Processing output from c++
+#' @title Transform c++ output into R objects (lists and arrays)
+#' @export
 make_list_species_fromR_tocpp <- function(list_species_after_landchange){
   list_ready_forcpp <- list()
-  
+
   ID <- NULL
   Parent <- NULL
   Birth <- NULL
   Death <- NULL
   TraitValue <- NULL
   RangeSize <- NULL
-  
+
   distribution_x <- NULL
   distribution_y <- NULL
-  
+
   for(i in 1:length(list_species_after_landchange)){
     focal <- list_species_after_landchange[[i]]
     #cat(i,"\n")
@@ -117,7 +118,7 @@ make_list_species_fromR_tocpp <- function(list_species_after_landchange){
     Death <- c(Death,focal$Death)
     TraitValue <- c(TraitValue,focal$TraitValue)
     RangeSize <- c(RangeSize,focal$RangeSize)
-    
+
     if(focal$RangeSize > 0){
       if(focal$RangeSize == 1){
         distribution_x <- c(distribution_x, focal$distribution[1])
@@ -138,9 +139,9 @@ make_list_species_fromR_tocpp <- function(list_species_after_landchange){
                             RangeSize=RangeSize,
                             distribution_x=distribution_x,
                             distribution_y=distribution_y)
-  
+
   return(list_ready_forcpp)
-  
+
 }
 
 
@@ -159,40 +160,40 @@ transform_map_vector <- function(input_map){
 
 
 do_some_tests <- function(old_map,new_map,simulation_raw,list_species_after_landchange,list_ready_forcpp){
-  
+
   change_map_thing <- adjust_species_with_landchange (list_species_from_cpp,new_map,time_map_change)
-  
+
   alive_species_fromcpp <- length(which(simulation_raw$evolution_trait$Death == 0))
   alive_species_after_landchange <- 0
   for(i in 1:length(list_species_after_landchange)){
-    
+
     if(list_species_after_landchange[[i]]$RangeSize > 0){
       alive_species_after_landchange <- alive_species_after_landchange + 1
     }
   }
-  
+
   if((change_map_thing$extinct_species_duelandchange + alive_species_after_landchange) != alive_species_fromcpp){
-    stop("problem with extinction")  
-    
+    stop("problem with extinction")
+
   }
-  
+
   all_populations_fromcpp <- sum(simulation_raw$evolution_trait$RangeSize)
   all_populations_fromready_forcpp <- sum(list_ready_forcpp$RangeSize)
-  
+
   if((all_populations_fromcpp-sum(change_map_thing$population_reduction_duelandchange)) != all_populations_fromready_forcpp){
     stop("problem with range reduction")
   }
-  
+
   land_reduction <- length(which(old_map==0)) - length(which(new_map==0))
-  
+
   if(land_reduction > 0){
       if(any(change_map_thing$population_reduction_duelandchange) > land_reduction){
     stop("problem with range reduction 2")
   }
   }
 
-  
-  
+
+
   if(length(list_ready_forcpp$distribution_x) != sum(list_ready_forcpp$RangeSize)){
     stop("range size problem")
   }

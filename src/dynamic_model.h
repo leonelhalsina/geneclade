@@ -61,7 +61,6 @@ public:
   int k_patch; //this k comes from the map
   int total_abundance_cell;
   int temperature;
-  int elevation;
 private:
 };
 
@@ -140,7 +139,6 @@ class species {
 public:
   bool alive;
   int id;
-  int elevation_origin;
   int parent;
   int range = 1;
   double percentage_parental_range;
@@ -186,8 +184,6 @@ public:
   vector <yx> available_neigh_to_colonize_trait(int ,int,int, double,landscape **map1);
   void happening_expansion(int , int , bool , double , landscape **map1, bool, vector<int>, double );
   void happening_contraction( double ,landscape **map1, std::string );
-  void classify_elevation(bool,landscape **map1);
-  void classify_elevation_origin(bool);
   void initial_position(yx);
   vector <yx> find_neighbor(int,int, int cell);
 private:
@@ -205,7 +201,7 @@ void show_all_species_data(vector<species> );
 double link_fitnesslike_mu_gamma(yx , population_structure , vector<int> , landscape **map1) ;
 void happening_speciation( int, int, vector<species>& , vector<int> , int , double , double,landscape **map1, bool);
 
-void set_landscape(IntegerVector,IntegerVector ,IntegerVector,int , int,landscape **map1);
+void set_landscape(IntegerVector ,IntegerVector,int , int,landscape **map1);
 void change_temperature_map(int,int,IntegerVector ,landscape **map1);
 void change_k_map(int,int,IntegerVector ,landscape **map1);
 vector <double> extract_temperature_func ( species);

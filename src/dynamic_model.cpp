@@ -2785,85 +2785,6 @@ void population_structure::happening_population_popchange(bool growth_only, land
   // cout << "allelic_o1 after:  "<< allelic_o1 << endl;
 }
 
-void species::classify_elevation(bool add, landscape **map1)
-{
-
-  int elevation_last_event;
-  elevation_last_event = map1[y_coordinate_last_event - 1][x_coordinate_last_event - 1].elevation;
-
-  if (elevation_last_event == 4)
-  {
-    // cout <<  "  high:  " << x_coordinate_last_event << endl;
-    if (add)
-    {
-      range_highlands = range_highlands + 1;
-    }
-    else
-    {
-      range_highlands = range_highlands - 1;
-    }
-  }
-  if (elevation_last_event == 3)
-  {
-    // cout <<  "  high:  " << x_coordinate_last_event << endl;
-    if (add)
-    {
-      range_intermediate1 = range_intermediate1 + 1;
-    }
-    else
-    {
-      range_intermediate1 = range_intermediate1 - 1;
-    }
-  }
-  if (elevation_last_event == 2)
-  {
-    // cout <<  "  high:  " << x_coordinate_last_event << endl;
-    if (add)
-    {
-      range_intermediate2 = range_intermediate2 + 1;
-    }
-    else
-    {
-      range_intermediate2 = range_intermediate2 - 1;
-    }
-  }
-  if (elevation_last_event == 1)
-  {
-    // cout <<  "  high:  " << x_coordinate_last_event << endl;
-    if (add)
-    {
-      range_lowlands = range_lowlands + 1;
-    }
-    else
-    {
-      range_lowlands = range_lowlands - 1;
-    }
-  }
-}
-
-void species::classify_elevation_origin(bool add)
-{
-  if (range_highlands == 1)
-  {
-    elevation_origin = 4;
-  }
-
-  if (range_intermediate1 == 1)
-  {
-    elevation_origin = 3;
-  }
-
-  if (range_intermediate2 == 1)
-  {
-    elevation_origin = 2;
-  }
-
-  if (range_lowlands == 1)
-  {
-    elevation_origin = 1;
-  }
-}
-
 double link_fitnesslike_mu_gamma(yx this_location, population_structure this_pop, vector<int> alleles_adaptation_coef, landscape **map1)
 
 {
@@ -4286,7 +4207,7 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
     new_species.id = all_species.size() + 1;
     new_species.x_coordinate_last_event = focal.presence[patch_becoming_differentsp.id_cells[0]].x;
     new_species.y_coordinate_last_event = focal.presence[patch_becoming_differentsp.id_cells[0]].y;
-    new_species.classify_elevation_origin(true);
+
 
     // cout <<" population new before speciation: " << new_species.total_pop_size << endl;
 
@@ -4441,8 +4362,7 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
       new_species.x_coordinate_last_event = focal.presence[random_cell_to_mutate].x;
       new_species.y_coordinate_last_event = focal.presence[random_cell_to_mutate].y;
       new_species.temperature_optimum.push_back(focal.temperature_optimum[random_cell_to_mutate]);
-      // new_species.classify_elevation(true,map1);
-      new_species.classify_elevation_origin(true);
+
       population_structure first_population_newspecies;
       first_population_newspecies.allelic_a1 = focal.populations_this_species[random_cell_to_mutate].allelic_a1;
       first_population_newspecies.allelic_b1 = focal.populations_this_species[random_cell_to_mutate].allelic_b1;
@@ -4590,7 +4510,7 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
 
 }
 
-void set_landscape(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, int y_max, int x_max, landscape **map1)
+void set_landscape(IntegerVector map_k_vector, IntegerVector map_temperature_vector, int y_max, int x_max, landscape **map1)
 {
 
   // landscape map1[x_max][y_max];
@@ -4611,7 +4531,6 @@ void set_landscape(IntegerVector map_elevation_vector, IntegerVector map_k_vecto
       }
       map1[i][j].k_patch = map_k_vector[(i * x_max) + j];
       map1[i][j].temperature = map_temperature_vector[(i * x_max) + j];
-      map1[i][j].elevation = map_elevation_vector[(i * x_max) + j];
       map1[i][j].total_abundance_cell = 0;
     }
     // cout << endl;
@@ -5354,7 +5273,6 @@ vector<species> get_species_intocpp(vector<species> all_species, IntegerVector a
       put_one_species.alive = false;
     }
     // put_one_species.classify_elevation(true,map1);
-    put_one_species.classify_elevation_origin(true);
     counter_species_range = counter_species_range + put_one_species.range;
     all_species.push_back(put_one_species);
   }

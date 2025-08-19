@@ -17,7 +17,7 @@ using namespace std;
 //default_random_engine &generator;
 //' @export
  // [[Rcpp::export]]
- List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector,IntegerVector map_k_vector2, IntegerVector map_temperature_vector, IntegerVector map_temperature_vector2,  std::string extirpation_depen,
+ List do_simulation(IntegerVector map_k_vector,IntegerVector map_k_vector2, IntegerVector map_temperature_vector, IntegerVector map_temperature_vector2,  std::string extirpation_depen,
                     bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y,
                     IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths,
                     NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,
@@ -73,7 +73,7 @@ using namespace std;
      map1[i] = new landscape[x_max];
    }
 
-   set_landscape(map_elevation_vector, map_k_vector, map_temperature_vector, y_max, x_max, map1);
+   set_landscape(map_k_vector, map_temperature_vector, y_max, x_max, map1);
 
    int absolute_potential_abundance = 0;
    int absolute_cells_to_live = 0;
