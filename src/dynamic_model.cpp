@@ -20,7 +20,6 @@ using namespace std;
 // const int y_max = 42;
 // vector <species> all_species;
 
-
 void population_structure::check_alleles(){
   int sum_from_selection;
   int sum_from_neutral;
@@ -35,7 +34,7 @@ void population_structure::check_alleles(){
     allelic_x2 + allelic_y2;
 
   // cout << "checking allelic frequencies " << endl;
-  //
+
   // cout << "pop_size " << pop_size << endl;
   // cout << "sum_from_selection " << sum_from_selection << endl;
   // cout << "sum_from_neutral " << sum_from_neutral << endl;
