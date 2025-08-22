@@ -1,3 +1,33 @@
+make_one_list_fromRaw <- function(simulation_raw_this_timeslice){
+
+  length(simulation_raw_this_timeslice)
+  first_part <- simulation_raw_this_timeslice[[1]]
+  second_part <- simulation_raw_this_timeslice[[2]]
+  third_part <- simulation_raw_this_timeslice[[3]]
+  fourth_part <- simulation_raw_this_timeslice[[4]]
+  new_raw <- list()
+  for(i in 1:length(first_part)){
+    new_raw <- c(new_raw,first_part[i])
+    #first_part[19][]
+    #names(new_raw[i]) <- names( first_part[i])
+  }
+  for(i in 1:length(second_part)){
+    new_raw <- c(new_raw,second_part[i])
+    #first_part[19][]
+    #names(new_raw[i]) <- names( first_part[i])
+  }
+  for(i in 1:length(third_part)){
+    new_raw <- c(new_raw,third_part[i])
+    #first_part[19][]
+    #names(new_raw[i]) <- names( first_part[i])
+  }
+  for(i in 1:length(fourth_part)){
+    new_raw <- c(new_raw,fourth_part[i])
+    #first_part[19][]
+    #names(new_raw[i]) <- names( first_part[i])
+  }
+  return(new_raw)
+}
 make_list_species_fromcpp_toR <- function(simulation_raw){
   list_species_from_cpp <- list()
   for(i in 1:length(simulation_raw$evolution_trait$Death)){
