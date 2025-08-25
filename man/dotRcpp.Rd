@@ -12,7 +12,7 @@ dotRcpp(x1, x2)
 \item{x2}{numeric vector}
 }
 \value{
-
+dot product
 }
 \description{
 Dot product in Rcpp.

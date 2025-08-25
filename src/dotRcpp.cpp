@@ -6,7 +6,7 @@ using namespace Rcpp;
 //'
 //' @param x1 numeric vector
 //' @param x2 numeric vector
-//' @return dot product, that is \code{t(x1)%*%x2}
+//' @return dot product
 //' @export
 // [[Rcpp::export(dotRcpp)]]
 NumericVector dotRcpp_I(NumericVector x1, NumericVector x2)

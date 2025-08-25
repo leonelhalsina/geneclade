@@ -5,7 +5,7 @@
 #'
 #' @param x1 numeric vector
 #' @param x2 numeric vector
-#' @return dot product, that is \code{t(x1)%*%x2}
+#' @return dot product
 #' @export
 dotRcpp <- function(x1, x2) {
     .Call(`_geneclade_dotRcpp_I`, x1, x2)

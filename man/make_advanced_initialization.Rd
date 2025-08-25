@@ -21,7 +21,7 @@ make_advanced_initialization(
 )
 }
 \arguments{
-\item{number_spp}{number of species to start the simulation with}
+\item{number_spp}{number of species to start the simulation with.}
 
 \item{all_x}{Map coordinates (vector) in x for the first populations in the simulation.}
 

@@ -11,6 +11,8 @@ run_simulation(
   max_spp,
   simulated_time,
   condition_to_stop = "richness",
+  stop_time_after_change = 0,
+  time_slices,
   maximum_cycles = 2e+09,
   rate_speciation,
   rate_colonisation,
@@ -19,12 +21,18 @@ run_simulation(
   rate_demographicchange,
   rate_traitevolution,
   rate_mutation,
+  alleles_optimum_enviroment,
   percentage_geneflow = 10,
   vicariant_speciation,
+  manual_speciation_events_timing = 0,
+  growth_only = TRUE,
+  unlink_range_to = NULL,
   x_max,
   y_max,
   map_k_1,
-  map_k_2
+  map_k_2,
+  map_environment_1,
+  map_environment_2
 )
 }
 \arguments{
@@ -34,11 +42,15 @@ run_simulation(
 
 \item{advanced_initialization}{When initilization needs to be different from default one (one sp with one population of size 150, all alles in the same frequency), user needs to input a list created with make_advanced_initialization() function. Default for this argument is NULL}
 
-\item{max_spp}{Total expected number of species.}
+\item{max_spp}{Maximum expected number of species.}
 
 \item{simulated_time}{The time the simulation will run for. The scale of the simulated time is highly dependent on selected rates.}
 
 \item{condition_to_stop}{The simulation will stop when the number of species is met ("richness") or when the simulated time is up ("time"). Default is "richness".}
+
+\item{stop_time_after_change}{Indicates the percentage of time that the simulation will be let run further, considering the time it needed to reach the first equilibirum. Default is 0 which means that the simulation will run until reaching a second equilibrium after map change (see below).}
+
+\item{time_slices}{A vector with the simulated time points at which the current state of the simulation will be saved in memory to retrive at the end of the simulation. Notice that you might need to know more or less the temporal scale of the total simulation.}
 
 \item{maximum_cycles}{Useful parameter to allow a speficic number of events (every cycle has an event e.g., colonization, geneflow) before stopping the simulation.}
 
@@ -50,23 +62,35 @@ run_simulation(
 
 \item{rate_geneflow}{Per-population rate of geneflow (sigma). One population exchange individuals with an adjacent one.}
 
-\item{rate_demographicchange}{Per-population rate of change in population size (delta). Population can grow or shrink.}
+\item{rate_demographicchange}{Vector of length 2. First element is the per-population rate of change in population size (delta). Population can grow or shrink. Second element is the standard deviation for the normal distribution from which the next population size will be drawn. Example rate_demographicchange <- c(0.01,60)}
 
-\item{rate_traitevolution}{Per-population rate of change in trait value. Their is one value per species.}
+\item{rate_traitevolution}{Vector of length 2. First element is the per-population rate of change in trait value. Second element is the standard deviation for the normal distribution from which the next trait value  will be drawn. Example rate_traitevolution <- c(0.01,1). Notice that all individuals of a species have the same trait state.}
 
 \item{rate_mutation}{Per-population rate of mutation (q) where one individual changes its two loci to different ones.}
+
+\item{alleles_optimum_enviroment}{Vector with 25 integer values representing the environmental optimum for each allele from a1 to y1. Notice that if all 25 are the same, the model will feature no differences in local adaptation and will therefore be neutral. These values should make sense with the cell values in the map_environment_1, see below.}
 
 \item{percentage_geneflow}{This arguments regulates how large, in each geneflow event, is the exchange of individuals between two populations. Because it is a percentage, the exchange can be assymetrical. Default is 10.}
 
 \item{vicariant_speciation}{Boolean. Whether or not species speciate by vicariance. False will result in point-mutation speciation.}
 
-\item{x_max}{Length of x axis in the map}
+\item{manual_speciation_events_timing}{In case it is needed, for some reason, to force the simulation to have speciation events at given times, this vector should provide the time for those events. This means that the length of this vector will indicate the total number of speciation events. This will automatically turn rate_speciation = 0. This option is disable by default (i.e., manual_speciation_events_timing)}
 
-\item{y_max}{Length of y axis in the map}
+\item{growth_only}{Boolean. Should population fluctiations only lead to population growth? Useful to ensure local saturation of species.}
+
+\item{unlink_range_to}{If one wishes to make speciation, colonization, or both independent from the number of populations use unlink_range_to <- c("colonization","speciation"). We suggest not using this option. Default is NULL.}
+
+\item{x_max}{Length of x axis in the map.}
+
+\item{y_max}{Length of y axis in the map.}
 
 \item{map_k_1}{dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K.}
 
-\item{map_k_2}{dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K. This map will replace map_k_2 at THIS TIME!!!!}
+\item{map_k_2}{dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K. This map will replace map_k_2 at THIS TIME!!!!. If there is no interest in changing maps, please do: map_k_2 <- map_k_1}
+
+\item{map_environment_1}{dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature}
+
+\item{map_environment_2}{dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. This map will replace map_environment_1 at THIS TIME!!!!.If there is no interest in changing maps, please do: map_environment_2 <- map_environment_1}
 }
 \value{
 List of species with detailed information on the variables tracked over time, ready for processing with THESE FUNCTIONS.

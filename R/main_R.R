@@ -91,7 +91,7 @@ make_advanced_initialization <- function (number_spp,
 #' @param max_spp Maximum expected number of species.
 #' @param simulated_time The time the simulation will run for. The scale of the simulated time is highly dependent on selected rates.
 #' @param condition_to_stop The simulation will stop when the number of species is met ("richness") or when the simulated time is up ("time"). Default is "richness".
-#' @param stop_time_after_change Indicates the % of time that the simulation will be let run further, considering the time it needed to reach the first equilibirum. Default is 0 which means that the simulation will run until reaching a second equilibrium after map change (see below).
+#' @param stop_time_after_change Indicates the percentage of time that the simulation will be let run further, considering the time it needed to reach the first equilibirum. Default is 0 which means that the simulation will run until reaching a second equilibrium after map change (see below).
 #' @param time_slices A vector with the simulated time points at which the current state of the simulation will be saved in memory to retrive at the end of the simulation. Notice that you might need to know more or less the temporal scale of the total simulation.
 #' @param maximum_cycles Useful parameter to allow a speficic number of events (every cycle has an event e.g., colonization, geneflow) before stopping the simulation.
 #' @param rate_speciation Per-population rate of speciation rate (lambda)
@@ -115,7 +115,7 @@ make_advanced_initialization <- function (number_spp,
 #' @param map_environment_2 dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. This map will replace map_environment_1 at THIS TIME!!!!.If there is no interest in changing maps, please do: map_environment_2 <- map_environment_1
 
 
-#' @return List of species with detailed information on the variables tracked over time, ready for processing with THESE FUNCTIONS.
+#' @return List of three objects: First is a table with all species in the simulation. For each species, the geographic location of each population as well as the number of individuals carrying each allele is indication. The second object is a list a phylogenetic tree for the species in the simulation. The third one is a table with richness and abundance per cell that can be used to make a map. If multiple time slices are requested, there will be multiple species table, phylogenetic trees and richness maps.
 #' @examples
 #'# Example of how to set the arguments for a Maximum Likelihood search.
 #'library(geneclade)
@@ -264,11 +264,7 @@ run_simulation <- function(position_start_x,
     }
   }
 
-
-
-
-
-  do_simulation(map_k_vector,
+  simulation_raw <-  do_simulation(map_k_vector,
                 map_k_vector2,
                 map_temperature_vector,
                 map_temperature_vector2,
@@ -320,73 +316,151 @@ run_simulation <- function(position_start_x,
                 time_slices,
                 manual_speciation_events_timing)
 
+output_table_overtime <- list()
+output_phylotree_overtime <- list()
+richness_abundance_map_overtime <- list()
+
+vector_times <- NULL
+for(ikk in 1:length(simulation_raw)){
+  all_spp <- NULL
+  cat("processing the ",ikk," time slice \n")
+
+  simulation_raw_this_timeslice <- simulation_raw[[ikk]]
+  simulation_raw_this_timeslice <- make_one_list_fromRaw(simulation_raw_this_timeslice)
+
+
+  time_simulated_from_output <- simulation_raw_this_timeslice$total_time[[1]]
+  vector_times <- c(vector_times,as.character(round(time_simulated_from_output,2)))
+  list_species_from_cpp <- make_list_species_fromcpp_toR(simulation_raw_this_timeslice)
+  all_spp <- as.data.frame(make_spp_table(list_species_from_cpp))
+  output_table_overtime[[ikk]] <- all_spp
+
+
+  richness_abundance_map <- NULL
+  richness_abundance_map <- make_richness_map(x_max,y_max,list_species_from_cpp)
+  richness_abundance_map_overtime[[ikk]]  <- richness_abundance_map
+
+  phylo_tree <- NULL
+  if(length(unique(all_spp$Sp_ID )) > 3){
+
+
+    # try(phylo_tree <- build_tree(time_simulated_from_output,list_species_from_cpp)
+    #     ,silent=TRUE)
+    phylo_tree <- build_tree(time_simulated_from_output,list_species_from_cpp)
+    if(!is.null(phylo_tree)){
+      output_phylotree_overtime[[ikk]] <- phylo_tree
+    } else {
+      output_phylotree_overtime[[ikk]] <- "a tree cannot be built because strange things"
+
+    }
+
+  } else {
+    output_phylotree_overtime[[ikk]] <- "a tree cannot be built because we have too few species"
+  }
+
+
 }
 
-#
-# all_x <- 17#3#3#10 #  initial population column
-# all_y <- 17#3 #3#10 # initial population row
-#
-# position_start_x <- 17
-#
-# position_start_y <- 17
-# max_spp <- 20
-# simulated_time <- 250
-#
-# time_slices <- c(10,20)
-#
-# rate_speciation <- 0.00005
-# rate_colonisation <- 5
-# rate_extirpation <- 0.0000001
-# rate_geneflow <- 0.01
-# rate_demographicchange <- 1
-# rate_traitevolution <- 0
-# rate_mutation <- rate_geneflow/10
-# alleles_optimum_enviroment <-  rep(9,25)
-# vicariant_speciation <- TRUE
-# x_max <- 42
-# y_max <- 42
-# map_k_1 <- read.table(paste0("k_map_uniform.txt"))
-# map_k_2 <- map_k_1
-# map_environment_1 <- read.table(paste0("temperature_map_uniform.txt"))
-# map_environment_2 <- map_environment_1
-#
-#
-# maximum_cycles <- 200000
-# simulation_raw <- run_simulation (position_start_x,
-#                          position_start_y,
-#                          advanced_initialization = NULL,
-#                          max_spp,
-#                          simulated_time,
-#                          condition_to_stop = "richness",
-#                          stop_time_after_change = 0,
-#                          time_slices,
-#                          maximum_cycles = maximum_cycles,
-#                          rate_speciation,
-#                          rate_colonisation,
-#                          rate_extirpation,
-#                          rate_geneflow,
-#                          rate_demographicchange,
-#                          rate_traitevolution,
-#                          rate_mutation,
-#                          alleles_optimum_enviroment,
-#                          percentage_geneflow = 10,
-#                          vicariant_speciation,
-#                          manual_speciation_events_timing = 0,
-#                          growth_only = TRUE,
-#                          unlink_range_to = NULL,
-#                          x_max,
-#                          y_max,
-#                          map_k_1,
-#                          map_k_2,
-#                          map_environment_1,
-#                          map_environment_2)
-#
-#
-# for(ikk in 1:length(simulation_raw)){
-#
-# }
-# simulation_raw_this_timeslice <- simulation_raw[[ikk]]
-# simulation_raw_this_timeslice <- make_one_list_fromRaw(simulation_raw_this_timeslice)
-#
-# time_simulated_from_output <- simulation_raw_this_timeslice$total_time[[1]]
-# list_species_from_cpp <- make_list_species_fromcpp_toR(simulation_raw_this_timeslice)
+names(output_table_overtime) <-  paste0('time: ',vector_times)
+names(output_phylotree_overtime) <- paste0('time: ',vector_times)
+names(richness_abundance_map_overtime) <- paste0('time: ',vector_times)
+
+
+processed_output <- list(output_table_overtime = output_table_overtime,
+                         output_phylotree_overtime = output_phylotree_overtime,
+                         output_richnessabundancemap_overtime = richness_abundance_map_overtime)
+
+}
+
+
+
+library(DDD)
+
+
+all_x <- 17#3#3#10 #  initial population column
+all_y <- 17#3 #3#10 # initial population row
+
+position_start_x <- 17
+
+position_start_y <- 17
+max_spp <- 20
+simulated_time <- 250
+
+time_slices <- c(10,20)
+
+rate_speciation <- 0.00005
+rate_colonisation <- 5
+rate_extirpation <- 0.0000001
+rate_geneflow <- 0.01
+rate_demographicchange <- 1
+rate_traitevolution <- 0
+rate_mutation <- rate_geneflow/10
+alleles_optimum_enviroment <-  rep(9,25)
+vicariant_speciation <- TRUE
+x_max <- 42
+y_max <- 42
+map_k_1 <- read.table(paste0("k_map_uniform.txt"))
+map_k_2 <- map_k_1
+map_environment_1 <- read.table(paste0("temperature_map_uniform.txt"))
+map_environment_2 <- map_environment_1
+
+
+maximum_cycles <- 200000
+output_simulation <- run_simulation (position_start_x,
+                                  position_start_y,
+                                  advanced_initialization = NULL,
+                                  max_spp,
+                                  simulated_time,
+                                  condition_to_stop = "richness",
+                                  stop_time_after_change = 0,
+                                  time_slices,
+                                  maximum_cycles = maximum_cycles,
+                                  rate_speciation,
+                                  rate_colonisation,
+                                  rate_extirpation,
+                                  rate_geneflow,
+                                  rate_demographicchange,
+                                  rate_traitevolution,
+                                  rate_mutation,
+                                  alleles_optimum_enviroment,
+                                  percentage_geneflow = 10,
+                                  vicariant_speciation,
+                                  manual_speciation_events_timing = 0,
+                                  growth_only = TRUE,
+                                  unlink_range_to = NULL,
+                                  x_max,
+                                  y_max,
+                                  map_k_1,
+                                  map_k_2,
+                                  map_environment_1,
+                                  map_environment_2)
+
+
+
+richnessabundancemap_overtime <- output_simulation$output_richnessabundancemap_overtime
+phylotrees_overtime <- output_simulation$output_phylotree_overtime
+tablespecies_overtime <- output_simulation$output_table_overtime
+
+# For plotting richness
+
+library(ggplot2)
+library(ggpubr)
+
+richness_abundance_map_present <- richnessabundancemap_overtime[[length(richnessabundancemap_overtime)]]
+p1 <- ggplot(richness_abundance_map_present, aes(X, Y)) +                           # Create heatmap with ggplot2
+  # scale_fill_viridis_c(option = "B", direction = 1) +
+  scale_fill_distiller(palette = "Spectral", direction = -1,
+                       name="Total abundance") +
+  geom_tile(aes(fill = (abundance) )) +
+  theme_classic()+
+  theme_void()
+
+p2 <- ggplot(richness_abundance_map_present, aes(X, Y)) +                           # Create heatmap with ggplot2
+  #scale_fill_viridis_c(option = "B", direction = -1) +
+  scale_fill_distiller(palette = "Spectral", direction = -1,
+                       name="Species Richness") +
+  geom_tile(aes(fill = richness )) +
+  theme_classic()+
+  theme_void()
+
+ggarrange(p1,p2)
