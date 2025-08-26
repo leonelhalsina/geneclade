@@ -10,18 +10,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// dotRcpp_I
-NumericVector dotRcpp_I(NumericVector x1, NumericVector x2);
-RcppExport SEXP _geneclade_dotRcpp_I(SEXP x1SEXP, SEXP x2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x1(x1SEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type x2(x2SEXP);
-    rcpp_result_gen = Rcpp::wrap(dotRcpp_I(x1, x2));
-    return rcpp_result_gen;
-END_RCPP
-}
 // do_simulation
 List do_simulation(IntegerVector map_k_vector, IntegerVector map_k_vector2, IntegerVector map_temperature_vector, IntegerVector map_temperature_vector2, std::string extirpation_depen, bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral, IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate, double percentage_flow, double geneflow_rate, double popchange_rate, NumericVector the_gammas, NumericVector the_mus, double q, double lambda, std::string species_trait_state, double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol, double sd_normal_distribution_pop_change, bool growth_only, double starting_time, double simulated_time, int max_spp, int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map, double v, IntegerVector alleles_adaptation_coef2, bool do_change_map_rates, bool vicariant_speciation, bool speciation_rangesize_unlinked, bool colonization_rangesize_unlinked, double time_percent_stop_after_first_equilibrium_and_disturbance, std::string condition_to_stop, IntegerVector time_slices, IntegerVector manual_speciation_events_timing);
 RcppExport SEXP _geneclade_do_simulation(SEXP map_k_vectorSEXP, SEXP map_k_vector2SEXP, SEXP map_temperature_vectorSEXP, SEXP map_temperature_vector2SEXP, SEXP extirpation_depenSEXP, SEXP colonization_depen_temperatureSEXP, SEXP x_maxSEXP, SEXP y_maxSEXP, SEXP all_xSEXP, SEXP all_ySEXP, SEXP all_IDsSEXP, SEXP all_parentsSEXP, SEXP all_birthsSEXP, SEXP all_deathsSEXP, SEXP all_traitsSEXP, SEXP all_rangesSEXP, SEXP all_allelesSEXP, SEXP all_alleles_neutralSEXP, SEXP all_popsizeSEXP, SEXP number_sppSEXP, SEXP the_seedSEXP, SEXP mutation_rateSEXP, SEXP percentage_flowSEXP, SEXP geneflow_rateSEXP, SEXP popchange_rateSEXP, SEXP the_gammasSEXP, SEXP the_musSEXP, SEXP qSEXP, SEXP lambdaSEXP, SEXP species_trait_stateSEXP, SEXP sd_normal_distribution_traitevolSEXP, SEXP mean_normal_distribution_traitevolSEXP, SEXP sd_normal_distribution_pop_changeSEXP, SEXP growth_onlySEXP, SEXP starting_timeSEXP, SEXP simulated_timeSEXP, SEXP max_sppSEXP, SEXP maximum_cyclesSEXP, SEXP use_kSEXP, SEXP restiction_parSEXP, SEXP show_richness_mapSEXP, SEXP vSEXP, SEXP alleles_adaptation_coef2SEXP, SEXP do_change_map_ratesSEXP, SEXP vicariant_speciationSEXP, SEXP speciation_rangesize_unlinkedSEXP, SEXP colonization_rangesize_unlinkedSEXP, SEXP time_percent_stop_after_first_equilibrium_and_disturbanceSEXP, SEXP condition_to_stopSEXP, SEXP time_slicesSEXP, SEXP manual_speciation_events_timingSEXP) {
@@ -99,7 +87,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_geneclade_dotRcpp_I", (DL_FUNC) &_geneclade_dotRcpp_I, 2},
     {"_geneclade_do_simulation", (DL_FUNC) &_geneclade_do_simulation, 51},
     {"_geneclade_try_random_wallenius", (DL_FUNC) &_geneclade_try_random_wallenius, 4},
     {NULL, NULL, 0}

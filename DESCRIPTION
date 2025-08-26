@@ -8,7 +8,7 @@ Description: Simulates the radiation of a clade in space while considering popul
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 2)
-Imports: Rcpp
+Imports: Rcpp,DDD,hierfstat
 LinkingTo: Rcpp
 NeedsCompilation: yes
 RoxygenNote: 7.3.2

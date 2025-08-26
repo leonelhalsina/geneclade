@@ -2,7 +2,7 @@
 % Please edit documentation in R/main_R.R
 \name{run_simulation}
 \alias{run_simulation}
-\title{Run geneclade model using rates for processes taking place at ecological and evolutionary time scales in a spatial context.}
+\title{Run geneclade model simulation on a map.}
 \usage{
 run_simulation(
   position_start_x,
@@ -88,18 +88,93 @@ run_simulation(
 
 \item{map_k_2}{dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K. This map will replace map_k_2 at THIS TIME!!!!. If there is no interest in changing maps, please do: map_k_2 <- map_k_1}
 
-\item{map_environment_1}{dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature}
+\item{map_environment_1}{dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. Only integers.}
 
 \item{map_environment_2}{dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. This map will replace map_environment_1 at THIS TIME!!!!.If there is no interest in changing maps, please do: map_environment_2 <- map_environment_1}
 }
 \value{
-List of species with detailed information on the variables tracked over time, ready for processing with THESE FUNCTIONS.
+List of three objects: First is a table with all species in the simulation. For each species, the geographic location of each population as well as the number of individuals carrying each allele is indication. The second object is a list a phylogenetic tree for the species in the simulation. The third one is a table with richness and abundance per cell that can be used to make a map. If multiple time slices are requested, there will be multiple species table, phylogenetic trees and richness maps.
 }
 \description{
 Runs a spatially explicit simulation where alleles, populations and species are modelled. Demographic, dispersal and evolutionary processes are simulated in continuous time.
 }
 \examples{
-# Example of how to set the arguments for a Maximum Likelihood search.
 library(geneclade)
-You can use this output in the plotting function: plot_biogeo_reconst()
+position_start_x <- 17
+position_start_y <- 17
+max_spp <- 20
+simulated_time <- 250
+time_slices <- c(10,20)
+rate_speciation <- 0.00005
+rate_colonisation <- 5
+rate_extirpation <- 0.0000001
+rate_geneflow <- 0.01
+rate_demographicchange <- 1
+rate_traitevolution <- 0
+rate_mutation <- rate_geneflow/10
+alleles_optimum_enviroment <-  rep(9,25)
+vicariant_speciation <- TRUE
+x_max <- 42
+y_max <- 42
+map_k_1 <- get("map_k_1")
+# one normally loads the map with:
+#map_k_1 <- read.table(paste0("k_map_uniform.txt"))
+map_k_2 <- map_k_1
+map_environment_1 <- get("map_environment_1")
+#map_environment_1 <- read.table(paste0("temperature_map_uniform.txt"))
+map_environment_2 <- map_environment_1
+maximum_cycles <- 200000
+output_simulation <- run_simulation (position_start_x,
+                                    position_start_y,
+                                    advanced_initialization = NULL,
+                                    max_spp,
+                                    simulated_time,
+                                    condition_to_stop = "richness",
+                                    stop_time_after_change = 0,
+                                    time_slices,
+                                    maximum_cycles = maximum_cycles,
+                                    rate_speciation,
+                                    rate_colonisation,
+                                    rate_extirpation,
+                                    rate_geneflow,
+                                    rate_demographicchange,
+                                    rate_traitevolution,
+                                    rate_mutation,
+                                    alleles_optimum_enviroment,
+                                    percentage_geneflow = 10,
+                                    vicariant_speciation,
+                                  manual_speciation_events_timing = 0,
+                                    growth_only = TRUE,
+                                    unlink_range_to = NULL,
+                                    x_max,
+                                    y_max,
+                                    map_k_1,
+                                    map_k_2,
+                                    map_environment_1,
+                                    map_environment_2)
+richnessabundancemap_overtime <- output_simulation$output_richnessabundancemap_overtime
+phylotrees_overtime <- output_simulation$output_phylotree_overtime
+tablespecies_overtime <- output_simulation$output_table_overtime
+# For plotting richness
+#
+# library(ggplot2)
+# library(ggpubr)
+#
+# richness_abundance_map_present <- richnessabundancemap_overtime[[length(richnessabundancemap_overtime)]]
+# p1 <- ggplot(richness_abundance_map_present, aes(X, Y)) +                           # Create heatmap with ggplot2
+#   # scale_fill_viridis_c(option = "B", direction = 1) +
+#   scale_fill_distiller(palette = "Spectral", direction = -1,
+#                        name="Total abundance") +
+#   geom_tile(aes(fill = (abundance) )) +
+#   theme_classic()+
+#   theme_void()
+#
+# p2 <- ggplot(richness_abundance_map_present, aes(X, Y)) +                           # Create heatmap with ggplot2
+#   #scale_fill_viridis_c(option = "B", direction = -1) +
+#   scale_fill_distiller(palette = "Spectral", direction = -1,
+#                        name="Species Richness") +
+#   geom_tile(aes(fill = richness )) +
+#   theme_classic()+
+#   theme_void()
+# ggarrange(p1,p2)
 }
