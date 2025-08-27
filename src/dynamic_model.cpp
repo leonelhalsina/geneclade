@@ -3160,7 +3160,7 @@ void to_show_richness_map(int y_max, int x_max, std::string show_richness_map,ve
   }
   if (show_richness_map == "none")
   {
-    cout << "no map is requested to be shown" << endl;
+    //cout << "no map is requested to be shown" << endl;
   }
 }
 
@@ -4065,7 +4065,7 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
     else
     { // vicariance with no real barrier
 
-      cout  << "splitting range with no real barrier" << endl;
+      //cout  << "splitting range with no real barrier" << endl;
       contiguous_patches pre_patch_becoming_differentsp;
       pre_patch_becoming_differentsp = list_patches[0];
       vector <int> range_cells_to_speciating_range;
@@ -4192,8 +4192,8 @@ void happening_speciation(int y_max,int x_max, vector<species>& all_species, vec
     }
     new_species.range = patch_becoming_differentsp.patch_size;
 
-    cout << "new_species.range" << new_species.range << endl;
-    cout << "focal.range" << focal.range << endl;
+    //cout << "new_species.range" << new_species.range << endl;
+    //cout << "focal.range" << focal.range << endl;
 
     new_species.percentage_parental_range = float(new_species.range)/float(focal.range);
     new_species.update_latitudinal_borders(t,true,true);

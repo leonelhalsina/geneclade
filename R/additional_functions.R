@@ -1,4 +1,4 @@
-#' Computes population genetic metrics using output from run_simulation()
+#' Computes population genetic metrics using output from run_geneclade_simulation()
 #' @title Population genetic metrics
 #' @param this_species_pop_info Table that includes, for a number of species, the xy coordinates of each population as well as their allelic frequencies.
 #' @param pairwise Boolean, should the analysis be done in a pairwise fashion?
@@ -8,7 +8,7 @@
 #'library(geneclade)
 #'library(DDD)
 #'library(hierfstat)
-#'# load a table which is one of the three elements retrived by run_simulation().
+#'# load a table which is one of the three elements retrived by run_geneclade_simulation().
 #'tablespecies_overtime <- get("tablespecies_overtime")
 #'this_time_slice <- tablespecies_overtime$`time: 9.5`
 #'# Take species with ID = 1
@@ -21,7 +21,7 @@
 #'                                                             locus="both")
 
 #'# Hudson's Fst
-#'mean(as.numeric(computed_genenetic_metrics$computed_betas$betaiovl),na.rm=T)
+#'mean(as.numeric(computed_genenetic_metrics$computed_betas$betaiovl),na.rm=TRUE)
 
 #'# Weir and Cockrham Fst
 #'computed_genenetic_metrics$wc_fst$FST

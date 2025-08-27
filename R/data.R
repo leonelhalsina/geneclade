@@ -14,7 +14,7 @@ NULL
 
 
 #' @name tablespecies_overtime_example
-#' @title A table which one of the three objects output of run_simulation().
+#' @title A table which one of the three objects output of run_geneclade_simulation().
 #' @description Includes, for a number of species, the xy coordinates of each population as well as their allelic frequencies.
 #' @format This particular example is actually a list with three timeslices
 NULL

@@ -88,7 +88,7 @@ make_advanced_initialization <- function (number_spp,
 #' @param position_start_x Map coordinate in x for the first population in the simulation.
 #' @param position_start_y Map coordinate in y for the first population in the simulation.
 #' @param advanced_initialization When initilization needs to be different from default one (one sp with one population of size 150, all alles in the same frequency), user needs to input a list created with make_advanced_initialization() function. Default for this argument is NULL
-#' @param max_spp Maximum expected number of species.
+#' @param max_spp Maximum expected number of species. Notice that this is to be used along with condition_to_stop = "richness", see below.
 #' @param simulated_time The time the simulation will run for. The scale of the simulated time is highly dependent on selected rates.
 #' @param condition_to_stop The simulation will stop when the number of species is met ("richness") or when the simulated time is up ("time"). Default is "richness".
 #' @param stop_time_after_change Indicates the percentage of time that the simulation will be let run further, considering the time it needed to reach the first equilibirum. Default is 0 which means that the simulation will run until reaching a second equilibrium after map change (see below).
@@ -113,6 +113,7 @@ make_advanced_initialization <- function (number_spp,
 #' @param map_k_2 dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K. This map will replace map_k_2 at THIS TIME!!!!. If there is no interest in changing maps, please do: map_k_2 <- map_k_1
 #' @param map_environment_1 dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. Only integers.
 #' @param map_environment_2 dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. This map will replace map_environment_1 at THIS TIME!!!!.If there is no interest in changing maps, please do: map_environment_2 <- map_environment_1
+#' @param frequency_print_simulationstatus How many cycles the status of the simulation should be printed in console? Notice that the information printed in one cycle might not be very different from the previous one so increasing frequency_print_simulationstatus might be an option. This is highly dependent on selected rates and does not affect simulation behaviour, it is just a visual aid on what is going on. Default is 1000.
 #' @return List of three objects: First is a table with all species in the simulation. For each species, the geographic location of each population as well as the number of individuals carrying each allele is indication. The second object is a list a phylogenetic tree for the species in the simulation. The third one is a table with richness and abundance per cell that can be used to make a map. If multiple time slices are requested, there will be multiple species table, phylogenetic trees and richness maps.
 #' @examples
 #'library(geneclade)
@@ -140,7 +141,8 @@ make_advanced_initialization <- function (number_spp,
 #'#map_environment_1 <- read.table(paste0("temperature_map_uniform.txt"))
 #'map_environment_2 <- map_environment_1
 #'maximum_cycles <- 200000
-#'output_simulation <- run_simulation (position_start_x,
+#'frequency_print_simulationstatus <- 100
+#'output_simulation <- run_geneclade_simulation (position_start_x,
 #'                                     position_start_y,
 #'                                     advanced_initialization = NULL,
 #'                                     max_spp,
@@ -159,7 +161,7 @@ make_advanced_initialization <- function (number_spp,
 #'                                     alleles_optimum_enviroment,
 #'                                     percentage_geneflow = 10,
 #'                                     vicariant_speciation,
-#'                                   manual_speciation_events_timing = 0,
+#'                                    manual_speciation_events_timing = 0,
 #'                                     growth_only = TRUE,
 #'                                     unlink_range_to = NULL,
 #'                                     x_max,
@@ -167,7 +169,8 @@ make_advanced_initialization <- function (number_spp,
 #'                                     map_k_1,
 #'                                     map_k_2,
 #'                                     map_environment_1,
-#'                                     map_environment_2)
+#'                                     map_environment_2,
+#'                                     frequency_print_simulationstatus)
 #'richnessabundancemap_overtime <- output_simulation$output_richnessabundancemap_overtime
 #'phylotrees_overtime <- output_simulation$output_phylotree_overtime
 #'tablespecies_overtime <- output_simulation$output_table_overtime
@@ -198,7 +201,7 @@ make_advanced_initialization <- function (number_spp,
 
 
 
-run_simulation <- function(position_start_x,
+run_geneclade_simulation <- function(position_start_x,
                            position_start_y,
                            advanced_initialization = NULL,
                            max_spp,
@@ -225,7 +228,8 @@ run_simulation <- function(position_start_x,
                            map_k_1,
                            map_k_2,
                            map_environment_1,
-                           map_environment_2){
+                           map_environment_2,
+                           frequency_print_simulationstatus = 1000){
   # initial
 
   if(is.null(advanced_initialization)){
@@ -388,7 +392,8 @@ run_simulation <- function(position_start_x,
                 time_percent_stop_after_first_equilibrium_and_disturbance,
                 condition_to_stop,
                 time_slices,
-                manual_speciation_events_timing)
+                manual_speciation_events_timing,
+                frequency_print_simulationstatus)
 
 output_table_overtime <- list()
 output_phylotree_overtime <- list()

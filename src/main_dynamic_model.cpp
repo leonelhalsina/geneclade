@@ -26,7 +26,8 @@ using namespace std;
                     double q, double lambda, std::string species_trait_state,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
                     double sd_normal_distribution_pop_change,bool growth_only,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
                     double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation,bool speciation_rangesize_unlinked, bool colonization_rangesize_unlinked,
-                    double time_percent_stop_after_first_equilibrium_and_disturbance,std::string condition_to_stop,IntegerVector time_slices,IntegerVector manual_speciation_events_timing)
+                    double time_percent_stop_after_first_equilibrium_and_disturbance,std::string condition_to_stop,IntegerVector time_slices,
+                    IntegerVector manual_speciation_events_timing,int frequency_print_simulationstatus)
  {
 
    List time_slices_model_output = List::create();
@@ -152,6 +153,8 @@ using namespace std;
    //set_landscape(map_elevation_vector, map_k_vector, map_temperature_vector, y_max, x_max, map1);
    populate_landscape(y_max,x_max,all_species, map1);
    to_show_richness_map(y_max,x_max,show_richness_map,all_species,map1);
+   int count_cycles_to_show_message;
+   count_cycles_to_show_message = 0;
    while (total_num_populations > 0 && cycles < maximum_cycles)
    {
 
@@ -205,9 +208,17 @@ using namespace std;
      time_elapsed = waiting_times(generator);
      double t_previous_cycle;
      t_previous_cycle = t;
+     count_cycles_to_show_message = count_cycles_to_show_message + 1;
      t = t + time_elapsed;
-     // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
 
+     if ( count_cycles_to_show_message == frequency_print_simulationstatus)
+       //if (   (t_previous_cycle + (t_previous_cycle * 0.1)) < t )
+     {
+       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals << endl;      // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
+       count_cycles_to_show_message = 0;
+     }
+     // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
+    //cout << "time: " << t << " cycle: " << cycles << endl;
      full_saturation_indi = round(((total_indviduals/(double)absolute_potential_abundance) * 100.0 ));
 
 
@@ -217,7 +228,7 @@ using namespace std;
      if(condition_to_stop == "richness" && id_alive_species.size() == max_spp && pending_show_stop_message)
      {
        condition_to_stop_met = true;
-       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
+       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals << endl;
        // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
        cout << "_________richness is complete" << endl;
        pending_show_stop_message = false;
@@ -225,13 +236,12 @@ using namespace std;
 
      if(condition_to_stop == "time" &&  t >= simulated_time && pending_show_stop_message)
      {
-       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
+       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals <<  endl;
        // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
        cout << "_________time is up" << endl;
        condition_to_stop_met = true;
        pending_show_stop_message = false;
      }
-
 
 
      // show_the_percentages_saturation.push_back(full_saturation_indi);
@@ -292,14 +302,19 @@ using namespace std;
        pending_change_in_rates = false;
        //accumul_satu_values.clear();
        //cout << "size_ accumul_satu_values.clear() "<<  accumul_satu_values.size() << endl;
-       cout << "___changing local extirpation rates and/or map temperature__" << endl;
+       cout << "___changing maps__" << endl;
 
      }
 
      if(condition_to_stop_met)
      {
+       if(t >= simulated_time && time_percent_stop_after_first_equilibrium_and_disturbance != 0){
+         break;
+       }
+
        if(event_to_do == "speciation" ||event_to_do == "contraction" || event_to_do == "expansion" ){ // these are the events that change range size
          //
+
          //      cout << "this full_saturation_indi " << full_saturation_indi << " at cyle: " << cycles << endl;
          accumul_satu_values.push_back(full_saturation_indi);
          //      cout << "lenghth accumul_satu_values: " << accumul_satu_values.size() << endl;
@@ -326,8 +341,6 @@ using namespace std;
            }
 
            if(this_variance == 0){
-
-
 
              cout << " final equilibrium found, so I stop" << endl;
              break;
@@ -364,10 +377,7 @@ using namespace std;
      //if ((round(t) - round(t_previous_cycle)) > 0)
      // cout << "t: " << t << " "<< t_previous_cycle << endl;
      // cout << (t + (t * 0.0005))  << endl;
-     if (   (t_previous_cycle + (t_previous_cycle * 0.001)) < t )
-     {
-       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<< " ind_saturation %: " << full_saturation_indi << endl;      // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
-     }
+
 
      // Here, the give_me_random function will pick a position of the id_alive_species vector
      // that Id, will be the element of all_species vector, and it will match its ID.
@@ -800,7 +810,7 @@ using namespace std;
    cout << "total_popchange_events " << total_popchange_events << endl;
 
 
-   cout << "time: " << t << " cycle: " << cycles << " richness:" << final_richness <<  " populations: " << final_numb_pop << " indviduals: " << final_indviduals<< " ind_saturation %: " << full_saturation_indi << endl;
+   cout << "time: " << t << " cycle: " << cycles << " richness:" << final_richness <<  " populations: " << final_numb_pop << " indviduals: " << final_indviduals<< endl;
    to_show_richness_map(y_max,x_max,show_richness_map,all_species,map1);
 
    bool no_failure;

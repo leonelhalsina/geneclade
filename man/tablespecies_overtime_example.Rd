@@ -2,7 +2,7 @@
 % Please edit documentation in R/data.R
 \name{tablespecies_overtime_example}
 \alias{tablespecies_overtime_example}
-\title{A table which one of the three objects output of run_simulation().}
+\title{A table which one of the three objects output of run_geneclade_simulation().}
 \format{
 This particular example is actually a list with three timeslices
 }

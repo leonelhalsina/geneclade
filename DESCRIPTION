@@ -12,3 +12,7 @@ Imports: Rcpp,DDD,hierfstat
 LinkingTo: Rcpp
 NeedsCompilation: yes
 RoxygenNote: 7.3.2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
