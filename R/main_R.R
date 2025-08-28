@@ -109,10 +109,8 @@ make_advanced_initialization <- function (number_spp,
 #' @param unlink_range_to If one wishes to make speciation, colonization, or both independent from the number of populations use unlink_range_to <- c("colonization","speciation"). We suggest not using this option. Default is NULL.
 #' @param x_max Length of x axis in the map.
 #' @param y_max Length of y axis in the map.
-#' @param map_k_1 dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K.
-#' @param map_k_2 dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K. This map will replace map_k_2 at THIS TIME!!!!. If there is no interest in changing maps, please do: map_k_2 <- map_k_1
-#' @param map_environment_1 dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. Only integers.
-#' @param map_environment_2 dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. This map will replace map_environment_1 at THIS TIME!!!!.If there is no interest in changing maps, please do: map_environment_2 <- map_environment_1
+#' @param map_k_1 dataframe to be the map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K.
+#' @param map_environment_1 dataframe to be the map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. Only integers.
 #' @param frequency_print_simulationstatus How many cycles the status of the simulation should be printed in console? Notice that the information printed in one cycle might not be very different from the previous one so increasing frequency_print_simulationstatus might be an option. This is highly dependent on selected rates and does not affect simulation behaviour, it is just a visual aid on what is going on. Default is 1000.
 #' @return List of three objects: First is a table with all species in the simulation. For each species, the geographic location of each population as well as the number of individuals carrying each allele is indication. The second object is a list a phylogenetic tree for the species in the simulation. The third one is a table with richness and abundance per cell that can be used to make a map. If multiple time slices are requested, there will be multiple species table, phylogenetic trees and richness maps.
 #' @examples
@@ -136,12 +134,10 @@ make_advanced_initialization <- function (number_spp,
 #'map_k_1 <- get("map_k_1")
 #' # one normally loads the map with:
 #'#map_k_1 <- read.table(paste0("k_map_uniform.txt"))
-#'map_k_2 <- map_k_1
 #'map_environment_1 <- get("map_environment_1")
 #'#map_environment_1 <- read.table(paste0("temperature_map_uniform.txt"))
-#'map_environment_2 <- map_environment_1
 #'maximum_cycles <- 200000
-#'frequency_print_simulationstatus <- 100
+#'frequency_print_simulationstatus <- 1000
 #'output_simulation <- run_geneclade_simulation (position_start_x,
 #'                                     position_start_y,
 #'                                     advanced_initialization = NULL,
@@ -167,9 +163,7 @@ make_advanced_initialization <- function (number_spp,
 #'                                     x_max,
 #'                                     y_max,
 #'                                     map_k_1,
-#'                                     map_k_2,
 #'                                     map_environment_1,
-#'                                     map_environment_2,
 #'                                     frequency_print_simulationstatus)
 #'richnessabundancemap_overtime <- output_simulation$output_richnessabundancemap_overtime
 #'phylotrees_overtime <- output_simulation$output_phylotree_overtime
@@ -226,9 +220,7 @@ run_geneclade_simulation <- function(position_start_x,
                            x_max,
                            y_max,
                            map_k_1,
-                           map_k_2,
                            map_environment_1,
-                           map_environment_2,
                            frequency_print_simulationstatus = 1000){
   # initial
 
@@ -299,9 +291,9 @@ run_geneclade_simulation <- function(position_start_x,
   y_max <- y_max
 
   text_k_map <- map_k_1
-  text_k_map2 <- map_k_2
+  text_k_map2 <- map_k_1
   map_temperature <- map_environment_1
-  map_temperature2 <- map_environment_2
+  map_temperature2 <- map_environment_1
 
 
   mean_normal_distribution_traitevol <- 0 # currently not used as the trait state value is used as the mean for the normal distribution to sample from.
@@ -316,7 +308,7 @@ run_geneclade_simulation <- function(position_start_x,
 
 
   restiction_par <- 2  # this parameter might not be important
-  do_change_map_rates <- TRUE
+  do_change_map_rates <- FALSE
   the_seed <- sample(1:9000,1)
   use_k <- TRUE
   show_richness_map <- "none"

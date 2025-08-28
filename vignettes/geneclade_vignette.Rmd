@@ -18,7 +18,7 @@ Geneclade is a simulation-based model that seamlessly integrates eco-evolutionar
 
 The main function is run_geneclade_simulation() and the documentation for that function (using ?run_geneclade_simulation) should be enough to run it. I will use this vignette to further expand the explanation for some arguments.
 
-Geneclade offers different ways to stop the simulation: based on time, reaching adynamic equilibrium or a given number of species. We need to set the argument "max_spp" which indicates the maximum number of species to have in the simulation as long as "condition_to_stop" is set to "richness" . Once the number of species is reached, no further speciation events will take place. Then, simulation will carry on until a dynamic equilibrium is met. However, if we set condition_to_stop = "time", we will have as many speciation events as expected given 1) the "rate_speciation", and 2) the "simulated_time." Once the simulated time has been reached, no further speciation will take place and the simulation will run until the dynamic equilibrium is reached. In this case, the time in the simulation might go way beyond "simulated_time". If one wants to force the simulation to stop once certain time is reached regardless of finding or not an equilibrium, use stop_time_after_change = 0.01.
+Geneclade offers different ways to stop the simulation: based on time, reaching a dynamic equilibrium or a given number of species. We need to set the argument "max_spp" which indicates the desired number of species to have in the simulation as long as "condition_to_stop" is set to "richness" . Once the number of species is reached, no further speciation events will take place. Then, simulation will carry on until a dynamic equilibrium is met. However, if we set condition_to_stop = "time", we will have as many speciation events as expected given 1) the "rate_speciation", and 2) the "simulated_time." Once the simulated time has been reached, no further speciation will take place and the simulation will run until the dynamic equilibrium is reached. In this case, the time in the simulation might go way beyond "simulated_time". If one wants to force the simulation to stop once certain time is reached (the simulated_time) regardless of finding or not an equilibrium, use stop_time_after_change = 0.01.
 
 ```{r setup}
 library(geneclade)
@@ -27,13 +27,13 @@ condition_to_stop <- "richness"
 stop_time_after_change <- 0
 ```
 
-We can ask the software to store outputs at specific time slices for further analysis of changes in the simulated world over time. The output at time slices and at the end of the simulation will be have the same structure: 1) a table with geographic and population genetic information, 2) a phylogenetic tree to the clade radiation, and 3) a table to use in ggplot to make diversity and abundance maps. The time slices are specified with "time_slices". Notice that it is difficult to estimate what the total simulated time would be to achieve equilibrium. This means that, for instance, when simulation will run 20000 time units to equilibrium, the argument time_slices <- c(10,20,30) will store 3 time slices at the very beginning of the simulation with nothing to store later in the simulation. Remember that when simulation stops, the end state of the system will always be stored, even if time_slices <- 0. We recommend making a sensible decision on the number of time slices to request, as there must be a balance between how informative the temporal analysis is and the computing power needed to process all time slices.
+We can ask the software to store what the simulation is like at specific time slices for further analysis of changes in the simulated world over time. The output at time slices and at the end of the simulation will be have the same structure: 1) a table with geographic and population genetic information, 2) a phylogenetic tree to the clade radiation, and 3) a table to use in ggplot to make diversity and abundance maps. The time slices are specified with "time_slices". Notice that it is difficult to estimate what the total simulated time would be to achieve equilibrium. This means that, for instance, when simulation will run 20000 time units to equilibrium, the argument time_slices <- c(10,20,30) will store 3 time slices at the very beginning of the simulation with nothing to store later in the simulation. Remember that when simulation stops, the end state of the system will always be stored, even if time_slices <- 0. We recommend making a sensible decision on the number of time slices to request, as there must be a balance between how informative the temporal analysis is and the computing power needed to process all the time slices.
 
 ```{r}
 time_slices <- c(10,200,600,1000)
 ```
 
-The rest of arguments to the function run_geneclade_simulation are rather straightforward
+The rest of arguments to the function run_geneclade_simulation are rather straightforward.
 
 ```{r}
 position_start_x <- 17
@@ -59,10 +59,8 @@ y_max <- 42
 map_k_1 <- get("map_k_1")
 # one normally loads the map with:
 #map_k_1 <- read.table(paste0("k_map_uniform.txt"))
-map_k_2 <- map_k_1
 map_environment_1 <- get("map_environment_1")
 #map_environment_1 <- read.table(paste0("temperature_map_uniform.txt"))
-map_environment_2 <- map_environment_1
 ```
 
 Finally, we call the function:
@@ -92,15 +90,13 @@ output_simulation <- run_geneclade_simulation (position_start_x,
                                      x_max,
                                      y_max,
                                      map_k_1,
-                                     map_k_2,
                                      map_environment_1,
-                                     map_environment_2,
                                      frequency_print_simulationstatus)
 
 
 ```
 
-Simulation stopped at cycle 200000 as requested, which allow to, without knowing how long the simulation needed to run to achieve equilibrium, complete a simulation for this vignette in reasonable real life time. The object output_simulation contains three outputs as described above. We can see the object number three:
+Simulation stopped at cycle 200000 as requested, which allows to complete a simulation for this vignette in reasonable real-life time. No equilibrium was achieved in 200000 cycles. The object output_simulation contains three outputs as described above. We can see the object number three:
 ```{r}
 phylotrees_overtime <- output_simulation$output_phylotree_overtime
 phylotrees_overtime
@@ -110,24 +106,27 @@ The next output object I would like to call now is the species table. Similar to
 ```{r}
 tablespecies_overtime <- output_simulation$output_table_overtime
 ```
-We can see what the final system was like by retrieving the last element of that object.  The name of each element indicates time of that slice (or final time of the simulation):
+We can see what the system at the end of the simulation was like by retrieving the last element of that object.  The name of each element indicates time of that slice (or final time of the simulation):
 
 ```{r}
 this_time_slice <- tablespecies_overtime[length(tablespecies_overtime)]
 names(this_time_slice)
 ```
-Let us now see what the table is like, here I show some sampled lines of it. The Sp_ID column shows the id of the species. A species will have as many rows as populations it has. So, a given row will indicate what species it belongs to, its xy location, number of individuals and the alleles that are carried. Use this table to compute population genetic metrics.
+Let us now see what the table is like. Here I show some sampled lines of it. The Sp_ID column shows the id of the species. A species will have as many rows as populations it has. So, a given row will indicate what species it belongs to, its xy location, number of individuals and the alleles that are carried. Use this table to compute population genetic metrics.
 ```{r}
 this_time_slice <- tablespecies_overtime[[length(tablespecies_overtime)]]
 sampled_lines <- sample(1:nrow(this_time_slice),10,replace = F)
 sampled_lines <- sort(sampled_lines)
 this_time_slice[sampled_lines,]
 ```
-Geneclade offers a function to compute basic metrics. Now imagine we want to compute calculate Fst for the species with ID 1. We can do:
+Geneclade offers a function to compute basic metrics. Now imagine we want to compute calculate Fst for the species with most populations (most widespread species). We can do:
 
 ```{r}
 
-this_species <- this_time_slice[which(this_time_slice$Sp_ID == 1),]
+most_widespread <- names(sort(table(this_time_slice$Sp_ID),decreasing = TRUE)[1])
+this_species <- this_time_slice[which(this_time_slice$Sp_ID == as.numeric(most_widespread)),]
+#Total number of populations for this species:
+nrow(this_species)
 # remove columns with uneccesary info (xy coordinates for instance)
 this_species_pop_info <- this_species[,-c(1,2,3,4)]
 computed_genenetic_metrics <- compute_PopulationsSpecificFST(this_species_pop_info,

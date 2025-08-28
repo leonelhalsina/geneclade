@@ -30,9 +30,7 @@ run_geneclade_simulation(
   x_max,
   y_max,
   map_k_1,
-  map_k_2,
   map_environment_1,
-  map_environment_2,
   frequency_print_simulationstatus = 1000
 )
 }
@@ -85,13 +83,9 @@ run_geneclade_simulation(
 
 \item{y_max}{Length of y axis in the map.}
 
-\item{map_k_1}{dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K.}
+\item{map_k_1}{dataframe to be the map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K.}
 
-\item{map_k_2}{dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local carrying capacity K. This map will replace map_k_2 at THIS TIME!!!!. If there is no interest in changing maps, please do: map_k_2 <- map_k_1}
-
-\item{map_environment_1}{dataframe to be the first map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. Only integers.}
-
-\item{map_environment_2}{dataframe to be the second map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. This map will replace map_environment_1 at THIS TIME!!!!.If there is no interest in changing maps, please do: map_environment_2 <- map_environment_1}
+\item{map_environment_1}{dataframe to be the map to run simulations on (dimensions x_max and y_max). Inhabitable cells marked with -9. Cell values represent local environmental conditions e.g., temperature. Only integers.}
 
 \item{frequency_print_simulationstatus}{How many cycles the status of the simulation should be printed in console? Notice that the information printed in one cycle might not be very different from the previous one so increasing frequency_print_simulationstatus might be an option. This is highly dependent on selected rates and does not affect simulation behaviour, it is just a visual aid on what is going on. Default is 1000.}
 }
@@ -122,12 +116,10 @@ y_max <- 42
 map_k_1 <- get("map_k_1")
 # one normally loads the map with:
 #map_k_1 <- read.table(paste0("k_map_uniform.txt"))
-map_k_2 <- map_k_1
 map_environment_1 <- get("map_environment_1")
 #map_environment_1 <- read.table(paste0("temperature_map_uniform.txt"))
-map_environment_2 <- map_environment_1
 maximum_cycles <- 200000
-frequency_print_simulationstatus <- 100
+frequency_print_simulationstatus <- 1000
 output_simulation <- run_geneclade_simulation (position_start_x,
                                     position_start_y,
                                     advanced_initialization = NULL,
@@ -153,9 +145,7 @@ output_simulation <- run_geneclade_simulation (position_start_x,
                                     x_max,
                                     y_max,
                                     map_k_1,
-                                    map_k_2,
                                     map_environment_1,
-                                    map_environment_2,
                                     frequency_print_simulationstatus)
 richnessabundancemap_overtime <- output_simulation$output_richnessabundancemap_overtime
 phylotrees_overtime <- output_simulation$output_phylotree_overtime
