@@ -23,6 +23,6 @@ be called once you load the library:
 library(geneclade)
 devtools::install(build_vignettes = TRUE)
 # or perhaps you need to build the vignette since package installation, so do:
-remotes::remotes::install_github("leonelhalsina/geneclade",ref="cleaning",build_vignettes = TRUE)
+remotes::install_github("leonelhalsina/geneclade",ref="cleaning",build_vignettes = TRUE)
 browseVignettes("geneclade")
 ```
