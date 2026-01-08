@@ -17,8 +17,24 @@ using namespace std;
 //default_random_engine &generator;
 //' @export
  // [[Rcpp::export]]
- List do_simulation(IntegerVector map_elevation_vector, IntegerVector map_k_vector, IntegerVector map_temperature_vector, bool extirpation_depen_temperature, bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y, IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths, NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow, double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,double t_change_rates, IntegerVector ice_age_change, double q, double lambda, double sd_normal_distribution, double starting_time, double simulated_time, int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map, double v, IntegerVector alleles_adaptation_coef2,bool global_reducing)
+ List do_simulation(IntegerVector map_k_vector,IntegerVector map_k_vector2, IntegerVector map_temperature_vector, IntegerVector map_temperature_vector2,  std::string extirpation_depen,
+                    bool colonization_depen_temperature, int x_max, int y_max, IntegerVector all_x, IntegerVector all_y,
+                    IntegerVector all_IDs, IntegerVector all_parents, NumericVector all_births, NumericVector all_deaths,
+                    NumericVector all_traits, IntegerVector all_ranges, IntegerVector all_alleles, IntegerVector all_alleles_neutral,
+                    IntegerVector all_popsize, int number_spp, int the_seed, double mutation_rate ,double percentage_flow,
+                    double geneflow_rate, double popchange_rate,NumericVector the_gammas, NumericVector the_mus,
+                    double q, double lambda, std::string species_trait_state,double sd_normal_distribution_traitevol, double mean_normal_distribution_traitevol,
+                    double sd_normal_distribution_pop_change,bool growth_only,double starting_time,double simulated_time, int max_spp,int maximum_cycles, bool use_k, double restiction_par, std::string show_richness_map,
+                    double v, IntegerVector alleles_adaptation_coef2,bool do_change_map_rates, bool vicariant_speciation,bool speciation_rangesize_unlinked, bool colonization_rangesize_unlinked,
+                    double time_percent_stop_after_first_equilibrium_and_disturbance,std::string condition_to_stop,IntegerVector time_slices,
+                    IntegerVector manual_speciation_events_timing,int frequency_print_simulationstatus)
  {
+
+   List time_slices_model_output = List::create();
+
+   if((x_max * y_max ) != map_k_vector.size()){
+     stop("map size does not match y_max and/or x_max");
+   }
 
    random_device rd;
    default_random_engine generator(rd());
@@ -32,10 +48,11 @@ using namespace std;
    mu = the_mus[0];
    second_mu = the_mus[1];
 
-   if (all_ranges.size() > 1)
-   {
-     cout << "initialization of simulation should be with one population only, or go and work on get_species_intocpp function" << endl;
-   }
+   // if (all_ranges.size() > 1)
+   // {
+   //
+   //   stop("initialization of simulation should be with one population only, or go and work on get_species_intocpp function" );
+   // }
    int total_pop_from_allelevector;
    total_pop_from_allelevector = 0;
    for(int ij = 0; ij < all_alleles.size(); ++ij){
@@ -57,7 +74,7 @@ using namespace std;
      map1[i] = new landscape[x_max];
    }
 
-   set_landscape(map_elevation_vector, map_k_vector, map_temperature_vector, y_max, x_max, map1);
+   set_landscape(map_k_vector, map_temperature_vector, y_max, x_max, map1);
 
    int absolute_potential_abundance = 0;
    int absolute_cells_to_live = 0;
@@ -84,7 +101,7 @@ using namespace std;
    }
 
 
-   all_species = get_species_intocpp(all_species,  all_alleles, all_alleles_neutral, all_popsize,  all_x,  all_y,  all_IDs,  all_parents,  all_births,  all_deaths,  all_traits,  all_ranges,  number_spp, map1, alleles_adaptation_coef,  v,  gamma,  mu, extirpation_depen_temperature,  colonization_depen_temperature);
+   all_species = get_species_intocpp(all_species,  all_alleles, all_alleles_neutral, all_popsize,  all_x,  all_y,  all_IDs,  all_parents,  all_births,  all_deaths,  all_traits,  all_ranges,  number_spp, map1, alleles_adaptation_coef,  v,  gamma,  mu, extirpation_depen,  colonization_depen_temperature);
 
    int total_num_populations = 0;
    for (int ij = 0; ij < all_ranges.size(); ++ij)
@@ -102,12 +119,16 @@ using namespace std;
    int total_speciation_events = 0;
    int total_geneflow_events = 0;
    int total_popchange_events = 0;
+   int total_traitevolution_events = 0;
    std::string event_to_do;
 
    int full_saturation_indi;
    int total_indviduals;
-   int final_richness;
-   int final_numb_pop;
+   int cycle_condition_met;
+   int individuals_condition_met;
+   int pops_condition_met;
+   double time_condition_met;
+   int richness_at_equilibrium;
    double t;
    t = starting_time;
    bool pending_change_in_rates;
@@ -115,6 +136,10 @@ using namespace std;
    equilibrium_achieved = false;
    pending_change_in_rates = true;
 
+   bool condition_to_stop_met;
+   condition_to_stop_met = false;
+   bool pending_show_stop_message;
+   pending_show_stop_message = true;
    vector <int> accumul_satu_values;
    int previous_satu = 0;
    int count_same_satura = 0;
@@ -125,10 +150,12 @@ using namespace std;
    int cycles = 0;
    // for (int cycles = 0; cycles < maximum_cycles; ++cycles) {
    //
-   set_landscape(map_elevation_vector, map_k_vector, map_temperature_vector, y_max, x_max, map1);
-   populate_landscape(all_species, map1);
-   to_show_richness_map(show_richness_map,all_species,map1);
-   while (t < simulated_time && total_num_populations > 0 && cycles < maximum_cycles)
+   //set_landscape(map_elevation_vector, map_k_vector, map_temperature_vector, y_max, x_max, map1);
+   populate_landscape(y_max,x_max,all_species, map1);
+   to_show_richness_map(y_max,x_max,show_richness_map,all_species,map1);
+   int count_cycles_to_show_message;
+   count_cycles_to_show_message = 0;
+   while (total_num_populations > 0 && cycles < maximum_cycles)
    {
 
      cycles = cycles + 1;
@@ -145,6 +172,9 @@ using namespace std;
      vector<int> id_alive_species;
      for (int i = 0; i < all_species.size(); ++i)
      {
+
+
+
        if (all_species[i].alive)
        {
          id_alive_species.push_back(all_species[i].id);
@@ -163,7 +193,7 @@ using namespace std;
      vector<double> total_probability_species;
      probabilities_based_traits calculation_probabilities;
 
-     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1,  extirpation_depen_temperature, colonization_depen_temperature, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
+     calculation_probabilities = calculate_probabilities_using_traitstate(all_species, map1,  extirpation_depen, colonization_depen_temperature, species_trait_state, mutation_rate, geneflow_rate, popchange_rate, lambda, gamma, mu, id_alive_species, v);
      total_probability_species = calculation_probabilities.total_probability_species;
      discrete_distribution<int> species_probabilities_to_pick(total_probability_species.begin(), total_probability_species.end());
      species_to_do = id_alive_species[species_probabilities_to_pick(generator)];
@@ -178,19 +208,40 @@ using namespace std;
      time_elapsed = waiting_times(generator);
      double t_previous_cycle;
      t_previous_cycle = t;
+     count_cycles_to_show_message = count_cycles_to_show_message + 1;
      t = t + time_elapsed;
-     // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
 
+     if ( count_cycles_to_show_message == frequency_print_simulationstatus)
+       //if (   (t_previous_cycle + (t_previous_cycle * 0.1)) < t )
+     {
+       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals << endl;      // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
+       count_cycles_to_show_message = 0;
+     }
+     // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
+    //cout << "time: " << t << " cycle: " << cycles << endl;
      full_saturation_indi = round(((total_indviduals/(double)absolute_potential_abundance) * 100.0 ));
 
 
      full_saturation_indi = round((((total_num_populations/id_alive_species.size())/(double)absolute_cells_to_live) * 100.0 ));
 
      // bit that looks for equilibrium and stops simulation when certain conditions are met
+     if(condition_to_stop == "richness" && id_alive_species.size() == max_spp && pending_show_stop_message)
+     {
+       condition_to_stop_met = true;
+       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals << endl;
+       // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
+       cout << "_________richness is complete" << endl;
+       pending_show_stop_message = false;
+     }
 
-
-
-
+     if(condition_to_stop == "time" &&  t >= simulated_time && pending_show_stop_message)
+     {
+       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals <<  endl;
+       // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
+       cout << "_________time is up" << endl;
+       condition_to_stop_met = true;
+       pending_show_stop_message = false;
+     }
 
 
      // show_the_percentages_saturation.push_back(full_saturation_indi);
@@ -221,75 +272,97 @@ using namespace std;
      // }
 
 
-
-
-
-     if(event_to_do == "speciation" ||event_to_do == "contraction" || event_to_do == "expansion" ){
-       //
-       //      cout << "this full_saturation_indi " << full_saturation_indi << " at cyle: " << cycles << endl;
-       accumul_satu_values.push_back(full_saturation_indi);
-       //     cout << "lenghth accumul_satu_values: " << accumul_satu_values.size() << endl;
-       //      for (int ij = 0; ij < accumul_satu_values.size(); ++ij){
-       //        cout << " "<< accumul_satu_values[ij] ;
-       //      }
-       // cout << endl;
-       if(accumul_satu_values.size() > 3000)
-       {
-         cout << " over limit in vector length" << endl;
-         break;
-       }
-       if(accumul_satu_values.size() == 3000)
-       {
-         double this_variance;
-         this_variance = calculate_variance(accumul_satu_values);
-         counting_to_print_variance = counting_to_print_variance + 1;
-         if(counting_to_print_variance == 100 )
-         {
-           cout << "Variance in average range size: " << this_variance << endl;
-           counting_to_print_variance = 0;
-         }
-
-         if(this_variance == 0){
-           cout << "equilibrium found: " << endl;
-           equilibrium_achieved = true;
-           if(global_reducing == false ){
-
-             break;
-           }
-
-           if(global_reducing  && pending_change_in_rates == false)
-           {
-             cout << "second equilibrium found" << endl;
-             break;
-           }
-
-         }
-         else
-         {
-           accumul_satu_values.erase(accumul_satu_values.begin());
-         }
-       }
-     }
-
-     if(equilibrium_achieved && global_reducing && pending_change_in_rates)
+     if(condition_to_stop_met && do_change_map_rates && pending_change_in_rates)
      {
-       change_temperature_map(x_max,y_max,map_temperature_vector, ice_age_change,map1);
+       change_temperature_map(x_max,y_max,map_temperature_vector2,map1);
+       change_k_map(x_max,y_max,map_k_vector2,map1);
        gamma = second_gamma;
        mu =  second_mu;
+       lambda = 0;
+
+       List model_output = List::create();
+       model_output = get_me_output(y_max,x_max,all_species,t);
+       time_slices_model_output.push_back(model_output);
+
+       time_condition_met = t;
+       cycle_condition_met = cycles;
+       individuals_condition_met = total_indviduals;
+       pops_condition_met = total_num_populations;
+       richness_at_equilibrium = id_alive_species.size();
+
+       if(time_percent_stop_after_first_equilibrium_and_disturbance != 0)
+       {
+
+         cout << "current time: " << t << endl;
+         simulated_time = t + (t * (time_percent_stop_after_first_equilibrium_and_disturbance/100)); // to stop the simulation some time (some % of time) after the change in map/rates.
+
+         cout << "__________simulated_time to run until " << simulated_time << endl;
+       }
+
        pending_change_in_rates = false;
-       accumul_satu_values.clear();
+       //accumul_satu_values.clear();
        //cout << "size_ accumul_satu_values.clear() "<<  accumul_satu_values.size() << endl;
-       cout << "___changing local extirpation rates and/or map temperature__" << endl;
+       cout << "___changing maps__" << endl;
 
      }
 
-     // if(equilibrium_achieved && global_reducing && pending_change_in_rates == false  && full_saturation_indi == stop_at_saturation)
+     if(condition_to_stop_met)
+     {
+       if(t >= simulated_time && time_percent_stop_after_first_equilibrium_and_disturbance != 0){
+         break;
+       }
+
+       if(event_to_do == "speciation" ||event_to_do == "contraction" || event_to_do == "expansion" ){ // these are the events that change range size
+         //
+
+         //      cout << "this full_saturation_indi " << full_saturation_indi << " at cyle: " << cycles << endl;
+         accumul_satu_values.push_back(full_saturation_indi);
+         //      cout << "lenghth accumul_satu_values: " << accumul_satu_values.size() << endl;
+         //      for (int ij = 0; ij < accumul_satu_values.size(); ++ij){
+         //        cout << " "<< accumul_satu_values[ij] ;
+         //      }
+         // cout << endl;
+         if(accumul_satu_values.size() > 300)
+         {
+           cout << " over limit in vector length" << endl;
+           break;
+         }
+         if(accumul_satu_values.size() == 300)
+         {
+           double this_variance;
+           this_variance = calculate_variance(accumul_satu_values);
+           //cout << "Variance in average range size: " << this_variance << endl;
+
+           counting_to_print_variance = counting_to_print_variance + 1;
+           if(counting_to_print_variance == 100 )
+           {
+             cout << "Variance in average range size: " << this_variance << endl;
+             counting_to_print_variance = 0;
+           }
+
+           if(this_variance == 0){
+
+             cout << " final equilibrium found, so I stop" << endl;
+             break;
+
+
+           }
+           else
+           {
+             accumul_satu_values.erase(accumul_satu_values.begin());
+           }
+         }
+       }
+     }
+
+
+     // if(equilibrium_achieved && do_change_map_rates && pending_change_in_rates == false  && full_saturation_indi == stop_at_saturation)
      // {
      //   cout << "---- Equilibrium was reached, then the changes of mu or map temperature were changed, saturation decreased until stop_at_saturation " << endl;
      //   break;
      // }
      //
-     // if(global_reducing == false && full_saturation_indi == stop_at_saturation){
+     // if(do_change_map_rates == false && full_saturation_indi == stop_at_saturation){
      //
      //   cout << "--- saturation reached the required level, no change in rates/maps nor equilibrium was met" << endl;
      //   break;
@@ -298,24 +371,13 @@ using namespace std;
 
 
 
-
-
-
      // end of it
-     if (t >= simulated_time)
-     {
-       cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<<  " ind_saturation %: " << full_saturation_indi << endl;
-       // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
-       cout << "_________time is up" << endl;
-       break;
-     }
+     //if (t >= simulated_time || id_alive_species.size() >= max_spp)
+
      //if ((round(t) - round(t_previous_cycle)) > 0)
      // cout << "t: " << t << " "<< t_previous_cycle << endl;
      // cout << (t + (t * 0.0005))  << endl;
-     if (   (t_previous_cycle + (t_previous_cycle * 0.00001)) < t )
-     {
-        cout << "time: " << t << " cycle: " << cycles << " richness:" << id_alive_species.size() <<  " populations: " << total_num_populations << " indviduals: " << total_indviduals<< " ind_saturation %: " << full_saturation_indi << endl;      // cout << "total abundance: " << total_num_populations << "..and computed from elevation info:" << (populations_highlands +populations_intermediate1 +populations_intermediate2 + populations_lowlands) << endl;
-     }
+
 
      // Here, the give_me_random function will pick a position of the id_alive_species vector
      // that Id, will be the element of all_species vector, and it will match its ID.
@@ -342,96 +404,184 @@ using namespace std;
      // cout << "calculation_probabilities.popchange_rate_total " << calculation_probabilities.popchange_rate_total  << endl;
      // cout << "calculation_probabilities.mutation_rate_total " << calculation_probabilities.mutation_rate_total  << endl;
 
-
+     double total_rate_traitevol;
+     //   I take the total rate to do trait evolution
+     total_rate_traitevol = ((calculation_probabilities.popchange_rate_total * q)/100.0);
      // to pick and event
-     discrete_distribution <int> events_probabilities_to_pick({calculation_probabilities.gammas_total, calculation_probabilities.mus_total, calculation_probabilities.popchange_rate_total, calculation_probabilities.lambdas_total,calculation_probabilities.geneflow_rate_total,calculation_probabilities.mutation_rate_total});
+     discrete_distribution <int> events_probabilities_to_pick({calculation_probabilities.gammas_total, calculation_probabilities.mus_total, calculation_probabilities.popchange_rate_total, calculation_probabilities.lambdas_total,calculation_probabilities.geneflow_rate_total,calculation_probabilities.mutation_rate_total,total_rate_traitevol});
      // cout << "gammas " << calculation_probabilities.gammas_total << "mus " << calculation_probabilities.mus_total << "qs "<<  calculation_probabilities.qs_total << "lambdas " << calculation_probabilities.lambdas_total << endl;
 
-     std::string all_events[6];
+     std::string all_events[7];
      all_events[0] = "expansion";
      all_events[1] = "contraction";
      all_events[2] = "pop_change";
      all_events[3] = "speciation";
      all_events[4] = "gene_flow";
      all_events[5] =  "mutation";
+     all_events[6] =  "trait_evolution";
 
 
      event_to_do = all_events[events_probabilities_to_pick(generator)];
 
+     for(int iji = 0; iji < manual_speciation_events_timing.size(); ++iji)
+     {
+
+       int t_rounded = round(t);
+       //cout << "rounded time: " << t_rounded << endl;
+
+       if(manual_speciation_events_timing[iji] == t_rounded)
+
+       {
+         event_to_do = "speciation";
+
+         manual_speciation_events_timing.erase(manual_speciation_events_timing.begin() + iji);
+
+         //cout << "time slice length here2: " << time_slices.size() << endl;
+
+       }
+     }
+
      vector <std::string> list_events_to_do;
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("speciation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("contraction");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
 
      list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("pop_change");
      list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
      list_events_to_do.push_back("contraction");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("gene_flow");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("pop_change");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("mutation");
-     list_events_to_do.push_back("expansion");
-     list_events_to_do.push_back("gene_flow");
      list_events_to_do.push_back("contraction");
-     list_events_to_do.push_back("pop_change");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("contraction");
      list_events_to_do.push_back("speciation");
-     list_events_to_do.push_back("mutation");
+
+
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("expansion");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("contraction");
+     list_events_to_do.push_back("speciation");
+     list_events_to_do.push_back("expansion");
+
+
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("speciation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("contraction");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     //
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("contraction");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("mutation");
+     // list_events_to_do.push_back("expansion");
+     // list_events_to_do.push_back("gene_flow");
+     // list_events_to_do.push_back("contraction");
+     // list_events_to_do.push_back("pop_change");
+     // list_events_to_do.push_back("speciation");
+     // list_events_to_do.push_back("mutation");
 
      if(cycles < list_events_to_do.size()){
-      // event_to_do = list_events_to_do[cycles - 1];   // to DELETE
+       //event_to_do = list_events_to_do[cycles - 1];   // to DELETE
      }
      //cout << "                       event_to_do: " << event_to_do << endl;
 
+
+     // all_species[species_to_do].find_patches_distribution(); // to DELETE
+
+
+
+
      if (event_to_do == "expansion")
      {
-      // cout << "                  i will expand" << endl;
+
+       if(colonization_rangesize_unlinked)
+       {
+         int random_spp_speciation;
+         species_to_do = give_me_random_uniform(0, id_alive_species.size() - 1);
+         //stop("stop here");
+       }
+       // cout << "                  i will expand" << endl;
 
        //  cout << "                   species  BEFORE expansion: " << all_species[species_to_do].presence.size() << endl;
        all_species[species_to_do].happening_expansion(x_max, y_max, use_k, restiction_par, map1, colonization_depen_temperature, alleles_adaptation_coef,t); // restriction par will be either k or trait dissimilarity;
@@ -443,15 +593,54 @@ using namespace std;
      if (event_to_do == "speciation")
      {
        //  cout << "                   i will speciate" << endl;
-       happening_speciation( all_species, alleles_adaptation_coef, species_to_do, t, full_saturation_indi,map1);
+
+       if(speciation_rangesize_unlinked)
+       {
+         int random_spp_speciation;
+         species_to_do = give_me_random_uniform(0, id_alive_species.size() - 1);
+         //stop("stop here");
+       }
+       int rich_in_here;
+       rich_in_here = all_species.size();
+
+       if(vicariant_speciation){
+         vector <contiguous_patches> list_patches;
+         list_patches = all_species[species_to_do].find_patches_distribution(y_max,x_max);
+         if(all_species[species_to_do].range > 2){
+           happening_speciation(y_max,x_max, all_species, alleles_adaptation_coef, species_to_do, t, full_saturation_indi,map1, vicariant_speciation);
+           all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
+           total_speciation_events = total_speciation_events + 1;
+
+
+           if(all_species.size() != (rich_in_here + 1)){
+
+             stop("speciation did not work out");
+           }
+         }
+
+
+       } else {
+         happening_speciation(y_max,x_max, all_species, alleles_adaptation_coef, species_to_do, t, full_saturation_indi,map1, vicariant_speciation);
+         all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
+         total_speciation_events = total_speciation_events + 1;
+       }
+
+
+
+
+     }
+
+     if (event_to_do == "trait_evolution"){
+
+       all_species[species_to_do].happening_trait_evolution(mean_normal_distribution_traitevol,sd_normal_distribution_traitevol);
        all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
-       total_speciation_events = total_speciation_events + 1;
+       total_traitevolution_events = total_traitevolution_events + 1;
      }
      if (event_to_do == "gene_flow")
      {
        // cout << "                   i will gene_flow" << endl;
 
-       all_species[species_to_do].happening_gene_flow(percentage_flow,map1);
+       all_species[species_to_do].happening_gene_flow(y_max,x_max,percentage_flow,map1);
 
        all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
        attempted_geneflow_events = attempted_geneflow_events + 1;
@@ -470,7 +659,7 @@ using namespace std;
      {
        // cout << "                  i will pop_change" << endl;
 
-       all_species[species_to_do].happening_population_popchange_this_species(sd_normal_distribution, map1, alleles_adaptation_coef);
+       all_species[species_to_do].happening_population_popchange_this_species(growth_only,sd_normal_distribution_pop_change, map1, alleles_adaptation_coef);
        all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
        total_popchange_events = total_popchange_events + 1;
      }
@@ -478,19 +667,37 @@ using namespace std;
      if (event_to_do == "contraction")
      {
        //  cout << "                  I will contract range " << endl;
-       all_species[species_to_do].happening_contraction(t, map1, extirpation_depen_temperature);
+       all_species[species_to_do].happening_contraction(t, map1, extirpation_depen);
        total_contraction_events = total_contraction_events + 1;
        //all_species[species_to_do] = all_species[species_to_do]; // this line updates the all_species vector
      }
      vector_events_tookplace.push_back(event_to_do);
 
-    // cout << "northermost: "<< all_species[species_to_do].northernmost << "south: " << all_species[species_to_do].southernmost << endl;
+     // cout << "super summary from here" << endl;
+     // for (int iij = 0; iij < all_species.size(); ++iij){
+     //   cout << "id: "<< all_species[iij].id << " range " <<  all_species[iij].range <<" x_coordinate_last_event  " <<  all_species[iij].x_coordinate_last_event << "y_coordinate_last_event " << all_species[iij].y_coordinate_last_event << endl;
+     //   cout << "new_species.temperature_optimum.size() " << all_species[iij].temperature_optimum.size() << endl;
+     //   cout << "new_species.southernmost "<< all_species[iij].southernmost << "new_species.northernmost " << all_species[iij].northernmost << endl;
+     //   cout << "total_rate " <<all_species[iij].total_rate << endl;
+     //   cout << "new_species.birth "<< all_species[iij].birth << "new_species.trait_state " << all_species[iij].trait_state << endl;
+     //   cout << "new_species.total_pop_size "<< all_species[iij].total_pop_size << endl;
+     //   for (int i = 0; i < all_species[iij].presence.size(); ++i)
+     //   {
+     //     cout << "presence here in  " << all_species[iij].presence[i].x << " " << all_species[iij].presence[i].y  << endl;
+     //     cout <<"populations_this_species: " << all_species[iij].populations_this_species[i].pop_size << endl;
+     //     cout <<"temperature_optimum: " << all_species[iij].temperature_optimum[i] << endl;
+     //     cout <<"computed_rate_based_on_temperature: " << all_species[iij].computed_rate_based_on_temperature[i] << endl;
+     //
+     //   }
+     // }
+
+
+     // cout << "northermost: "<< all_species[species_to_do].northernmost << "south: " << all_species[species_to_do].southernmost << endl;
      if (total_num_populations == 1 && event_to_do == "contraction")
      {
        cout << "total annihilation of the clade" << endl;
        break;
      }
-
      bool problem_zero_popsize;
      problem_zero_popsize = false;
      for(int iji = 0; iji < all_species.size(); ++iji)
@@ -521,39 +728,93 @@ using namespace std;
        stop("some issue with population below zero");
        break;
      } // end of checks
-     final_numb_pop = total_num_populations;
-     final_richness = id_alive_species.size();
+
+
+
+
+
+     //cout << "time slice length here: " << time_slices.size() << endl;
+     for(int iji = 0; iji < time_slices.size(); ++iji)
+     {
+
+       int t_rounded = round(t);
+       //cout << "rounded time: " << t_rounded << endl;
+
+       if(time_slices[iji] == t_rounded)
+
+       {
+         // cout << "went in here " << endl;
+         List model_output = List::create();
+         model_output = get_me_output(y_max,x_max,all_species,t);
+         time_slices_model_output.push_back(model_output);
+         time_slices.erase(time_slices.begin() + iji);
+
+         //cout << "time slice length here2: " << time_slices.size() << endl;
+
+       }
+     }
+
+
+
    } // End of While loop
 
-
+   int final_richness;
+   final_richness = 0;
+   int final_numb_pop;
+   final_numb_pop = 0;
+   int final_indviduals;
+   final_indviduals = 0;
    for(int iji = 0; iji < all_species.size(); ++iji)
    {
+     // checks for alleles and loci
+     for(int ij = 0; ij < all_species[iji].populations_this_species.size();++ij)
+     {
+       all_species[iji].populations_this_species[ij].check_alleles();
+     }
+
+
      if(all_species[iji].alive)
      {
        total_geneflow_events = total_geneflow_events + all_species[iji].succesful_geneflow_events;
+       final_richness = final_richness + 1;
+       final_numb_pop = final_numb_pop + all_species[iji].range;
+       final_indviduals =  final_indviduals + all_species[iji].total_pop_size;
      }
    }
 
 
    cout << "____ Summary____" << endl;
-   if(pending_change_in_rates == false){
+   if(pending_change_in_rates == false)
+   {
      cout << "change in rates and/or temperature did take place" << endl;
+     //if(time_percent_stop_after_first_equilibrium_and_disturbance  != 0){
+     cout << "time_condition_met: " << time_condition_met << endl;
+
+     cout << "cycle_condition_met: " << cycle_condition_met << endl;
+     cout << "individuals_condition_met: " << individuals_condition_met << endl;
+     cout << "pops_condition_met: " << pops_condition_met << endl;
+     cout << "and it let the model run some more time and stop at: " << t << " which is "<< time_percent_stop_after_first_equilibrium_and_disturbance <<" % more of the time the simulation had already run for" << endl;
+     cout << " richness_at_equilibrium: " << richness_at_equilibrium  << endl;
+
+     //}
+
    }
    cout << "events took place: " << endl;
    cout << "total_expansion_events " << total_expansion_events << endl;
    cout << "total_contraction_events " << total_contraction_events << endl;
    cout << "total_mutation_events " << total_mutation_events << endl;
+   cout << "total_traitevolution_events" << total_traitevolution_events << endl;
    cout << "attempted_geneflow_events " << attempted_geneflow_events << endl;
    cout << "total_geneflow_events " << total_geneflow_events << endl;
    cout << "total_speciation_events " << total_speciation_events << endl;
    cout << "total_popchange_events " << total_popchange_events << endl;
 
 
-   cout << "time: " << t << " cycle: " << cycles << " richness:" << final_richness <<  " populations: " << final_numb_pop << " indviduals: " << total_indviduals<< " ind_saturation %: " << full_saturation_indi << endl;
-   to_show_richness_map(show_richness_map,all_species,map1);
+   cout << "time: " << t << " cycle: " << cycles << " richness:" << final_richness <<  " populations: " << final_numb_pop << " indviduals: " << final_indviduals<< endl;
+   to_show_richness_map(y_max,x_max,show_richness_map,all_species,map1);
 
    bool no_failure;
-   no_failure = final_check(all_species,map1);
+   no_failure = final_check(y_max,x_max,all_species,map1);
    if(no_failure)
    {
      cout << "OK" << endl;
@@ -562,12 +823,17 @@ using namespace std;
 
    // for RcPP
 
+
+
+
    List model_output = List::create();
-   model_output = get_me_output(all_species,t);
+   model_output = get_me_output(y_max,x_max,all_species,t);
+
+   time_slices_model_output.push_back(model_output);
 
    // end for Rcpp
    //
    //       int model_output;
    //    model_output = 3;
-   return model_output;
+   return time_slices_model_output;
  }

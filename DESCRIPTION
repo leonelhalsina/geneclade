@@ -1,14 +1,18 @@
 Package: geneclade
 Type: Package
-Title: Simulates the radiation of a clade in space with genetic structure
-Version: 0.1.2
+Title: Spatial clade radiation with genetic dynamics
+Version: 0.2.1
 Author: Leonel Herrera Alsina
 Maintainer: Leonel Herrera Alsina <leonelhalsina@gmail.com>
-Description: Simulates the radiation of a clade in space with genetic structure
+Description: Simulates the radiation of a clade in space while considering population genetic dynamics
 Encoding: UTF-8
 LazyData: true
 License: GPL (>= 2)
-Imports: Rcpp
+Imports: Rcpp,DDD,hierfstat
 LinkingTo: Rcpp
 NeedsCompilation: yes
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
